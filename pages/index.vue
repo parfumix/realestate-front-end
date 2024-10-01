@@ -7,13 +7,8 @@
       
       <div class="sm:w-5/12	h-full sm:max-w-xl w-full bg-white shadow-lg rounded-lg flex flex-col">
         <Chat @submit="handleSendMessage" :messages="messages">
-          <div class="mx-auto flex flex-wrap justify-center space-y-2 mt-2">
-            <span 
-              v-for="(prompt, index) in prompts" 
-              @click="() => handleSelectPrompt(prompt)"
-              :key="index" 
-              class="cursor-pointer inline-flex items-center rounded-md bg-gray-100 px-4 py-2 text-xs font-medium text-gray-600 mr-2"
-            >
+          <div class="mx-auto flex flex-wrap justify-center my-2">
+            <span v-for="(prompt, index) in prompts"  @click="() => handleSelectPrompt(prompt)" :key="index" class="cursor-pointer inline-flex items-center mt-2 rounded-md bg-gray-100 px-4 py-2 text-xs font-medium text-gray-600 mr-2">
               {{ prompt }}
             </span>
           </div>

@@ -5,7 +5,8 @@ export default defineNuxtConfig({
     '@nuxtjs/leaflet',
     'nuxt-headlessui',
     '@pinia/nuxt',
-    '@nuxtjs/supabase'
+    '@nuxtjs/supabase',
+    'nuxt-keen-slider'
   ],
   runtimeConfig: {
     public: {

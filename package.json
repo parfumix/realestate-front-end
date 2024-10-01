@@ -24,6 +24,7 @@
   "devDependencies": {
     "@nuxtjs/tailwindcss": "^6.12.1",
     "@tailwindcss/forms": "^0.5.9",
-    "nuxt-headlessui": "^1.2.0"
+    "nuxt-headlessui": "^1.2.0",
+    "nuxt-keen-slider": "^1.1.0"
   }
 }
