@@ -7,7 +7,7 @@
           </div>
           <p class="mt-1 truncate text-sm text-gray-500">{{ item?.description }}</p>
         </div>
-        <img class="h-10 w-10 flex-shrink-0 rounded-full bg-gray-300" :src="item?.imageUrl" alt="" />
+        <img class="h-10 w-10 flex-shrink-0 rounded-full bg-gray-300" :src="item?.images[0]" alt="" />
       </div>
 </template>
 

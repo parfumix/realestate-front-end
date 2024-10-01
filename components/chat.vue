@@ -11,6 +11,7 @@
         <div v-if="message.sender === 'user'" class="ml-auto">
           <p class="bg-blue-500 text-white py-2 px-4 rounded-lg shadow" v-html="message.text" />
         </div>
+        
         <div v-else class="mr-auto">
           <div class="w-full" v-if="message.realEstate">
             <slider :slidesPerView="2" ref="sliderRef" class="mx-4 w-[480px]" :items="message.realEstate" v-slot="{ item }">
