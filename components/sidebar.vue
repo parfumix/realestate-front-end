@@ -4,7 +4,7 @@
     role="dialog" tabindex="-1" aria-label="Mini Sidebar">
     <div class="flex flex-col justify-center items-center gap-y-2 py-4">
       <div class="mb-4">
-        <NuxtLink to="/" class="flex-none focus:outline-none focus:opacity-80" href="#">
+        <NuxtLink to="/" class="flex-none focus:outline-none focus:opacity-80">
           <svg class="w-10 h-auto" width="100" height="100" viewBox="0 0 100 100" fill="none"
             xmlns="http://www.w3.org/2000/svg">
             <rect width="100" height="100" rx="10" fill="black" />

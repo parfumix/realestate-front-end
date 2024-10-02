@@ -80,11 +80,10 @@
                 leave-active-class="transition ease-in duration-75" leave-from-class="transform opacity-100 scale-100"
                 leave-to-class="transform opacity-0 scale-95">
                 <MenuItems
-                  class="absolute left-0 z-10 mt-2 w-40 origin-top-left rounded-md bg-white shadow-2xl focus:outline-none">
+                  class="absolute left-0 z-10 mt-2 w-40 origin-top-left rounded-md bg-white shadow-2xl focus:ring-0 focus:outline-none">
                   <div class="py-1">
-                    <MenuItem v-for="option in filterStore.sortOptions" :key="option.name" v-slot="{ active }">
-                      <a :href="option.href"
-                        :class="[option.current ? 'font-medium text-gray-900' : 'text-gray-500', active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm']">
+                    <MenuItem v-for="option in filterStore.sortOptions" :key="option.id" v-slot="{ active }">
+                      <a @click="filterStore.activeSorting=option.id" :class="[activeSorting == option.id ? 'font-medium text-gray-900' : 'text-gray-500', activeSorting == option.id ? 'bg-gray-100' : '', 'block cursor-pointer px-4 py-2 text-sm']">
                         {{ option.name }}
                       </a>
                     </MenuItem>
@@ -93,38 +92,27 @@
               </transition>
             </Menu>
   
-            <button type="button" class="inline-block text-sm font-medium text-gray-700 hover:text-gray-900 sm:hidden"
-              @click="filterStore.toggleOpen()">Filters</button>
+            <button type="button" class="inline-block text-sm font-medium text-gray-700 hover:text-gray-900 sm:hidden" @click="filterStore.toggleOpen()">Filters</button>
   
             <div class="hidden sm:block">
               <div class="flow-root">
                 <PopoverGroup class="-mx-4 flex items-center divide-x divide-gray-200">
-                  <Popover v-for="(section, sectionIdx) in filterStore.filters" :key="section.name"
+                  <Popover v-for="(section, sectionIdx) in filterStore.filters" :key="sectionIdx"
                     class="relative inline-block px-4 text-left">
-                    <PopoverButton
-                      class="group inline-flex justify-center text-sm font-medium text-gray-700 hover:text-gray-900">
+                    <PopoverButton class="group inline-flex justify-center text-sm font-medium text-gray-700 hover:text-gray-900">
                       <span>{{ section.name }}</span>
-                      <span v-if="sectionIdx === 0"
-                        class="ml-1.5 rounded bg-gray-200 px-1.5 py-0.5 text-xs font-semibold tabular-nums text-gray-700">1</span>
-                      <ChevronDownIcon
-                        class="-mr-1 ml-1 h-5 w-5 flex-shrink-0 text-gray-400 group-hover:text-gray-500"
-                        aria-hidden="true" />
+                      <ChevronDownIcon class="-mr-1 ml-1 h-5 w-5 flex-shrink-0 text-gray-400 group-hover:text-gray-500" aria-hidden="true" />
                     </PopoverButton>
   
                     <transition enter-active-class="transition ease-out duration-100"
                       enter-from-class="transform opacity-0 scale-95" enter-to-class="transform opacity-100 scale-100"
                       leave-active-class="transition ease-in duration-75" leave-from-class="transform opacity-100 scale-100"
                       leave-to-class="transform opacity-0 scale-95">
-                      <PopoverPanel
-                        class="absolute right-0 z-10 mt-2 origin-top-right rounded-md bg-white p-4 shadow-2xl focus:outline-none">
+                      <PopoverPanel class="absolute right-0 z-10 mt-2 origin-top-right rounded-md bg-white p-4 shadow-2xl focus:ring-0 focus:outline-none">
                         <form class="space-y-4">
-                          <div v-for="(option, optionIdx) in section.options" :key="option.value"
-                            class="flex items-center">
-                            <input :id="`filter-${section.id}-${optionIdx}`" :name="`${section.id}[]`"
-                              :value="option.value" type="checkbox" :checked="option.checked"
-                              class="h-4 w-4 rounded border-gray-300 text-grat-600" />
-                            <label :for="`filter-${section.id}-${optionIdx}`"
-                              class="ml-3 whitespace-nowrap pr-6 text-sm font-medium text-gray-900">{{ option.label }}</label>
+                          <div v-for="(option, optionIdx) in section.options" :key="option.value" class="flex items-center">
+                            <input :id="`filter-${section.id}-${optionIdx}`" :name="`${section.id}[]`" :value="option.value" @click="toggleFilter(section.id, option.value)" type="checkbox" :checked="filterStore.activeFilters[section.id].includes(option.value)" class="h-4 w-4 rounded border-gray-300 text-grat-600" />
+                            <label :for="`filter-${section.id}-${optionIdx}`" class="ml-3 whitespace-nowrap pr-6 text-sm font-medium text-gray-900">{{ option.label }}</label>
                           </div>
                         </form>
                       </PopoverPanel>
@@ -148,19 +136,21 @@
   
             <div class="mt-2 sm:ml-4 sm:mt-0">
               <div class="-m-1 flex flex-wrap items-center">
-                <span v-for="activeFilter in filterStore.activeFilters" :key="activeFilter.value"
-                  class="m-1 inline-flex items-center rounded-full border border-gray-200 bg-white py-1.5 pl-3 pr-2 text-sm font-medium text-gray-900">
-                  <span>{{ activeFilter.label }}</span>
-                  <button type="button"
-                    class="ml-1 inline-flex h-4 w-4 flex-shrink-0 rounded-full p-1 text-gray-400 hover:bg-gray-200 hover:text-gray-500">
-                    <span class="sr-only">Remove filter for {{ activeFilter.label }}</span>
-                    <svg class="h-2 w-2" stroke="currentColor" fill="none" viewBox="0 0 8 8">
-                      <path stroke-linecap="round" stroke-width="1.5" d="M1 1l6 6m0-6L1 7" />
-                    </svg>
-                  </button>
+                <span v-for="(activeFilter, index) in filterStore.activeFilters" :key="index" class="flex flex-row">
+                  <span v-for="filter in activeFilter" :key="`${index}-sub`" class="m-1 inline-flex items-center rounded-full border border-gray-200 bg-white py-1.5 pl-3 pr-2 text-sm font-medium text-gray-900">
+                    <span>{{ filters.find(el => el.id == index)['options'].find(el => el.value == filter).label }}</span>
+                    <button type="button" @click="toggleFilter(index, filter)" class="ml-1 inline-flex h-4 w-4 flex-shrink-0 rounded-full p-1 text-gray-400 hover:bg-gray-200 hover:text-gray-500">
+                      <span class="sr-only">Remove filter for {{ filter }}</span>
+                      <svg class="h-2 w-2" stroke="currentColor" fill="none" viewBox="0 0 8 8">
+                        <path stroke-linecap="round" stroke-width="1.5" d="M1 1l6 6m0-6L1 7" />
+                      </svg>
+                    </button>
+                  </span>
+                 
                 </span>
               </div>
             </div>
+            
           </div>
         </div>
       </section>
@@ -189,7 +179,14 @@
   import { XMarkIcon } from '@heroicons/vue/24/outline';
   import { ChevronDownIcon } from '@heroicons/vue/20/solid';
   
+  import { storeToRefs } from 'pinia'
+
   // Use the Pinia filter store
-  const filterStore = useFilterStore();
+  const filterStore = useFilterStore()
+  const { filters, activeSorting } = storeToRefs(filterStore)
+
+  const toggleFilter = (type, value) => {
+    filterStore.handleToggleFilter(type, value)
+  }
   </script>
   
