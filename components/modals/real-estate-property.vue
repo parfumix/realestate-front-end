@@ -38,7 +38,7 @@ import { ExclamationTriangleIcon } from '@heroicons/vue/24/outline'
 // Define the open state
 const props = defineProps({
   item: {
-    type: Object
+    type: [Object, Boolean]
   }
 })
 
