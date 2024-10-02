@@ -27,6 +27,7 @@
 
 <script setup>
 import { search } from '~/api/real-estate';
+const filterStore = useFilterStore()
 
 const messages = ref([
   { text: 'Bună! Cauți o locuință nouă? Asistentul nostru AI este aici să te ajute să găsești exact ce ai nevoie. Scrie preferințele tale și să începem! 🏡✨', sender: 'bot' },
@@ -83,6 +84,11 @@ const handleSendMessage = async (message) => {
         messages.value.push({
         text: reply,
         sender: 'bot',
+      });
+
+      // apply filters automatically
+      Object.keys(data.value?.filters).forEach(key => {
+        filterStore.activeFilters[key] = data.value?.filters[key]
       });
 
       // Update the items for the map and re-render it
