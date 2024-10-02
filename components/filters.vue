@@ -82,7 +82,7 @@
                 <MenuItems
                   class="absolute left-0 z-10 mt-2 w-40 origin-top-left rounded-md bg-white shadow-2xl focus:ring-0 focus:outline-none">
                   <div class="py-1">
-                    <MenuItem v-for="option in filterStore.sortOptions" :key="option.id" v-slot="{ active }">
+                    <MenuItem v-for="option in filterStore.sortOptions" :key="option.id">
                       <a @click="filterStore.activeSorting=option.id" :class="[activeSorting == option.id ? 'font-medium text-gray-900' : 'text-gray-500', activeSorting == option.id ? 'bg-gray-100' : '', 'block cursor-pointer px-4 py-2 text-sm']">
                         {{ option.name }}
                       </a>
