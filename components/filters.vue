@@ -125,8 +125,8 @@
         </div>
   
         <!-- Active filters -->
-        <div class="bg-gray-100">
-          <div class="mx-auto max-w-7xl px-4 py-3 sm:flex sm:items-center sm:px-6 lg:px-8">
+        <div class="bg-gray-100 py-1">
+          <div class="mx-auto max-w-7xl px-4 sm:flex sm:items-center sm:px-6 lg:px-8 h-10">
             <h3 class="text-sm font-medium text-gray-500">
               Filters
               <span class="sr-only">, active</span>
