@@ -1,13 +1,11 @@
 <template>
-    <div class="border border-black flex  fw-full h-full items-center justify-center space-x-6 p-6">
-        <div class="flex-1 flex-wrap truncate">
-          <div class="flex items-center space-x-3">
-            <h3 class="truncate text-sm font-medium text-gray-900">{{ item?.title }}</h3>
-            <span class="inline-flex flex-shrink-0 items-center rounded-full bg-green-50 px-1.5 py-0.5 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">${{ item?.price }}</span>
-          </div>
-          <p class="mt-1 truncate text-sm text-gray-500">{{ item?.description }}</p>
+    <div class="flex fw-full h-full items-start justify-start px-2 pt-2 pb-1">
+        <div class="flex-1 items-center justify-center">
+          <p class="text-xs font-medium text-gray-900 pb-1 px-1 hover:underline cursor-pointer h-[55px]" :title="item?.title">{{ (item?.title || '').substring(36, item?.title) + '…' }}</p>
+          <p class="text-sm font-bold text-gray-900">{{ $currencyFormat(item.price, 'fr-FR', 'EUR') }}</p>
+          <p class="text-xs font-normal text-gray-900" v-if="item.area && item.price">{{ parseFloat(item?.price / parseFloat(new String(item?.area).match(/\d+(\.\d+)?/))).toFixed(2) }} EUR<span class="text-gray-800"> / m2</span></p>
         </div>
-        <img class="h-20 w-20 flex-shrink-0 rounded-md bg-gray-300" :src="item?.images?.[0]" alt="" />
+        <img class="h-[5.5rem] w-[5.5rem] flex-shrink-0 rounded-xl cursor-pointer" :src="item?.images?.[0]" alt="" />
       </div>
 </template>
 

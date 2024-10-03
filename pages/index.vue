@@ -1,11 +1,11 @@
 <template>
-  <div class="h-screen bg-gray-100 flex flex-col items-center">
+  <div class="bg-gray-100 flex flex-col items-center " style="height: calc(100vh - 40px);">
 
     <Filters class="w-full z-50" />
 
-    <div class="flex max-w-7xl mx-auto w-full justify-center items-center px-4 sm:px-6 lg:px-8 mt-2 mb-6" style="height: calc(100vh - 150px);">
+    <div class="flex max-w-7xl mx-auto w-full justify-center items-center px-4 sm:px-6 lg:px-8 mt-2 " style="height: calc(100vh - 150px);">
       
-      <div class="sm:w-5/12	h-full sm:max-w-xl w-full bg-white shadow-lg rounded-lg flex flex-col">
+      <div class="sm:w-5/12	h-full sm:max-w-xl w-full bg-white shadow-xs rounded-lg flex flex-col">
         <Chat @submit="handleSendMessage" :messages="messages">
           <div class="mx-auto flex flex-wrap justify-center my-2">
             <span v-for="(prompt, index) in prompts"  @click="() => handleSelectPrompt(prompt)" :key="index" class="cursor-pointer inline-flex items-center mt-2 rounded-md bg-gray-100 px-4 py-2 text-xs font-medium text-gray-600 mr-2">

@@ -1,7 +1,7 @@
 <template>
   <!-- Header -->
-  <div class="bg-blue-500 text-white py-3 px-4 rounded-t-lg">
-    <h1 class="text-lg">Real Estate Chat</h1>
+  <div class="bg-blue-500 text-white py-2 px-4 rounded-t-lg">
+    <h1 class="text-md">Real Estate Chat</h1>
   </div>
 
   <!-- Chat Window -->
@@ -14,9 +14,7 @@
         
         <div v-else class="mr-auto">
           <div class="w-full" v-if="message.realEstate">
-            <slider :slidesPerView="2" ref="sliderRef" class="mx-4 w-[480px]" :items="message.realEstate" v-slot="{ item }">
-              <Item :item="item" @click="handleShowModal(item)" class="h-[150px] divide-y divide-gray-200 rounded-lg bg-white shadow" />
-            </slider>
+            <Items :items="message.realEstate" />
           </div>
           <!-- Else, display bot text messages -->
           <div v-else>
@@ -30,12 +28,10 @@
   </div>
 
   <!-- Input Field -->
-  <div class="bg-gray-200 p-4 rounded-b-lg flex">
-    <input v-model="message" @keyup.enter="() => handleSendMessage(message)" type="text" placeholder="Type a message..." class="flex-1 py-2 px-4 rounded-lg border border-gray-300 focus:outline-none" />
+  <div class="w-full rounded-b-lg flex justify-between border-t border-gray-300 ">
+    <input v-model="message" @keyup.enter="() => handleSendMessage(message)" type="text" placeholder="Type a message..." class="flex-1 py-2 px-4 focus:ring-0 focus:outline-none" />
     <button @click="() => handleSendMessage(message)" class="ml-2 bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600">Send</button>
   </div>
-
-  <ModalsRealEstateProperty :item="currentModalItem" @close="handleCloseModal" class="z-[100]" />
 </template>
 
 <script setup>
@@ -49,17 +45,6 @@ const props = defineProps({
 
 const emit = defineEmits(['submit'])
 
-const currentModalItem = ref(null)
-const handleShowModal = (item) => {
-  currentModalItem.value = item
-}
-
-const handleCloseModal = () => {
-  setTimeout(() => {
-    currentModalItem.value = false
-  }, 340)
-}
-
 const handleSendMessage = (query, resetMessage = true) => {
     emit('submit', query)
     if(resetMessage) {
@@ -67,3 +52,4 @@ const handleSendMessage = (query, resetMessage = true) => {
     }
 }
 </script>
+

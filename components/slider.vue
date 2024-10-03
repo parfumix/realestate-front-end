@@ -11,7 +11,6 @@
 <script setup>
 import { Swiper, SwiperSlide } from 'swiper/vue';
 import { Mousewheel, Keyboard, FreeMode } from 'swiper/modules';
-import { ref } from 'vue'
 
 import 'swiper/css';
 
