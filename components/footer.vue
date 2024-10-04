@@ -1,6 +1,6 @@
 <template>
     <footer class="bg-gray-100 h-[40px]">
-      <div class="mx-auto max-w-full mx-24 px-6 h-full md:flex items-center md:justify-between lg:px-8">
+      <div class="mx-auto max-w-7xl mx-24 px-6 h-full md:flex items-center md:justify-between lg:px-8">
         <div class="flex justify-center space-x-6 md:order-2">
           <a v-for="item in navigation" :key="item.name" :href="item.href" class="text-gray-400 hover:text-gray-500">
             <span class="sr-only">{{ item.name }}</span>
