@@ -17,8 +17,17 @@
       </div>
 
       <!-- Pass the real estate listings to the map component -->
-      <div class="hidden sm:flex sm:w-7/12  h-full ml-2 z-30">
-        <RealEstateMap :key="mapKey" :items="realEstateItems" />
+      <div class="hidden sm:flex sm:w-7/12  h-full ml-4 z-[50] relative">
+        <div v-if="realEstateItems.length" :key="realEstateItems.length" class="absolute inset-y-0 right-0 top-0 w-[15px] flex justify-end -mr-[50px] -mt-[30px] flex flex-col items-end justify-start space-y-2">
+          <svg @click="isListView = true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="cursor-pointer size-6"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 6.75h12M8.25 12h12m-12 5.25h12M3.75 6.75h.007v.008H3.75V6.75Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0ZM3.75 12h.007v.008H3.75V12Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm-.375 5.25h.007v.008H3.75v-.008Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" /></svg>
+          <svg @click="isListView = false" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="cursor-pointer size-6"><path stroke-linecap="round" stroke-linejoin="round" d="M9 6.75V15m6-6v8.25m.503 3.498 4.875-2.437c.381-.19.622-.58.622-1.006V4.82c0-.836-.88-1.38-1.628-1.006l-3.869 1.934c-.317.159-.69.159-1.006 0L9.503 3.252a1.125 1.125 0 0 0-1.006 0L3.622 5.689C3.24 5.88 3 6.27 3 6.695V19.18c0 .836.88 1.38 1.628 1.006l3.869-1.934c.317-.159.69-.159 1.006 0l4.994 2.497c.317.158.69.158 1.006 0Z" /></svg>
+        </div>
+
+        <div v-if="realEstateItems.length">
+          <RealEstateMap v-if="!isListView" :key="mapKey" :items="realEstateItems" />
+          <RealEstateList v-else :key="realEstateItems.length" :items="realEstateItems" />
+        </div>
+        <EmptyResults v-else class="w-full h-full flex flex-col justify-center items-center" />
       </div>
     </div>
 
@@ -46,7 +55,8 @@ let loadMorePrompts = [
   "Arată doar proprietăți recent listate"
 ]
 
-const prompts = ref(newSearchPrompts);
+const prompts = ref(newSearchPrompts)
+const isListView = ref(true)
 
 const realEstateItems = ref([]);
 
