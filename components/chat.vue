@@ -28,7 +28,7 @@
 
   <!-- Input Field -->
   <div class="w-full rounded-b-lg flex justify-between border-t border-gray-300 ">
-    <input v-model="message" @keyup.enter="() => handleSendMessage(message)" type="text" placeholder="Type a message..." class="flex-1 py-2 px-4 focus:ring-0 focus:outline-none" />
+    <input v-model="message" @keyup.enter="() => handleSendMessage(message)" type="text" placeholder="Scrie ce cauți..." class="flex-1 py-2 px-4 focus:ring-0 focus:outline-none" />
     <button @click="() => handleSendMessage(message)" class="ml-2 bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600">Send</button>
   </div>
 </template>

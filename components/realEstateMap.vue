@@ -31,7 +31,10 @@ const props = defineProps({
   items: {
     type: Array,
     default: () => []
-  }
+  },
+  randInt: {
+    type: Number,
+  },
 });
 
 const elements = ref([]);
@@ -39,14 +42,14 @@ const mapCenter = ref([47.21322, -1.559482]);
 
 // Watch for changes to items and update elements
 watch(
-  () => props.items,
-  (newItems) => {
-    elements.value = newItems.map(item => ({
-      ...item,
-      lat: item.lat,
-      lng: item.lng,
-    }));
-  },
-  { deep: true, immediate: true }
-);
+      [() => props.items, () => props.randInt], 
+      ([newItems, newRand]) => {
+        elements.value = newItems.map(item => ({
+          ...item,
+          lat: item.lat,
+          lng: item.lng,
+        }));
+      },
+      { deep: true, immediate: true }
+    );
 </script>
