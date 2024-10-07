@@ -1,7 +1,7 @@
 <template>
   <div class="bg-gray-100 flex flex-col items-center " style="height: calc(100vh - 40px);">
 
-    <Filters class="w-full z-50" />
+    <Filters class="w-full z-[50]" />
 
     <div class="flex max-w-7xl mx-auto w-full justify-center items-center px-4 sm:px-6 lg:px-8 mt-2 " style="height: calc(100vh - 150px);">
       

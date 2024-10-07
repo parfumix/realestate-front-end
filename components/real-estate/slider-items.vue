@@ -7,7 +7,7 @@
             </div>
            
             <slider :slidesPerView="2" ref="templateRef" class="mx-4 w-[450px]" :items="items" v-slot="{ item }">
-                <Item :item="item" @click="handleShowModal(item)" class="h-[150px] divide-y divide-gray-200 rounded-lg bg-gray-100" />
+                <RealEstateSliderItem :item="item" @click="handleShowModal(item)" class="h-[150px] divide-y divide-gray-200 rounded-lg bg-gray-100" />
             </slider>
         </nav>
      

@@ -14,9 +14,8 @@
         
         <div v-else class="mr-auto">
           <div class="w-full" v-if="message.realEstate">
-            <Items :items="message.realEstate" />
+            <RealEstateSliderItems :items="message.realEstate" />
           </div>
-          <!-- Else, display bot text messages -->
           <div v-else>
             <p class="bg-gray-300 py-2 px-4 rounded-lg shadow" v-html="message.text" />
           </div>
