@@ -32,7 +32,7 @@ export const useFilterStore = defineStore('filters', () => {
     },
     {
       id: 'price',
-      name: 'Interval Preț',
+      name: 'Preț',
       options: [
         { value: '0-50000', label: '€0 - €50,000'},
         { value: '50000-100000', label: '€50,000 - €100,000'},
