@@ -11,16 +11,22 @@ const props = defineProps({
     }
 })
 
+const chatStore = useChatStore()
 const scrollable = ref(null)
 
 // Function to handle scroll event
-const handleScroll = () => {
-  // Get the scroll position inside the div
+const handleScroll = async() => {
+  // Get the scroll position and height inside the div
   const scrollPosition = scrollable.value.scrollTop;
+  const scrollHeight = scrollable.value.scrollHeight;
+  const clientHeight = scrollable.value.clientHeight;
 
   // Check if the user has scrolled to the bottom of the div
-  if (scrollable.value.scrollHeight - scrollable.value.scrollTop === scrollable.value.clientHeight) {
-    // You can trigger additional actions here (e.g., loading more content)
+  if (scrollHeight - scrollPosition <= clientHeight + 1) {
+    const { results: jobs } = await chatStore.handleLoadMore()
+    if(! jobs) return
+
+    chatStore.handlePushJobs(jobs)
   }
 };
 </script>

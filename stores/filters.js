@@ -67,6 +67,10 @@ export const useFilterStore = defineStore('filters', () => {
     'bathrooms': [],
     'location': [],
   });
+
+  const setActiveFilter = (filterName, value) => {
+    activeFilters[filterName] = value;
+  };
   
   const handleToggleFilter = (type, value) => {
     let valueIndex = activeFilters?.[type].findIndex(el => el == value);
@@ -92,6 +96,7 @@ export const useFilterStore = defineStore('filters', () => {
     filters,
     activeFilters,
     handleToggleFilter,
+    setActiveFilter,
 
     toggleOpen,
   }
