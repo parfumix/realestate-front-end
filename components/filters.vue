@@ -48,7 +48,7 @@
                             :value="option.value" type="checkbox" :checked="option.checked"
                             class="h-4 w-4 rounded border-gray-300 text-grat-600 " />
                           <label :for="`filter-mobile-${section.id}-${optionIdx}`"
-                            class="ml-3 text-sm text-gray-500">{{ option.label }}</label>
+                            class="ml-3 text-sm text-gray-500">{{ option?.label }}</label>
                         </div>
                       </div>
                     </DisclosurePanel>

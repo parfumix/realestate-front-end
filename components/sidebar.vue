@@ -1,6 +1,6 @@
 <template>
   <div
-    class="hs-overlay [--auto-close:lg] hs-overlay-open:translate-x-0 -translate-x-full transition-all duration-300 transform hidden fixed top-0 start-0 bottom-0 z-[60] w-20 bg-white border-e border-gray-200 lg:block lg:translate-x-0 lg:end-auto lg:bottom-0 [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-track]:bg-gray-100 [&::-webkit-scrollbar-thumb]:bg-gray-300 dark:[&::-webkit-scrollbar-track]:bg-blue-500 dark:[&::-webkit-scrollbar-thumb]:bg-blue-500 dark:bg-blue-800 dark:border-neutral-500"
+    class="hs-overlay [--auto-close:lg] hs-overlay-open:translate-x-0 -translate-x-full transition-all duration-300 transform hidden fixed top-0 start-0 bottom-0 z-[70] w-20 bg-white border-e border-gray-200 lg:block lg:translate-x-0 lg:end-auto lg:bottom-0 [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-track]:bg-gray-100 [&::-webkit-scrollbar-thumb]:bg-gray-300 dark:[&::-webkit-scrollbar-track]:bg-blue-500 dark:[&::-webkit-scrollbar-thumb]:bg-blue-500 dark:bg-blue-800 dark:border-neutral-500"
     role="dialog" tabindex="-1" aria-label="Mini Sidebar">
     <div class="flex flex-col justify-center items-center gap-y-2 py-4">
       <div class="mb-4">

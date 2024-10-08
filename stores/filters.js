@@ -14,67 +14,96 @@ export const useFilterStore = defineStore('filters', () => {
 
   const filters = ref([
     {
-      id: 'property-type',
-      name: 'Property Type',
+      id: 'transaction-type',
+      name: 'Tip Tranzacție',
       options: [
-        { value: 'house', label: 'House'},
-        { value: 'apartment', label: 'Apartment'},
-        { value: 'condo', label: 'Condo'},
+        { value: 'for-sale', label: 'De Vânzare' },
+        { value: 'for-rent', label: 'De Închiriat' },
+      ],
+    },
+    {
+      id: 'property-type',
+      name: 'Tip Proprietate',
+      options: [
+        { value: 'apartamente', label: 'Apartamente' },
+        { value: 'case', label: 'Case' },
+        { value: 'garsoniere', label: 'Garsoniere' },
       ],
     },
     {
       id: 'price',
-      name: 'Price Range',
+      name: 'Interval Preț',
       options: [
-        { value: '0-50000', label: '$0 - $50,000'},
-        { value: '50000-100000', label: '$50,000 - $100,000'},
-        { value: '100000-200000', label: '$100,000 - $200,000'},
+        { value: '0-50000', label: '€0 - €50,000' },
+        { value: '50000-100000', label: '€50,000 - €100,000' },
+        { value: '100000-150000', label: '€100,000 - €150,000' },
+        { value: '150000-200000', label: '€150,000 - €200,000' },
+        { value: '200000+', label: '€200,000+' },
       ],
     },
     {
-      id: 'bedrooms',
-      name: 'Bedrooms',
+      id: 'rooms',
+      name: 'Număr de Camere',
       options: [
-        { value: '1', label: '1 Bedroom'},
-        { value: '2', label: '2 Bedrooms'},
-        { value: '3', label: '3+ Bedrooms'},
+        { value: '1', label: '1 Cameră' },
+        { value: '2', label: '2 Camere' },
+        { value: '3', label: '3+ Camere' },
       ],
     },
     {
-      id: 'bathrooms',
-      name: 'Bathrooms',
+      id: 'area',
+      name: 'Suprafață',
       options: [
-        { value: '1', label: '1 Bathroom'},
-        { value: '2', label: '2 Bathrooms'},
-        { value: '3', label: '3+ Bathrooms'},
+        { value: '0-50', label: '0 - 50 m²' },
+        { value: '50-100', label: '50 - 100 m²' },
+        { value: '100-150', label: '100 - 150 m²' },
+        { value: '150-200', label: '150 - 200 m²' },
+        { value: '200+', label: '200+ m²' },
+      ],
+    },
+    {
+      id: 'floor',
+      name: 'Etaj',
+      options: [
+        { value: 'parter', label: 'Parter' },
+        { value: '1', label: 'Etaj 1' },
+        { value: '2', label: 'Etaj 2' },
+        { value: '3+', label: 'Etaj 3+' },
       ],
     },
     {
       id: 'location',
-      name: 'Location',
+      name: 'Locație',
       options: [
-        { value: 'city-center', label: 'City Center'},
-        { value: 'suburbs', label: 'Suburbs'},
-        { value: 'rural', label: 'Rural'},
+        { value: 'city-center', label: 'Centru Oraș' },
+        { value: 'suburbs', label: 'Suburbiile' },
+        { value: 'rural', label: 'Rural' },
       ],
     },
   ])
 
-  const activeFilters = reactive({
+  const defaultFilters = {
     'property-type': [],
     'price': [],
-    'bedrooms': [],
-    'bathrooms': [],
+    'rooms': [],
+    'area': [],
+    'floor': [],
     'location': [],
-  });
+    'transaction-type': [],
+  }
+  const activeFilters = reactive(defaultFilters);
 
   const setActiveFilter = (filterName, value) => {
     activeFilters[filterName] = value;
-  };
-  
+  }
+
+  const resetActiveFilters = () => {
+    activeFilters = defaultFilters
+  }
+
   const handleToggleFilter = (type, value) => {
     let valueIndex = activeFilters?.[type].findIndex(el => el == value);
-  
+
     if (valueIndex >= 0) {
       // Remove the value if it exists
       activeFilters?.[type].splice(valueIndex, 1);
@@ -97,6 +126,7 @@ export const useFilterStore = defineStore('filters', () => {
     activeFilters,
     handleToggleFilter,
     setActiveFilter,
+    resetActiveFilters,
 
     toggleOpen,
   }
