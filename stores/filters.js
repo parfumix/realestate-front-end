@@ -89,6 +89,10 @@ export const useFilterStore = defineStore('filters', () => {
     },
   ])
 
+  const hasFiltersChanged = ref(false)
+  const resetHasFiltersChanged = () => {
+    hasFiltersChanged.value = false
+  }
 
   const defaultFilters = {
     'property-type': [],
@@ -112,6 +116,7 @@ export const useFilterStore = defineStore('filters', () => {
   const handleToggleFilter = (type, value) => {
     let valueIndex = activeFilters?.[type].findIndex(el => el == value);
 
+    console.log(123)
     if (valueIndex >= 0) {
       // Remove the value if it exists
       activeFilters?.[type].splice(valueIndex, 1);
@@ -119,6 +124,8 @@ export const useFilterStore = defineStore('filters', () => {
       // Add the value if it does not exist
       activeFilters[type] = [...activeFilters[type], value];
     }
+
+    hasFiltersChanged.value = true
   }
 
   const toggleOpen = () => {
@@ -129,12 +136,14 @@ export const useFilterStore = defineStore('filters', () => {
     open,
     sortOptions,
     activeSorting,
+    hasFiltersChanged,
 
     filters,
     activeFilters,
     handleToggleFilter,
     setActiveFilter,
     resetActiveFilters,
+    resetHasFiltersChanged,
 
     toggleOpen,
   }
