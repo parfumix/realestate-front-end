@@ -1,7 +1,7 @@
 <template>
   <div class="h-full">
     <div class="flex flex-col justify-between h-full">
-      <RealEstateListItems :items="items" />
+      <RealEstateListItems v-if="items.length > 0" :items="items" />
     </div>
 </div>
 </template>

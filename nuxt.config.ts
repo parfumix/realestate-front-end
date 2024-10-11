@@ -13,7 +13,7 @@ export default defineNuxtConfig({
       baseURL: `${process.env.API_BASE_URL}` || 'http://localhost:3001',
     },
   },
-  ssr: false,
+  ssr: true,
   supabase: {
     // Options
     url: process.env.SUPABASE_URL,
