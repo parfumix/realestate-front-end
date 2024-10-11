@@ -14,7 +14,7 @@ export const useFilterStore = defineStore('filters', () => {
 
   const filters = ref([
     {
-      id: 'transaction-type',
+      id: 'transaction_type',
       name: 'Tip Tranzacție',
       options: [
         { value: 'for-sale', label: 'De Vânzare'},
@@ -22,7 +22,7 @@ export const useFilterStore = defineStore('filters', () => {
       ],
     },
     {
-      id: 'property-type',
+      id: 'property_type',
       name: 'Tip Proprietate',
       options: [
         { value: 'apartamente', label: 'Apartamente'},
@@ -42,12 +42,12 @@ export const useFilterStore = defineStore('filters', () => {
       ],
     },
     {
-      id: 'rooms',
+      id: 'room_count',
       name: 'Număr de Camere',
       options: [
-        { value: '1', label: '1 Cameră'},
-        { value: '2', label: '2 Camere'},
-        { value: '3', label: '3+ Camere'},
+        { value: 1, label: '1 Cameră'},
+        { value: 2, label: '2 Camere'},
+        { value: "3+", label: '3+ Camere'},
       ],
     },
     {
@@ -65,27 +65,27 @@ export const useFilterStore = defineStore('filters', () => {
       id: 'floor',
       name: 'Etaj',
       options: [
-        { value: 'parter', label: 'Parter'},
-        { value: '1', label: 'Etaj 1'},
-        { value: '2', label: 'Etaj 2'},
-        { value: '3+', label: 'Etaj 3+'},
+        { value: 0, label: 'Parter'},
+        { value: 1, label: 'Etaj 1'},
+        { value: 2, label: 'Etaj 2'},
+        { value: "3+", label: 'Etaj 3+'},
       ],
     },
     {
       id: 'location',
       name: 'Locație',
       options: [
-        { value: 'bucharest', label: 'București'},
-        { value: 'cluj-napoca', label: 'Cluj-Napoca'},
-        { value: 'iasi', label: 'Iași'},
-        { value: 'timisoara', label: 'Timișoara'},
-        { value: 'constanta', label: 'Constanța'},
-        { value: 'brasov', label: 'Brașov'},
-        { value: 'sibiu', label: 'Sibiu'},
-        { value: 'ploiesti', label: 'Ploiești'},
-        { value: 'craiova', label: 'Craiova'},
-        { value: 'oradea', label: 'Oradea'},
-      ],
+        { value: 'bucurești', label: 'București' },
+        { value: 'cluj-napoca', label: 'Cluj-Napoca' },
+        { value: 'iași', label: 'Iași' },
+        { value: 'timișoara', label: 'Timișoara' },
+        { value: 'constanța', label: 'Constanța' },
+        { value: 'brașov', label: 'Brașov' },
+        { value: 'sibiu', label: 'Sibiu' },
+        { value: 'ploiești', label: 'Ploiești' },
+        { value: 'craiova', label: 'Craiova' },
+        { value: 'oradea', label: 'Oradea' },
+      ]
     },
   ])
 
@@ -95,13 +95,13 @@ export const useFilterStore = defineStore('filters', () => {
   }
 
   const defaultFilters = {
-    'property-type': [],
+    'property_type': [],
     'price': [],
-    'rooms': [],
+    'room_count': [],
     'area': [],
     'floor': [],
     'location': [],
-    'transaction-type': [],
+    'transaction_type': [],
   }
   const activeFilters = reactive(defaultFilters);
 
@@ -116,7 +116,6 @@ export const useFilterStore = defineStore('filters', () => {
   const handleToggleFilter = (type, value) => {
     let valueIndex = activeFilters?.[type].findIndex(el => el == value);
 
-    console.log(123)
     if (valueIndex >= 0) {
       // Remove the value if it exists
       activeFilters?.[type].splice(valueIndex, 1);

@@ -112,7 +112,7 @@
                         <form class="space-y-4">
                           <div v-for="(option, optionIdx) in section.options" :key="option.value" class="flex items-center">
                             <input :id="`filter-${section.id}-${optionIdx}`" :name="`${section.id}[]`" :value="option.value" @click="toggleFilter(section.id, option.value)" type="checkbox" :checked="filterStore.activeFilters[section.id].includes(option.value)" class="h-4 w-4 rounded border-gray-300 text-grat-600" />
-                            <label :for="`filter-${section.id}-${optionIdx}`" class="ml-3 whitespace-nowrap pr-6 text-sm font-medium text-gray-900">{{ option.label }}</label>
+                            <label :for="`filter-${section.id}-${optionIdx}`" class="ml-3 whitespace-nowrap pr-6 text-sm font-medium text-gray-900">{{ option?.label }}</label>
                           </div>
                         </form>
                       </PopoverPanel>
@@ -139,7 +139,7 @@
                 <div class="-m-1 flex flex-wrap items-center">
                   <span v-for="(activeFilter, index) in filterStore.activeFilters" :key="index" class="flex flex-row">
                     <span v-for="filter in activeFilter" :key="`${index}-sub`" class="m-1 inline-flex items-center rounded-full border border-gray-200 bg-white py-1.5 pl-3 pr-2 text-sm font-medium text-gray-900">
-                      <span>{{ filters.find(el => el.id == index)['options'].find(el => el.value == filter).label }}</span>
+                      <span>{{ filters.find(el => el.id == index)?.['options'].find(el => el.value == filter)?.label }}</span>
                       <button type="button" @click="toggleFilter(index, filter)" class="ml-1 inline-flex h-4 w-4 flex-shrink-0 rounded-full p-1 text-gray-400 hover:bg-gray-200 hover:text-gray-500">
                         <span class="sr-only">Remove filter for {{ filter }}</span>
                         <svg class="h-2 w-2" stroke="currentColor" fill="none" viewBox="0 0 8 8">
@@ -190,13 +190,17 @@
 
   // Use the Pinia filter store
   const filterStore = useFilterStore()
-  const { filters, activeSorting, hasFiltersChanged } = storeToRefs(filterStore)
+  const { filters, activeSorting, hasFiltersChanged, activeFilters } = storeToRefs(filterStore)
 
   const chatStore = useChatStore()
 
-  const handleApplyFilters = () => {
+  const handleApplyFilters = async() => {
     filterStore.resetHasFiltersChanged()
-    chatStore.handleLoadMore()
+    const { reply, results: jobs } = await chatStore.handleQuery(null, activeFilters.value)
+    if( jobs) {
+      chatStore.handleResetJobs()
+      chatStore.handlePushJobs(jobs)
+    }
   }
 
   const toggleFilter = (type, value) => {

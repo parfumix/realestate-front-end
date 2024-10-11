@@ -30,6 +30,10 @@ export const useChatStore = defineStore('chatStore', () => {
         messages.value.push(message);
     }
 
+    const handleResetJobs = () => {
+        jobs.value = []
+    }
+
     const handlePushJob = (job) => {
         // Push new job to jobs array
         jobs.value.push(job);
@@ -40,9 +44,9 @@ export const useChatStore = defineStore('chatStore', () => {
         jobs.value = [...jobs.value, ...newJobs];
     }
 
-    const handleQuery = async (q) => {
+    const handleQuery = async (q = null, filters = null) => {
         try {
-            const { data, error } = await query(q);
+            const { data, error } = await query(q, filters);
             if (error.value) throw new Error(error.value);
             return data.value;
         } catch (err) {
@@ -67,6 +71,6 @@ export const useChatStore = defineStore('chatStore', () => {
         handleSetPrompts, handleClearPrompts,
         handleQuery, handleLoadMore, 
         handlePushMessage, 
-        handlePushJobs, handlePushJob
+        handlePushJobs, handlePushJob, handleResetJobs
     }
 })

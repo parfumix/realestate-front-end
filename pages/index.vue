@@ -68,15 +68,17 @@ const handleSendMessage = async (message) => {
     // adding user message to stack
     chatStore.handlePushMessage({ text: message, sender: 'user' })
 
-    const { reply, results: jobs, filters } = await chatStore.handleQuery(trimmedMessage)
+    const { reply, results: jobs, filters } = await chatStore.handleQuery(trimmedMessage, {})
     if(! jobs) throw new Error('No results found for' + trimmedMessage)
 
     chatStore.handlePushMessage({ text: reply, sender: 'bot' })
     chatStore.handlePushJobs(jobs)
 
     // apply filters automatically
-    Object.keys(filters).forEach(key => {
-      filterStore.setActiveFilter(key, filters[key])
+    let parsedFilters = JSON.parse(JSON.stringify(filters))
+    Object.keys(parsedFilters).forEach(key => {
+      if(! parsedFilters?.[key]) return
+      filterStore.setActiveFilter(key, parsedFilters[key])
     });
 
     // Update the items for the map and re-render it
