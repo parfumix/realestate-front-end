@@ -51,27 +51,25 @@ const handleSwitch = (mode) => {
 const mapKey = ref(0);
 
 const handleSelectPrompt = async(prompt) => {
-  chatStore.handleClearPrompts()
-
   await handleSendMessage(prompt)
-
-  chatStore.handleSetPrompts([
-    "Arată doar proprietăți recent listate"
-  ])
 }
 
 const handleSendMessage = async (message) => {
   try {
     let trimmedMessage = message.trim()
-    if(! trimmedMessage) throw new Error('Invalid message');
+    if(! trimmedMessage) return
 
     // adding user message to stack
     chatStore.handlePushMessage({ text: message, sender: 'user' })
+    chatStore.handleClearPrompts()
 
-    const { reply, results: jobs, filters } = await chatStore.handleQuery(trimmedMessage, {})
+    const { reply, results: jobs, filters, prompts = [] } = await chatStore.handleQuery(trimmedMessage, {})
     if(! jobs) throw new Error('No results found for' + trimmedMessage)
 
+    chatStore.handleSetPrompts(prompts)
     chatStore.handlePushMessage({ text: reply, sender: 'bot' })
+
+    chatStore.handleResetJobs()
     chatStore.handlePushJobs(jobs)
 
     // apply filters automatically

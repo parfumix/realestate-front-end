@@ -44,14 +44,18 @@ export const useChatStore = defineStore('chatStore', () => {
         jobs.value = [...jobs.value, ...newJobs];
     }
 
+    const isQueryLoading = ref(false)
     const handleQuery = async (q = null, filters = null) => {
         try {
+            isQueryLoading.value = true
             const { data, error } = await query(q, filters);
             if (error.value) throw new Error(error.value);
             return data.value;
         } catch (err) {
             console.error('Error in handleQuery:', err);
             throw err; // Rethrow the error if needed
+        } finally {
+            isQueryLoading.value = false
         }
     }
 
@@ -67,6 +71,7 @@ export const useChatStore = defineStore('chatStore', () => {
     }
 
     return {
+        isQueryLoading,
         messages, jobs, prompts,
         handleSetPrompts, handleClearPrompts,
         handleQuery, handleLoadMore, 
