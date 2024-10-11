@@ -23,10 +23,10 @@ const handleScroll = async() => {
 
   // Check if the user has scrolled to the bottom of the div
   if (scrollHeight - scrollPosition <= clientHeight + 1) {
-    const { results: jobs } = await chatStore.handleLoadMore()
-    if(! jobs) return
+    const { results: items } = await chatStore.handleLoadMore()
+    if(! items) return
 
-    chatStore.handlePushJobs(jobs)
+    chatStore.handlePushItems(items)
   }
 };
 </script>

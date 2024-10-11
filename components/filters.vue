@@ -69,7 +69,7 @@
               <div>
                 <MenuButton
                   class="group inline-flex justify-center text-sm font-medium text-gray-700 hover:text-gray-900">
-                  Sort
+                  Sortează
                   <ChevronDownIcon class="-mr-1 ml-1 h-5 w-5 flex-shrink-0 text-gray-400 group-hover:text-gray-500"
                     aria-hidden="true" />
                 </MenuButton>
@@ -83,7 +83,7 @@
                   class="absolute left-0 z-10 mt-2 w-40 origin-top-left rounded-md bg-white shadow-2xl focus:ring-0 focus:outline-none">
                   <div class="py-1">
                     <MenuItem v-for="option in filterStore.sortOptions" :key="option.id">
-                      <a @click="filterStore.activeSorting=option.id" :class="[activeSorting == option.id ? 'font-medium text-gray-900' : 'text-gray-500', activeSorting == option.id ? 'bg-gray-100' : '', 'block cursor-pointer px-4 py-2 text-sm']">
+                      <a @click="handleSort(option.id)" :class="[activeSorting == option.id ? 'font-medium text-gray-900' : 'text-gray-500', activeSorting == option.id ? 'bg-gray-100' : '', 'block cursor-pointer px-4 py-2 text-sm']">
                         {{ option.name }}
                       </a>
                     </MenuItem>
@@ -129,7 +129,7 @@
           <div class="mx-auto max-w-7xl px-4 sm:flex sm:justify-between sm:items-center sm:px-6 lg:px-8 min-h-10">
             <div class="sm:flex sm:items-center sm:px-6 lg:px-8 min-h-10">
               <h3 class="text-sm font-medium text-gray-500">
-                Filters
+                Filtre
                 <span class="sr-only">, active</span>
               </h3>
     
@@ -194,12 +194,16 @@
 
   const chatStore = useChatStore()
 
+  const handleSort = sort => {
+    filterStore.handleSortOption(sort)
+  }
+
   const handleApplyFilters = async() => {
     filterStore.resetHasFiltersChanged()
-    const { reply, results: jobs } = await chatStore.handleQuery(null, activeFilters.value)
-    if( jobs) {
-      chatStore.handleResetJobs()
-      chatStore.handlePushJobs(jobs)
+    const { reply, results: items } = await chatStore.handleQuery(null, activeFilters.value)
+    if( items) {
+      chatStore.handleResetItems()
+      chatStore.handlePushItems(items)
     }
   }
 

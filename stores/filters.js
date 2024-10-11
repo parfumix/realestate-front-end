@@ -4,13 +4,17 @@ export const useFilterStore = defineStore('filters', () => {
   const open = ref(false);
 
   const sortOptions = ref([
-    { id: 'price_low_to_high', name: 'Price: Low to High' },
-    { id: 'price_high_to_low', name: 'Price: High to Low' },
-    { id: 'newest_listings', name: 'Newest Listings' },
-    { id: 'most_popular', name: 'Most Popular' },
+    { id: 'price_low_to_high', name: 'Preț: Crescător' },
+    { id: 'price_high_to_low', name: 'Preț: Descrescător' },
+    { id: 'newest_listings', name: 'Cele mai noi' },
   ]);
 
-  const activeSorting = ref('most_popular')
+  const activeSorting = ref('newest_listings')
+
+  const handleSortOption = (option) => {
+    activeSorting.value = option
+    hasFiltersChanged.value = true
+  }
 
   const filters = ref([
     {
@@ -136,6 +140,7 @@ export const useFilterStore = defineStore('filters', () => {
     sortOptions,
     activeSorting,
     hasFiltersChanged,
+    handleSortOption,
 
     filters,
     activeFilters,

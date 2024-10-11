@@ -15,7 +15,7 @@ export const useChatStore = defineStore('chatStore', () => {
         "Proprietăți de închiriat disponibile în București"
     ])
   
-    const jobs = ref([])
+    const items = ref([])
 
     const handleSetPrompts = (newPrompts) => {
         prompts.value = newPrompts
@@ -30,22 +30,20 @@ export const useChatStore = defineStore('chatStore', () => {
         messages.value.push(message);
     }
 
-    const handleResetJobs = () => {
-        jobs.value = []
+    const handleResetItems = () => {
+        items.value = []
     }
 
-    const handlePushJob = (job) => {
-        // Push new job to jobs array
-        jobs.value.push(job);
+    const handlePushItem = (item) => {
+        items.value.push(item);
     }
 
-    const handlePushJobs = (newJobs) => {
-        // Append new jobs to the jobs array
-        jobs.value = [...jobs.value, ...newJobs];
+    const handlePushItems = (newItems) => {
+        items.value = [...items.value, ...newItems];
     }
 
     const isQueryLoading = ref(false)
-    const handleQuery = async (q = null, filters = null) => {
+    const handleQuery = async (q = null, filters = {}) => {
         try {
             isQueryLoading.value = true
             const { data, error } = await query(q, filters);
@@ -72,10 +70,10 @@ export const useChatStore = defineStore('chatStore', () => {
 
     return {
         isQueryLoading,
-        messages, jobs, prompts,
+        messages, items, prompts,
         handleSetPrompts, handleClearPrompts,
         handleQuery, handleLoadMore, 
         handlePushMessage, 
-        handlePushJobs, handlePushJob, handleResetJobs
+        handlePushItems, handlePushItem, handleResetItems
     }
 })
