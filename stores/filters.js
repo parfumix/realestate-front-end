@@ -72,7 +72,11 @@ export const useFilterStore = defineStore('filters', () => {
         { value: 0, label: 'Parter'},
         { value: 1, label: 'Etaj 1'},
         { value: 2, label: 'Etaj 2'},
-        { value: "3+", label: 'Etaj 3+'},
+        { value: 3, label: 'Etaj 3'},
+        { value: 4, label: 'Etaj 4'},
+        { value: 5, label: 'Etaj 5'},
+        { value: 6, label: 'Etaj 6'},
+        { value: "7+", label: 'Etaj 7+'},
       ],
     },
     {

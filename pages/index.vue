@@ -48,6 +48,8 @@ chatStore.handleResetItems()
 chatStore.handlePushItems(results)
 
 const handleSwitch = (mode) => {
+  if(isListView.value == mode) return
+  
   isListView.value = mode
   randomInt.value = Math.random()
 }
