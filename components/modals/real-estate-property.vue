@@ -12,12 +12,12 @@
                 <div class="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
                   <div class="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
 
-                    <DialogTitle as="h3" class="text-base font-semibold leading-6 text-gray-900">{{ item.title }}</DialogTitle>
+                    <DialogTitle as="h3" class="text-base font-semibold leading-6 text-gray-900">{{ item?.title }}</DialogTitle>
 
-                    <ModalsRealEstateGallerySlider :items="item.images" />
+                    <ModalsRealEstateGallerySlider :items="item?.images" />
 
                     <div class="mt-2">
-                      <p class="text-sm text-gray-500">{{ item.description }}</p>
+                      <p class="text-sm text-gray-500">{{ item?.description }}</p>
                     </div>
 
                   </div>
