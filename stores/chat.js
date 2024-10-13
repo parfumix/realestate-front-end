@@ -16,6 +16,15 @@ export const useChatStore = defineStore('chatStore', () => {
     ])
   
     const items = ref([])
+    const selectedItem = ref(null)
+
+    const handleSelectItem = item => {
+        selectedItem.value = item
+    }
+
+    const handleResetItem = () => {
+        selectedItem.value = null
+    }
 
     const handleSetPrompts = (newPrompts) => {
         prompts.value = newPrompts
@@ -69,6 +78,8 @@ export const useChatStore = defineStore('chatStore', () => {
     }
 
     return {
+        handleSelectItem, selectedItem, handleResetItem,
+
         isQueryLoading,
         messages, items, prompts,
         handleSetPrompts, handleClearPrompts,

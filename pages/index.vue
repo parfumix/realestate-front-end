@@ -26,6 +26,7 @@
         <div v-if="items.length > 0">
           <RealEstateMap v-if="!isListView" :key="`${randomInt}-map`" :randInt="randomInt" :items="items" />
           <RealEstateList v-else :key="`${randomInt}-list`" :items="items" />
+          <ModalsRealEstateProperty :item="selectedItem" @close="handleCloseModal" class="z-[100]" />
         </div>
         <EmptyResults v-else class="w-full h-full flex flex-col justify-center items-center" />
       </div>
@@ -38,7 +39,7 @@
 const filterStore = useFilterStore()
 const chatStore = useChatStore()
 
-const { items, messages, prompts } = storeToRefs(chatStore)
+const { items, messages, prompts, selectedItem } = storeToRefs(chatStore)
 
 const isListView = ref(true)
 const randomInt = ref(Math.random())
@@ -55,6 +56,12 @@ const handleSwitch = (mode) => {
 }
 
 const mapKey = ref(0);
+
+const handleCloseModal = () => {
+    setTimeout(() => {
+      chatStore.handleResetItem()
+    }, 50)
+}
 
 const handleSelectPrompt = async(prompt) => {
   await handleSendMessage(prompt)

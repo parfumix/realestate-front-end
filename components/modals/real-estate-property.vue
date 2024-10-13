@@ -31,9 +31,8 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue' // Add watch import
+import { ref, watch } from 'vue'
 import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } from '@headlessui/vue'
-import { ExclamationTriangleIcon } from '@heroicons/vue/24/outline'
 
 // Define the open state
 const props = defineProps({
@@ -48,9 +47,7 @@ const isModalOpen = ref(props.item ? true : false);  // Or data() for Options AP
 const emit = defineEmits(['close'])
 
 watch(() => props.item, (item) => {
-  setTimeout(() => {
-    isModalOpen.value = item ? true : false
-  })
+  isModalOpen.value = item ? true : false
 })
 
 // Watch for changes in 'open' and emit 'close' event if it's false
