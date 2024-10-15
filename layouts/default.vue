@@ -1,7 +1,8 @@
 <template>
-    <div>
-      <Sidebar />
-      <slot />
-      <Footer />
-    </div>
-  </template>
+  <div>
+    <Sidebar />
+    <slot />
+    <Footer />
+    <Notifications />
+  </div>
+</template>
