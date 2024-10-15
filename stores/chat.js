@@ -14,6 +14,21 @@ export const useChatStore = defineStore('chatStore', () => {
         "Proprietăți comerciale de vânzare în București",
         "Proprietăți de închiriat disponibile în București"
     ])
+
+    const promptsProperty = ref({
+        buyer: [
+          "Cât de aproape este de transportul public?",
+          "Există școli sau spitale în apropiere?",
+          "Care sunt cele mai apropiate centre comerciale?",
+          "Este inclus un loc de parcare?",
+        ],
+        investor: [
+          "Care este randamentul al chiriei?",
+          "Care a fost rata istorică de apreciere din această zonă?",
+          "Care este venitul mediu lunar din chirie?",
+          "Cât de stabilă este piața de închiriere din această zonă?"
+        ],
+      });
   
     const items = ref([])
     const selectedItem = ref(null)
@@ -79,7 +94,7 @@ export const useChatStore = defineStore('chatStore', () => {
 
     return {
         handleSelectItem, selectedItem, handleResetItem,
-
+        promptsProperty,
         isQueryLoading,
         messages, items, prompts,
         handleSetPrompts, handleClearPrompts,
