@@ -5,34 +5,32 @@
                 <div class="bg-blue-500 text-white px-4 rounded-tl-lg flex items-center">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                         stroke="currentColor" class="size-5">
-                        <path stroke-linecap="round" stroke-linejoin="round"
-                            d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 5.25h.008v.008H12v-.008Z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 5.25h.008v.008H12v-.008Z" />
                     </svg>
-                    <h1 class="text-lg py-2 bg-blue-500 text-white font-semibold leading-6 pl-2">Pune orice întrebare
-                    </h1>
+                    <h1 class="text-lg py-2 bg-blue-500 text-white font-semibold leading-6 pl-2">Pune orice întrebare</h1>
                 </div>
             </template>
 
             <div>
                 <div class="border-b border-gray-200 mx-auto flex justify-center">
                     <nav class="-mb-px flex space-x-[12px]">
-                        <a v-for="(tab, index) in tabs" :key="tab.title"
-                            class="cursor-pointer py-4 px-1 flex items-center" @click="selectTab(tab.slug)"
-                            :class="{ 'border-b border-gray-500 text-blue-500': activeTab === index }">
-                            <span v-html="tab.icon" class="pr-2"></span>
-                            <span v-html="tab.title"
-                                class="text-gray-500 hover:text-gray-700 whitespace-nowrap text-sm font-medium"></span>
+                        <a v-for="(tab, index) in tabs" :key="tab.title" class="cursor-pointer py-4 px-1 flex items-center" @click="selectTab(tab.slug)" :class="{ 'border-b border-gray-500 text-blue-500': activeTab === index }">
+                            <span v-html="tab.icon" :class="[{'text-gray-800': tab.slug==activeTab, 'text-gray-500': tab.slug!=activeTab}, 'pr-2']"></span>
+                            <span v-html="tab.title" :class="[{'text-gray-800 font-medium hover:text-gray-900': tab.slug==activeTab, 'text-gray-500 font-medium hover:text-gray-700': tab.slug!=activeTab}, 'whitespace-nowrap text-sm']"></span>
                         </a>
                     </nav>
                 </div>
 
                 <div class="mx-auto flex flex-wrap justify-center my-2">
-                    <span v-for="(prompt, index) in activePrompts" @click="() => handleSelectPrompt(prompt)"
-                        :key="index"
-                        class="cursor-pointer text-center inline-flex items-center mt-2 rounded-md bg-gray-100 px-4 py-2 text-xs font-medium text-gray-600 mr-2">
+                    <span v-for="(prompt, index) in activePrompts" @click="() => handleSelectPrompt(prompt)" :key="index" class="cursor-pointer text-center inline-flex items-center mt-2 rounded-md bg-gray-100 px-4 py-2 text-xs font-medium text-gray-600 mr-2">
                         {{ prompt }}
                     </span>
                 </div>
+
+                <span @click="getActivePrompts" class="cursor-pointer flex items-center justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4 text-gray-500"><path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" /></svg>
+                </span>
+
             </div>
         </Chat>
     </div>
@@ -61,8 +59,28 @@ const tabs = ref([
 
 const activeTab = ref('buyer');
 
-const activePrompts = computed(() => {
-    return promptsProperty.value[activeTab.value]
+let activePrompts = ref([])
+const getActivePrompts = () => {
+  let prompts = promptsProperty.value[activeTab.value];
+
+  // Function to shuffle the array
+  const shuffleArray = (arr) => {
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+  };
+
+  // Shuffle the prompts
+  let shuffledPrompts = shuffleArray([...prompts]);
+
+  // Return the first 5 items (or fewer if there are less than 5 prompts)
+  activePrompts.value = shuffledPrompts.slice(0, 5);
+};
+
+onMounted(() => {
+    getActivePrompts()
 })
 
 const messages = ref([]);
@@ -77,5 +95,6 @@ const handleSelectPrompt = (prompt) => {
 
 const selectTab = (slug) => {
     activeTab.value = slug;
+    getActivePrompts()
 };
 </script>

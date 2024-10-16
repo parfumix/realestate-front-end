@@ -20,6 +20,7 @@ export const useChatStore = defineStore('chatStore', () => {
           "Cât de aproape este de transportul public?",
           "Există școli sau spitale în apropiere?",
           "Care sunt cele mai apropiate centre comerciale?",
+          "Care sunt cele mai apropiate parcuri?",
           "Este inclus un loc de parcare?",
         ],
         investor: [

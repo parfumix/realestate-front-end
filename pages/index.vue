@@ -7,13 +7,15 @@
       
       <Chat @submit="handleSendMessage" :messages="messages" class="sm:w-5/12">
         <template #header>
-          <div class="bg-blue-500 text-white py-2 px-4 rounded-t-lg">
-            <h1 class="text-md">Real Estate Chat</h1>
+          <div class="bg-blue-500 text-white py-2 px-4 rounded-t-lg flex items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5"><path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 5.25h.008v.008H12v-.008Z" />
+              </svg>
+            <h1 class="text-md pl-2">Cauți ceva anume?</h1>
           </div>
         </template>
 
         <div class="mx-auto flex flex-wrap justify-center my-2">
-          <span v-for="(prompt, index) in prompts"  @click="() => handleSelectPrompt(prompt)" :key="prompt" class="cursor-pointer inline-flex items-center mt-2 rounded-md bg-gray-100 px-4 py-2 text-xs font-medium text-gray-600 mr-2">
+          <span v-for="(prompt, index) in prompts"  @click="() => handleSelectPrompt(prompt)" :key="`${index}+${prompt}`" class="cursor-pointer inline-flex items-center mt-2 rounded-md bg-gray-100 px-4 py-2 text-xs font-medium text-gray-600 mr-2">
             {{ prompt }}
           </span>
         </div>
