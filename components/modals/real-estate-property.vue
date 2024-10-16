@@ -14,12 +14,26 @@
                 </div>
                 <div class="w-4/6 bg-transparent pb-4 sm:pb-4">
                   <div class="mt-3 text-center sm:mt-0 sm:text-left">
-                    <DialogTitle as="h3" class="text-lg py-2 bg-blue-500 text-white font-semibold leading-6">{{ item?.title }}</DialogTitle>
-                    <ModalsRealEstateGallerySlider :items="item?.images" />
+                    <ModalsRealEstateTabs :tabs="tabs" @select="(tab) => activeTab=tab.slug" />
+                    
+                    <transition name="fade">
+                      <div v-if="activeTab === 'general'" key="general">
+                        <DialogTitle as="h3" class="text-lg py-2 bg-white text-black font-semibold leading-6">{{ item?.title }}</DialogTitle>
+                        <ModalsRealEstateGallerySlider :items="item?.images" />
+                        <ModalsRealEstateStats :item="item" />
+                        <div class="overflow-auto h-[300px]">
+                          <ModalsRealEstateDescription :item="item" />
+                        </div>
+                      </div>
+                    </transition>
 
-                    <div class="mt-2 p-3">
-                      <p class="text-sm text-gray-500">{{ item?.description }}</p>
-                    </div>
+                    <transition name="fade">
+                      <div v-if="activeTab === 'map'" key="map">
+                        <div class="h-[300px]">
+                          <ModalsRealEstateMap class="h-[300px]" :item="item" />
+                        </div>
+                      </div>
+                    </transition>
                   </div>
                 </div>
               </DialogPanel>
@@ -40,6 +54,13 @@ const props = defineProps({
     type: [Object, Boolean]
   }
 })
+
+const tabs = ref([
+  { name: 'General', href: '#', slug: 'general' },
+  { name: 'Harta', href: '#', slug: 'map' },
+])
+
+const activeTab = ref('general')
 
 const isModalOpen = ref(props.item ? true : false);  // Or data() for Options API
 
