@@ -21,7 +21,7 @@
                         <DialogTitle as="h3" class="text-2xl pt-4 px-1 bg-white text-black font-semibold leading-6" v-html="propertyTitle" />
                         <ModalsRealEstateActions :item="item" />
 
-                        <div class="overflow-y-auto h-full">
+                        <div class="overflow-y-auto max-h-[calc(100vh-200px)] pb-[20px]">
                           <ModalsRealEstateGallerySlider :items="item?.images" />
                           <ModalsRealEstateStats :item="item" />
                           <ModalsRealEstateDescription :item="item" />
