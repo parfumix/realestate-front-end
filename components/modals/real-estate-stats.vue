@@ -1,17 +1,30 @@
 <template>
-    <dl class="mx-auto grid grid-cols-1 gap-px bg-gray-900/5 sm:grid-cols-2 lg:grid-cols-3">
-      <div v-for="stat in stats" :key="stat.name" class="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-2 bg-white px-4 py-10 sm:px-6 xl:px-8">
-        <dt class="text-sm font-medium leading-6 text-gray-500">{{ stat.name }}</dt>
-        <dd :class="[stat.changeType === 'negative' ? 'text-rose-600' : 'text-gray-700', 'text-xs font-medium']">{{ stat.change }}</dd>
-        <dd class="w-full flex-none text-3xl font-medium leading-10 tracking-tight text-gray-900">{{ stat.value }}</dd>
-      </div>
-    </dl>
-  </template>
-  
-  <script setup>
-  const stats = [
-    { name: 'Revenue', value: '$405,091.00', change: '+4.75%', changeType: 'positive' },
-    { name: 'Overdue invoices', value: '$12,787.00', change: '+54.02%', changeType: 'negative' },
-    { name: 'Outstanding invoices', value: '$245,988.00', change: '-1.39%', changeType: 'positive' },
-  ]
-  </script>
+  <div class="bg-gray-100 p-4 rounded-lg">
+    <div class="text-gray-700">
+      <p><strong>Price:</strong> {{ item.price }} EUR</p>
+      <p><strong>Area:</strong> {{ item.area }} m²</p>
+      <p><strong>Rooms:</strong> {{ item.room_count }}</p>
+      <p><strong>Location:</strong> {{ item.street }}</p>
+    </div>
+
+    <div v-if="item.facilities.length > 0" class="mt-6">
+      <h3 class="text-xl font-semibold text-gray-900 mb-2">Facilities</h3>
+      <ul class="list-disc pl-5 space-y-2">
+        <li v-for="(facility, index) in item.facilities" :key="index" class="text-gray-700">
+          {{ facility }}
+        </li>
+      </ul>
+    </div>
+  </div>
+</template>
+
+<script>
+export default {
+  props: {
+    item: {
+      type: Object,
+      required: true,
+    },
+  },
+};
+</script>

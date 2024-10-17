@@ -31,6 +31,8 @@
         <div v-if="items.length > 0">
           <RealEstateMap v-if="!isListView" :key="`${randomInt}-map`" :randInt="randomInt" :items="items" />
           <RealEstateList v-else :key="`${randomInt}-list`" :items="items" />
+
+          <!-- It's used to show clicked property as modal -->
           <ModalsRealEstateProperty v-if="selectedItem" :item="selectedItem" @close="handleCloseModal" class="z-[100]" />
         </div>
         <EmptyResults v-else class="w-full h-full flex flex-col justify-center items-center" />

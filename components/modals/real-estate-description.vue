@@ -1,5 +1,6 @@
 <template>
     <div class="mt-2 p-3">
+        <h2 class="text-lg text-gray-700 font-bold">Descriere</h2>
         <p class="text-sm text-gray-500">{{ item?.description }}</p>
     </div>
 </template>
@@ -11,4 +12,5 @@ const props = defineProps({
         default: () => ({})
     },
 
-});</script>
+})
+</script>
