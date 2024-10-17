@@ -5,7 +5,7 @@
 
     <div class="flex max-w-7xl mx-auto w-full justify-center items-center px-4 sm:px-6 lg:px-8 mt-2 " style="height: calc(100vh - 150px);">
       
-      <Chat @submit="handleSendMessage" :messages="messages" class="sm:w-5/12">
+      <Chat @submit="handleSendMessage" :messages="defaultThreadMessages" class="sm:w-5/12">
         <template #header>
           <div class="bg-blue-500 text-white py-2 px-4 rounded-t-lg flex items-center">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5"><path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 5.25h.008v.008H12v-.008Z" />
@@ -46,10 +46,14 @@
 const filterStore = useFilterStore()
 const chatStore = useChatStore()
 
-const { items, messages, prompts, selectedItem } = storeToRefs(chatStore)
+const { items, prompts, selectedItem } = storeToRefs(chatStore)
 
 const isListView = ref(true)
 const randomInt = ref(Math.random())
+
+const defaultThreadMessages = computed(() => {
+  return chatStore.handleGetMessagesByThread('default')
+})
 
 const { results = [] } = await chatStore.handleQuery()
 chatStore.handleResetItems()
@@ -80,14 +84,14 @@ const handleSendMessage = async (message) => {
     if(! trimmedMessage) return
 
     // adding user message to stack
-    chatStore.handlePushMessage({ text: message, sender: 'user' })
+    chatStore.handlePushMessage('default', { text: message, sender: 'user' })
     chatStore.handleClearPrompts()
 
     const { reply, results: items, filters, prompts = [] } = await chatStore.handleQuery(trimmedMessage, {})
     if(! items) throw new Error('No results found for' + trimmedMessage)
 
     chatStore.handleSetPrompts(prompts)
-    chatStore.handlePushMessage({ text: reply, sender: 'bot' })
+    chatStore.handlePushMessage('default', { text: reply, sender: 'bot' })
 
     chatStore.handleResetItems()
     chatStore.handlePushItems(items)
@@ -103,7 +107,7 @@ const handleSendMessage = async (message) => {
     mapKey.value++; // Change the key to force the map to re-render
 
   } catch(err) {
-    chatStore.handlePushMessage({
+    chatStore.handlePushMessage('default', {
       text: err,
       sender: 'bot',
     })
