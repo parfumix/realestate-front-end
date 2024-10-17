@@ -36,12 +36,18 @@
 </template>
 
 <script setup>
-
 import { useChatStore } from '@/stores/chat';
 import { storeToRefs } from 'pinia'
 
 const chatStore = useChatStore()
-const { promptsProperty } = storeToRefs(chatStore)
+const { prompts } = storeToRefs(chatStore)
+
+const props = defineProps({
+    item: {
+        type: Object,
+        default: () => ({})
+    },
+})
 
 const tabs = ref([
     {
@@ -60,7 +66,7 @@ const activeTab = ref('buyer');
 
 let activePrompts = ref([])
 const getActivePrompts = () => {
-  let prompts = promptsProperty.value[activeTab.value];
+  let promptsByThread = chatStore.handleGetPromptsByThread(activeTab.value);
 
   // Function to shuffle the array
   const shuffleArray = (arr) => {
@@ -72,7 +78,7 @@ const getActivePrompts = () => {
   };
 
   // Shuffle the prompts
-  let shuffledPrompts = shuffleArray([...prompts]);
+  let shuffledPrompts = shuffleArray([...promptsByThread]);
 
   // Return the first 5 items (or fewer if there are less than 5 prompts)
   activePrompts.value = shuffledPrompts.slice(0, 5);
@@ -90,19 +96,18 @@ const handleSendMessage = async(message) => {
         if(! trimmedMessage) return
 
         // adding user message to stack
-        chatStore.handlePushMessage({ text: message, sender: 'user' })
-        chatStore.handleClearPrompts()
+        chatStore.handlePushMessage(props.item._additional.id, { text: message, sender: 'user' })
+        chatStore.handleSetPromptsByThread(activeTab.value, [])
 
         const { reply, results: items } = await chatStore.handleRequestDetails(trimmedMessage, {})
         if(! items) throw new Error('No results found for' + trimmedMessage)
 
-        chatStore.handleSetPrompts(prompts)
-        chatStore.handlePushMessage({ text: reply, sender: 'bot' })
+        chatStore.handlePushMessage(props.item._additional.id, { text: reply, sender: 'bot' })
 
         chatStore.handleResetItems()
         chatStore.handlePushItems(items)
   } catch(err) {
-    chatStore.handlePushMessage({
+    chatStore.handlePushMessage(props.item._additional.id, {
       text: err,
       sender: 'bot',
     })

@@ -3,6 +3,31 @@ import { ref } from 'vue';
 import { query, loadMore, requestDetails } from '../api/chat';
 
 export const useChatStore = defineStore('chatStore', () => {
+
+    // Unified prompts by thread name
+    const prompts = ref({
+        default: [
+            "Apartamente cu 2 dormitoare aproape de centru",
+            "Case cu grădină în București",
+            "Apartamente moderne în București cu parcare",
+            "Proprietăți comerciale de vânzare în București",
+            "Proprietăți de închiriat disponibile în București",
+        ],
+        buyer: [
+            "Cât de aproape este de transportul public?",
+            "Există școli sau spitale în apropiere?",
+            "Care sunt cele mai apropiate centre comerciale?",
+            "Care sunt cele mai apropiate parcuri?",
+            "Este inclus un loc de parcare?",
+        ],
+        investor: [
+            "Care este randamentul chiriei?",
+            "Care a fost rata istorică de apreciere din această zonă?",
+            "Care este venitul mediu lunar din chirie?",
+            "Cât de stabilă este piața de închiriere din această zonă?",
+        ],
+    });
+
     // Messages by thread, where each thread is identified by a unique key (threadId)
     const messages = ref({
         default: [
@@ -31,37 +56,14 @@ export const useChatStore = defineStore('chatStore', () => {
         return messages.value[threadId] || [];
     };
 
-    // Prompts
-    const prompts = ref([
-        "Apartamente cu 2 dormitoare aproape de centru",
-        "Case cu grădină în București",
-        "Apartamente moderne în București cu parcare",
-        "Proprietăți comerciale de vânzare în București",
-        "Proprietăți de închiriat disponibile în București",
-    ]);
-
-    const promptsProperty = ref({
-        buyer: [
-            "Cât de aproape este de transportul public?",
-            "Există școli sau spitale în apropiere?",
-            "Care sunt cele mai apropiate centre comerciale?",
-            "Care sunt cele mai apropiate parcuri?",
-            "Este inclus un loc de parcare?",
-        ],
-        investor: [
-            "Care este randamentul chiriei?",
-            "Care a fost rata istorică de apreciere din această zonă?",
-            "Care este venitul mediu lunar din chirie?",
-            "Cât de stabilă este piața de închiriere din această zonă?",
-        ],
-    });
-
-    const handleSetPrompts = (newPrompts) => {
-        prompts.value = newPrompts;
+    // Set prompts for a specific thread
+    const handleSetPromptsByThread = (threadId, newPrompts) => {
+        prompts.value[threadId] = newPrompts;
     };
 
-    const handleClearPrompts = () => {
-        prompts.value = [];
+    // Get prompts for a specific thread
+    const handleGetPromptsByThread = (threadId) => {
+        return prompts.value[threadId] || [];
     };
 
     // Items management
@@ -133,17 +135,16 @@ export const useChatStore = defineStore('chatStore', () => {
 
     // Return grouped by feature
     return {
+        // Prompts
+        prompts,
+        handleSetPromptsByThread,
+        handleGetPromptsByThread,
+
         // Messages
         messages,
         handlePushMessage,
         handleClearMessages,
         handleGetMessagesByThread,
-
-        // Prompts
-        prompts,
-        promptsProperty,
-        handleSetPrompts,
-        handleClearPrompts,
 
         // Items
         items,

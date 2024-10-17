@@ -15,7 +15,7 @@
         </template>
 
         <div class="mx-auto flex flex-wrap justify-center my-2">
-          <span v-for="(prompt, index) in prompts"  @click="() => handleSelectPrompt(prompt)" :key="`${index}+${prompt}`" class="cursor-pointer inline-flex items-center mt-2 rounded-md bg-gray-100 px-4 py-2 text-xs font-medium text-gray-600 mr-2">
+          <span v-for="(prompt, index) in defaultThreadPrompts"  @click="() => handleSelectPrompt(prompt)" :key="`${index}+${prompt}`" class="cursor-pointer inline-flex items-center mt-2 rounded-md bg-gray-100 px-4 py-2 text-xs font-medium text-gray-600 mr-2">
             {{ prompt }}
           </span>
         </div>
@@ -46,13 +46,17 @@
 const filterStore = useFilterStore()
 const chatStore = useChatStore()
 
-const { items, prompts, selectedItem } = storeToRefs(chatStore)
+const { items, selectedItem } = storeToRefs(chatStore)
 
 const isListView = ref(true)
 const randomInt = ref(Math.random())
 
 const defaultThreadMessages = computed(() => {
   return chatStore.handleGetMessagesByThread('default')
+})
+
+const defaultThreadPrompts = computed(() => {
+  return chatStore.handleGetPromptsByThread('default')
 })
 
 const { results = [] } = await chatStore.handleQuery()
@@ -85,12 +89,12 @@ const handleSendMessage = async (message) => {
 
     // adding user message to stack
     chatStore.handlePushMessage('default', { text: message, sender: 'user' })
-    chatStore.handleClearPrompts()
+    chatStore.handleSetPromptsByThread('default', [])
 
     const { reply, results: items, filters, prompts = [] } = await chatStore.handleQuery(trimmedMessage, {})
     if(! items) throw new Error('No results found for' + trimmedMessage)
 
-    chatStore.handleSetPrompts(prompts)
+    chatStore.handleSetPromptsByThread('default', prompts)
     chatStore.handlePushMessage('default', { text: reply, sender: 'bot' })
 
     chatStore.handleResetItems()
