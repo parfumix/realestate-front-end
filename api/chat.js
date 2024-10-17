@@ -21,6 +21,17 @@ const loadMore = async() => {
   return { data, error }
 }
 
+const requestDetails = async(query) => {
+  const { data, error } = await useCustomFetch('request-details', {
+    method: 'POST',
+    body: JSON.stringify({ q: query }),
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+  return { data, error }
+}
+
 export {
-  query, loadMore
+  query, loadMore, requestDetails
 }

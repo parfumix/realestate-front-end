@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import { query, loadMore } from '../api/chat'
+import { query, loadMore, requestDetails } from '../api/chat'
 
 export const useChatStore = defineStore('chatStore', () => {
     const messages = ref([
@@ -33,6 +33,7 @@ export const useChatStore = defineStore('chatStore', () => {
   
     const items = ref([])
     const selectedItem = ref(null)
+    const isQueryLoading = ref(false)
 
     const handleSelectItem = item => {
         selectedItem.value = item
@@ -67,7 +68,6 @@ export const useChatStore = defineStore('chatStore', () => {
         items.value = [...items.value, ...newItems];
     }
 
-    const isQueryLoading = ref(false)
     const handleQuery = async (q = null, filters = {}) => {
         try {
             isQueryLoading.value = true
@@ -93,6 +93,20 @@ export const useChatStore = defineStore('chatStore', () => {
         }
     }
 
+    const handleRequestDetails = async (q) => {
+        try {
+            isQueryLoading.value = true
+            const { data, error } = await requestDetails(q);
+            if (error.value) throw new Error(error.value);
+            return data.value;
+        } catch (err) {
+            console.error('Error in handleQuery:', err);
+            throw err; // Rethrow the error if needed
+        } finally {
+            isQueryLoading.value = false
+        }
+    }
+
     return {
         handleSelectItem, selectedItem, handleResetItem,
         promptsProperty,
@@ -101,6 +115,7 @@ export const useChatStore = defineStore('chatStore', () => {
         handleSetPrompts, handleClearPrompts,
         handleQuery, handleLoadMore, 
         handlePushMessage, 
-        handlePushItems, handlePushItem, handleResetItems
+        handlePushItems, handlePushItem, handleResetItems,
+        handleRequestDetails,
     }
 })
