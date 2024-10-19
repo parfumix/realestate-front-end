@@ -92,6 +92,7 @@ export const useChatStore = defineStore('chatStore', () => {
 
     // Loading state
     const isQueryLoading = ref(false);
+    const isQueryLoadingProperty = ref(false);
 
     // API interactions
     const handleQuery = async (q = null, filters = {}) => {
@@ -119,17 +120,17 @@ export const useChatStore = defineStore('chatStore', () => {
         }
     };
 
-    const handleRequestDetails = async (q) => {
+    const handleRequestDetails = async (propertyId, q) => {
         try {
-            isQueryLoading.value = true;
-            const { data, error } = await requestDetails(q);
+            isQueryLoadingProperty.value = true;
+            const { data, error } = await requestDetails(propertyId, q);
             if (error.value) throw new Error(error.value);
-            return data.value;
+            return data.value?.data;
         } catch (err) {
             console.error('Error in handleRequestDetails:', err);
             throw err;
         } finally {
-            isQueryLoading.value = false;
+            isQueryLoadingProperty.value = false;
         }
     };
 
@@ -157,6 +158,7 @@ export const useChatStore = defineStore('chatStore', () => {
 
         // Loading state
         isQueryLoading,
+        isQueryLoadingProperty,
 
         // API interactions
         handleQuery,

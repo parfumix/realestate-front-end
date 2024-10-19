@@ -21,8 +21,8 @@ const loadMore = async() => {
   return { data, error }
 }
 
-const requestDetails = async(query) => {
-  const { data, error } = await useCustomFetch('request-details', {
+const requestDetails = async(propertyId, query) => {
+  const { data, error } = await useCustomFetch(`request-details/${propertyId}`, {
     method: 'POST',
     body: JSON.stringify({ q: query }),
     headers: {

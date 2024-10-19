@@ -1,6 +1,6 @@
 <template>
     <div class="h-full">
-        <Chat @submit="handleSendMessage" :messages="messages">
+        <Chat @submit="handleSendMessage" :isLoading="isQueryLoadingProperty" :messages="defaultThreadMessages">
             <template #header>
                 <div class="bg-blue-500 text-white px-4 rounded-tl-lg flex items-center">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
@@ -37,10 +37,8 @@
 
 <script setup>
 import { useChatStore } from '@/stores/chat';
-import { storeToRefs } from 'pinia'
-
 const chatStore = useChatStore()
-const { prompts } = storeToRefs(chatStore)
+const { isQueryLoadingProperty } = storeToRefs(chatStore)
 
 const props = defineProps({
     item: {
@@ -88,7 +86,9 @@ onMounted(() => {
     getActivePrompts()
 })
 
-const messages = ref([]);
+const defaultThreadMessages = computed(() => {
+  return chatStore.handleGetMessagesByThread(props.item._additional.id)
+})
 
 const handleSendMessage = async(message) => {
     try {
@@ -99,13 +99,14 @@ const handleSendMessage = async(message) => {
         chatStore.handlePushMessage(props.item._additional.id, { text: message, sender: 'user' })
         chatStore.handleSetPromptsByThread(activeTab.value, [])
 
-        const { reply, results: items } = await chatStore.handleRequestDetails(trimmedMessage, {})
-        if(! items) throw new Error('No results found for' + trimmedMessage)
+        const { reply = null, item, intent, amenity } = await chatStore.handleRequestDetails(props.item._additional.id, trimmedMessage, {})
+        if(! item) throw new Error('No results found for' + trimmedMessage)
+        
+        if(reply) chatStore.handlePushMessage(props.item._additional.id, { text: reply, sender: 'bot' })
 
-        chatStore.handlePushMessage(props.item._additional.id, { text: reply, sender: 'bot' })
-
-        chatStore.handleResetItems()
-        chatStore.handlePushItems(items)
+        if(amenity) {
+            //
+        }
   } catch(err) {
     chatStore.handlePushMessage(props.item._additional.id, {
       text: err,
@@ -116,11 +117,11 @@ const handleSendMessage = async(message) => {
 };
 
 const handleSelectPrompt = (prompt) => {
-    console.log('Selected Prompt:', prompt);
-};
+    handleSendMessage(prompt)
+}
 
 const selectTab = (slug) => {
     activeTab.value = slug;
     getActivePrompts()
-};
+}
 </script>
