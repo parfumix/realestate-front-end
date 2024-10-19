@@ -47,6 +47,8 @@ const props = defineProps({
     },
 })
 
+const emit = defineEmits(['select'])
+
 const tabs = ref([
     {
         title: "Sunt cumpărător",
@@ -101,11 +103,9 @@ const handleSendMessage = async(message) => {
         const { reply = null, item, intent, amenity } = await chatStore.handleRequestDetails(props.item._additional.id, trimmedMessage, {})
         if(! item) throw new Error('No results found for' + trimmedMessage)
         
-        if(reply) chatStore.handlePushMessage(props.item._additional.id, { text: reply, sender: 'bot' })
+        chatStore.handlePushMessage(props.item._additional.id, { text: reply, sender: 'bot' })
 
-        if(amenity) {
-            //
-        }
+        emit('select', amenity ? 'map' : 'general')
   } catch(err) {
     chatStore.handlePushMessage(props.item._additional.id, {
       text: err,
