@@ -12,7 +12,7 @@
             </template>
 
             <div>
-                <div class="border-b border-gray-200 mx-auto flex justify-center">
+                <div v-if="!defaultThreadMessages.length" class="border-b border-gray-200 mx-auto flex justify-center">
                     <nav class="-mb-px flex space-x-[12px]">
                         <a v-for="(tab, index) in tabs" :key="tab.title" class="cursor-pointer py-4 px-1 flex items-center" @click="selectTab(tab.slug)" :class="{ 'border-b border-gray-500 text-blue-500': activeTab === index }">
                             <span v-html="tab.icon" :class="[{'text-gray-800': tab.slug==activeTab, 'text-gray-500': tab.slug!=activeTab}, 'pr-2']"></span>
@@ -97,7 +97,6 @@ const handleSendMessage = async(message) => {
 
         // adding user message to stack
         chatStore.handlePushMessage(props.item._additional.id, { text: message, sender: 'user' })
-        chatStore.handleSetPromptsByThread(activeTab.value, [])
 
         const { reply = null, item, intent, amenity } = await chatStore.handleRequestDetails(props.item._additional.id, trimmedMessage, {})
         if(! item) throw new Error('No results found for' + trimmedMessage)
