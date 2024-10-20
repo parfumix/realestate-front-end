@@ -1,4 +1,3 @@
-// api/real-estate.js
 import { useCustomFetch } from '~/composables/useCustomFetch'
 
 const query = async (query = null, filters = {}) => {
