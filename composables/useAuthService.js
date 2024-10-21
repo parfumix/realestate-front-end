@@ -39,6 +39,17 @@ export const useAuthService = () => {
     }
   }
 
+  const logoutUser = async () => {
+    try {
+      const { error } = await supabase.auth.signOut()
+
+      if (error) {
+        throw new Error(error.message);
+      }
+    } catch (error) {
+      throw error
+    }
+  }
   const loginUser = async (email, password) => {
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
@@ -78,6 +89,7 @@ export const useAuthService = () => {
     user,
     createAnonymousUser,
     registerUser,
+    logoutUser,
     loginUser,
     convertAnonymousToRealUser
   }
