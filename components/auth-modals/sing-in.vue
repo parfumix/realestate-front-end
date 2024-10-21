@@ -27,14 +27,12 @@
             </div>
   
             <div class="text-sm leading-6">
-              <a href="#" class="font-semibold text-blue-600 hover:text-blue-500">Forgot password?</a>
+              <a @click="modalStore.openModal(RegisterModal)" class="cursor-pointer font-semibold text-blue-600 hover:text-blue-500">Creaza un cont</a>
             </div>
           </div>
   
           <div>
-            <button type="submit"
-              class="flex w-full justify-center rounded-md bg-blue-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600">Sign
-              in</button>
+            <button type="submit" class="flex w-full justify-center rounded-md bg-blue-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600">Sign in</button>
           </div>
         </form>
       </div>
@@ -42,6 +40,8 @@
   </template>
   
   <script setup>
+  import RegisterModal from '@/components/auth-modals/register.vue';
+
   const email = ref('')
   const password = ref('')
   const modalStore = useModalStore();

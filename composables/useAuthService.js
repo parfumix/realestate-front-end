@@ -74,7 +74,6 @@ export const useAuthService = () => {
     }
   }
 
-
   return {
     user,
     createAnonymousUser,

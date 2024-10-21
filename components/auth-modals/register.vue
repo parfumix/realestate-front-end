@@ -15,13 +15,8 @@
         </div>
 
         <div class="flex items-center justify-between">
-          <div class="flex items-center">
-            <input id="remember-me" name="remember-me" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-600" />
-            <label for="remember-me" class="ml-3 block text-sm leading-6 text-gray-900">Remember me</label>
-          </div>
-
           <div class="text-sm leading-6">
-            <a href="#" class="font-semibold text-blue-600 hover:text-blue-500">Forgot password?</a>
+            <a @click="modalStore.openModal(SignInModal)" class="cursor-pointer font-semibold text-blue-600 hover:text-blue-500">Intra in cont</a>
           </div>
         </div>
 
@@ -34,12 +29,13 @@
 </template>
 
 <script setup>
+import SignInModal from '@/components/auth-modals/sing-in.vue';
+
 const { convertAnonymousToRealUser } = useAuthService()
 const modalStore = useModalStore();
 
 const email = ref('')
 const password = ref('')
-
 
 const signUp = async () => {
   try {
