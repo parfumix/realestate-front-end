@@ -6,7 +6,8 @@ export default defineNuxtConfig({
     'nuxt-headlessui',
     '@pinia/nuxt',
     '@nuxtjs/supabase',
-    'nuxt-keen-slider'
+    'nuxt-keen-slider',
+    'nuxt3-notifications'
   ],
   runtimeConfig: {
     public: {

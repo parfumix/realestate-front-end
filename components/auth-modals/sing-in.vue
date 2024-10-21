@@ -47,10 +47,16 @@
   const modalStore = useModalStore();
   
   const { loginUser } = useAuthService()
-  
+  const { notify } = useNotification();
+
   const signInWithEmail = async () => {
     try {
       await loginUser(email.value, password.value)
+
+      notify({
+        title: "Success!",
+      });
+      
       modalStore.closeModal()
     } catch (err) {
       console.error('Error signing in:', err.message)

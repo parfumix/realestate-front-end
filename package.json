@@ -30,6 +30,7 @@
     "leaflet": "^1.9.4",
     "nuxt-headlessui": "^1.2.0",
     "nuxt-keen-slider": "^1.1.0",
+    "nuxt3-notifications": "^1.2.3",
     "vue-leaflet-markercluster": "^0.6.1"
   }
 }
