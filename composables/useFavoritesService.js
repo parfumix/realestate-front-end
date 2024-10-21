@@ -1,4 +1,4 @@
-export const useFavorites = () => {
+export const useFavoritesService = () => {
 
     const client = useSupabaseClient()
 
@@ -54,7 +54,35 @@ export const useFavorites = () => {
         }
     };
 
+    // Toggle favorite (add if not exists, remove if exists)
+    const toggleFavorite = async (userId, propertyId) => {
+        try {
+            // Check if the property is already a favorite
+            const { data: existingFavorite, error } = await client
+                .from('favorites')
+                .select('*')
+                .eq('user_id', userId)
+                .eq('property_id', propertyId)
+                .single(); // Fetch a single record
+
+            if (error && error.code !== 'PGRST116') { // If not a 'No record found' error
+                throw new Error(error.message);
+            }
+
+            if (existingFavorite) {
+                // If favorite exists, remove it
+                return await removeFavorite(userId, propertyId);
+            } else {
+                // If favorite doesn't exist, add it
+                return await addFavorite(userId, propertyId);
+            }
+        } catch (err) {
+            throw err;
+        }
+    };
+
     return {
+        toggleFavorite,
         addFavorite,
         removeFavorite,
         fetchFavorites,
