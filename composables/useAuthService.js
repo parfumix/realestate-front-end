@@ -3,11 +3,9 @@ export const useAuthService = () => {
   const user = useSupabaseUser()
 
   const createAnonymousUser = async () => {
-    let session = await getSession()
-
     // Check if anonymous user ID & access token are already stored
-    if (session) {
-      return session;
+    if (user.value) {
+      return user.value;
     }
 
     // Create a new anonymous user if not created before
@@ -60,9 +58,7 @@ export const useAuthService = () => {
 
   const convertAnonymousToRealUser = async (email, password) => {
     try {
-      let session = await getSession()
-
-      if (! session) {
+      if (! user.value) {
         throw new Error('Missing user IDs for conversion')
       }
 
@@ -78,20 +74,9 @@ export const useAuthService = () => {
     }
   }
 
-  const getUser = async () => {
-    const { data: { user } } = await supabase.auth.getUser()
-    return user
-  }
-
-  const getSession = async () => {
-    const { data: { session }, error } = await supabase.auth.getSession()
-    return session
-  }
 
   return {
     user,
-    getSession,
-    getUser,
     createAnonymousUser,
     registerUser,
     loginUser,
