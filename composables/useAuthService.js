@@ -2,12 +2,11 @@ export const useAuthService = () => {
   const supabase = useSupabaseClient();
 
   const createAnonymousUser = async () => {
-    const anonymousUserId = localStorage.getItem('anonymous_user_id');
-    const anonymousAccessToken = localStorage.getItem('anonymous_access_token');
+    let session = await getSession()
 
     // Check if anonymous user ID & access token are already stored
-    if (anonymousUserId && anonymousAccessToken) {
-      return { user: { id: anonymousUserId }, session: { access_token: anonymousAccessToken } };
+    if (session) {
+      return session;
     }
 
     // Create a new anonymous user if not created before
@@ -17,10 +16,6 @@ export const useAuthService = () => {
       if (error) {
         throw new Error(error.message);
       }
-
-      // Store anonymous user session
-      localStorage.setItem('anonymous_user_id', data.user.id);
-      localStorage.setItem('anonymous_access_token', data.session.access_token);
 
       return data;
     } catch (err) {
@@ -39,10 +34,6 @@ export const useAuthService = () => {
         throw new Error(error.message);
       }
 
-      // Store new user session
-      localStorage.setItem('access_token', data.session.access_token);
-      localStorage.setItem('real_user_id', data.user.id);
-
       return data;
     } catch (error) {
       throw error
@@ -60,10 +51,6 @@ export const useAuthService = () => {
         throw new Error(error.message);
       }
 
-      // Store session data
-      localStorage.setItem('access_token', data.session.access_token);
-      localStorage.setItem('real_user_id', data.user.id);
-
       return data;
     } catch (error) {
       throw error
@@ -72,10 +59,9 @@ export const useAuthService = () => {
 
   const convertAnonymousToRealUser = async (email) => {
     try {
-      const anonymousUserId = localStorage.getItem('anonymous_user_id');
-      const anonymousAccessToken = localStorage.getItem('anonymous_access_token');
+      let session = await getSession()
 
-      if (!anonymousUserId || !anonymousAccessToken) {
+      if (! session) {
         throw new Error('Missing user IDs for conversion')
       }
 
@@ -85,17 +71,25 @@ export const useAuthService = () => {
         throw new Error(error.message);
       }
 
-      // Store anonymous user session
-      localStorage.setItem('anonymous_user_id', data.user.id);
-      localStorage.setItem('anonymous_access_token', data.session.access_token);
-
       return data;
     } catch (error) {
       throw err;
     }
   }
 
+  const getUser = async () => {
+    const { data: { user } } = await supabase.auth.getUser()
+    return user
+  }
+
+  const getSession = async () => {
+    const { data: { session }, error } = await supabase.auth.getSession()
+    return session
+  }
+
   return {
+    getSession,
+    getUser,
     createAnonymousUser,
     registerUser,
     loginUser,
