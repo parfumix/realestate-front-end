@@ -57,7 +57,7 @@ export const useAuthService = () => {
     }
   }
 
-  const convertAnonymousToRealUser = async (email) => {
+  const convertAnonymousToRealUser = async (email, password) => {
     try {
       let session = await getSession()
 
@@ -65,7 +65,7 @@ export const useAuthService = () => {
         throw new Error('Missing user IDs for conversion')
       }
 
-      const { data, error } = await supabase.auth.updateUser({ email })
+      const { data, error } = await supabase.auth.updateUser({ email, password })
 
       if (error) {
         throw new Error(error.message);
