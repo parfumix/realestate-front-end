@@ -1,36 +1,30 @@
 export const useUserMessages = () => {
+
   const client = useSupabaseClient()
 
   // State to hold chat messages
   const messages = ref([]);
-  const loading = ref(false);
-  const error = ref(null);
 
   // Insert a new message into the user_messages table
-  const insertMessage = async (userId, thread, message, role) => {
+  const insertMessage = async (userId, propertyId = null, thread, message, role, filters = {}) => {
     try {
-      loading.value = true;
-      const { data, error: insertError } = await client
-        .from('user_messages')
-        .insert([
-          {
-            user_id: userId,
-            thread,
-            message,
-            role,
-          },
-        ]);
+      const { data, error } = await client.from('user_messages').insert([{
+          user_id: userId,
+          property_id: propertyId,
+          thread,
+          message,
+          role,
+          meta: {
+            filters
+          }
+        }
+      ])
 
-      if (insertError) {
-        error.value = insertError.message;
-        console.error('Error inserting message:', insertError.message);
-        return null;
-      }
+      if (error) throw new Error(error);
       
-      console.log('Message inserted:', data);
       return data;
-    } finally {
-      loading.value = false;
+    } catch(err) {
+      throw err
     }
   };
 
@@ -59,8 +53,6 @@ export const useUserMessages = () => {
 
   return {
     messages,
-    loading,
-    error,
     insertMessage,
     fetchMessages,
   }

@@ -1,5 +1,6 @@
 export const useAuthService = () => {
   const supabase = useSupabaseClient();
+  const user = useSupabaseUser()
 
   const createAnonymousUser = async () => {
     let session = await getSession()
@@ -88,6 +89,7 @@ export const useAuthService = () => {
   }
 
   return {
+    user,
     getSession,
     getUser,
     createAnonymousUser,

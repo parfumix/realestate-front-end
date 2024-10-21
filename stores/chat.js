@@ -3,7 +3,6 @@ import { ref } from 'vue';
 import { query, loadMore, requestDetails } from '../api/chat';
 
 export const useChatStore = defineStore('chatStore', () => {
-
     // Unified prompts by thread name
     const prompts = ref({
         default: [
@@ -38,12 +37,12 @@ export const useChatStore = defineStore('chatStore', () => {
         ],
     });
 
-    const handlePushMessage = (threadId, message) => {
+    const handlePushMessage = async(threadId, { text, sender }) => {
         if (!messages.value[threadId]) {
-            // Initialize a new thread if it doesn't exist
             messages.value[threadId] = [];
         }
-        messages.value[threadId].push(message);
+
+        messages.value[threadId].push({ text, sender });
     };
 
     const handleClearMessages = (threadId) => {
@@ -165,4 +164,4 @@ export const useChatStore = defineStore('chatStore', () => {
         handleLoadMore,
         handleRequestDetails,
     };
-});
+})

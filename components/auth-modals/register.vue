@@ -34,19 +34,17 @@
 </template>
 
 <script setup>
-const { convertAnonymousToRealUser, getUser } = useAuthService()
+const { convertAnonymousToRealUser } = useAuthService()
+const modalStore = useModalStore();
 
 const email = ref('')
 const password = ref('')
 
-onMounted(async() => {
-  const { is_anonymous } = await getUser()
-  if(! is_anonymous) router.push('/')
-})
 
 const signUp = async () => {
   try {
     await convertAnonymousToRealUser(email.value)
+    modalStore.closeModal()
   } catch(err) {
     console.error('Error signing in:', err.message)
   }

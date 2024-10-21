@@ -33,7 +33,8 @@
           <RealEstateList v-else :key="`${randomInt}-list`" :items="items" />
 
           <!-- It's used to show clicked property as modal -->
-          <ModalsRealEstateProperty v-if="selectedItem" :item="selectedItem" @close="handleCloseModal" class="z-[100]" />
+          <!-- <ModalsRealEstateProperty v-if="selectedItem" :item="selectedItem" @close="handleCloseModal" class="z-[100]" /> -->
+
         </div>
         <EmptyResults v-else class="w-full h-full flex flex-col justify-center items-center" />
       </div>
@@ -43,12 +44,27 @@
 </template>
 
 <script setup>
+import RealEstatePropertyModal from '@/components/modals/real-estate-property.vue';
+
 const filterStore = useFilterStore()
 const chatStore = useChatStore()
+const modalStore = useModalStore();
+
+const openRealEstatePropertyModal = () => {
+  modalStore.openModal(RealEstatePropertyModal);
+}
+
 const { items, selectedItem, isQueryLoading } = storeToRefs(chatStore)
+
+const { insertMessage } = useUserMessages()
+const { user } = useAuthService()
 
 const isListView = ref(true)
 const randomInt = ref(Math.random())
+
+watch(() => selectedItem.value, newVal => {
+  if(newVal) openRealEstatePropertyModal()
+})
 
 const defaultThreadMessages = computed(() => {
   return chatStore.handleGetMessagesByThread('default')
@@ -108,6 +124,10 @@ const handleSendMessage = async (message) => {
 
     // Update the items for the map and re-render it
     mapKey.value++; // Change the key to force the map to re-render
+
+    insertMessage(
+      user.value?.id, null, 'default', trimmedMessage, 'user', parsedFilters
+    )
 
   } catch(err) {
     chatStore.handlePushMessage('default', {
