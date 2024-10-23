@@ -111,7 +111,7 @@ export const useFilterStore = defineStore('filters', () => {
     'location': [],
     'transaction_type': [],
   }
-  const activeFilters = reactive(defaultFilters);
+  let activeFilters = reactive(defaultFilters);
 
   const setActiveFilter = (filterName, value) => {
     activeFilters[filterName] = value;
