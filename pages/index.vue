@@ -49,7 +49,6 @@ const modalStore = useModalStore();
 const openRealEstatePropertyModal = () => {
   modalStore.openModal(RealEstatePropertyModal);
 }
-
 const { items, selectedItem, isQueryLoading } = storeToRefs(chatStore)
 
 const { insertMessage } = useUserMessages()
@@ -70,7 +69,7 @@ const defaultThreadPrompts = computed(() => {
   return chatStore.handleGetPromptsByThread('default')
 })
 
-const { results = [] } = await chatStore.handleQuery()
+const { results } = await chatStore.handleQuery()
 chatStore.handleResetItems()
 chatStore.handlePushItems(results)
 
@@ -96,14 +95,14 @@ const handleSendMessage = async (message) => {
     chatStore.handlePushMessage('default', { text: message, sender: 'user' })
     chatStore.handleSetPromptsByThread('default', [])
 
-    const { reply, results: items, filters, prompts = [] } = await chatStore.handleQuery(trimmedMessage, {})
-    if(! items) throw new Error('No results found for' + trimmedMessage)
+    const { reply, results, filters, prompts = [] } = await chatStore.handleQuery(trimmedMessage, {})
+    if(! results) throw new Error('No results found for' + trimmedMessage)
 
     chatStore.handleSetPromptsByThread('default', prompts)
     chatStore.handlePushMessage('default', { text: reply, sender: 'bot' })
 
     chatStore.handleResetItems()
-    chatStore.handlePushItems(items)
+    chatStore.handlePushItems(results)
 
     // apply filters automatically
     let parsedFilters = JSON.parse(JSON.stringify(filters))

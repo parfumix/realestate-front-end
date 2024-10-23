@@ -9,7 +9,7 @@
 
       <LMap ref="map" :zoom="mapZoom" :center="mapCenter" :useGlobalLeaflet="false" style="height: 400px; width: 100%">
         <LTileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" layer-type="base" name="OpenStreetMap" />
-        <LCircle v-if="item.lat && item.lng" :lat-lng="[item.lat, item.lng]" :radius="radius" />
+        <LCircle v-if="item.meta?.lat && item.meta?.lng" :lat-lng="[item.meta?.lat, item.meta?.lng]" :radius="radius" />
       </LMap>
     </div>
   </ClientOnly>
@@ -66,7 +66,7 @@ onMounted(async () => {
 })
 
 // Center the map based on item's lat and lng
-const mapCenter = ref([props.item.lat || 47.21322, props.item.lng || -1.559482]);
+const mapCenter = ref([props.item.meta?.lat || 47.21322, props.item.meta?.lng || -1.559482]);
 
 // Dynamically adjust the zoom level to fit the circle
 const mapZoom = ref(13); // Initial zoom level

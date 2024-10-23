@@ -200,10 +200,11 @@
 
   const handleApplyFilters = async() => {
     filterStore.resetHasFiltersChanged()
-    const { reply, results: items } = await chatStore.handleQuery(null, activeFilters.value)
-    if( items) {
+    const { results } = await chatStore.handleQuery(null, activeFilters.value)
+
+    if(results.length) {
       chatStore.handleResetItems()
-      chatStore.handlePushItems(items)
+      chatStore.handlePushItems(results)
     }
   }
 

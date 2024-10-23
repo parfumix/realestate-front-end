@@ -1,7 +1,7 @@
 <template>
     <li class="shadow rounded-md">
         <div @click="() => chatStore.handleSelectItem(item)" class="group aspect-h-6 aspect-w-10 block w-full overflow-hidden rounded-lg bg-gray-100 focus-within:ring-2 focus-within:ring-blue-500 focus-within:ring-offset-2 focus-within:ring-offset-gray-100">
-            <img :src="item.images?.[0]" :alt="item.description" class="pointer-events-none object-cover group-hover:opacity-75" />
+            <img :src="item.meta.images?.[0]" :alt="item.meta.description" class="pointer-events-none object-cover group-hover:opacity-75" />
         </div>
         <div class="px-3 py-2 flex flex-col justify-start">
             <div class="flex justify-betwen">
@@ -38,6 +38,6 @@ const openSignInModal = () => {
 
 const handleAddToFavorites = () => {
     if(user.value?.is_anonymous) return openSignInModal()
-    addFavorite(user.value?.id, props.item._additional.id)
+    addFavorite(user.value?.id, props.item.id)
 }
 </script>

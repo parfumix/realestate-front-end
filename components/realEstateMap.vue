@@ -14,7 +14,7 @@
       <LMarker
         v-for="(el, index) in elements"
         :key="index"
-        :lat-lng="[el?.lat, el?.lng]"
+        :lat-lng="[el?.meta?.lat, el?.meta?.lng]"
       >
       </LMarker>
     </LMap>
@@ -46,8 +46,8 @@ watch(
       ([newItems, newRand]) => {
         elements.value = newItems.map(item => ({
           ...item,
-          lat: item.lat,
-          lng: item.lng,
+          lat: item?.meta?.lat,
+          lng: item?.meta?.lng,
         }));
       },
       { deep: true, immediate: true }

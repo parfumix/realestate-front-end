@@ -92,7 +92,7 @@ onMounted(() => {
 })
 
 const defaultThreadMessages = computed(() => {
-  return chatStore.handleGetMessagesByThread(props.item._additional.id)
+  return chatStore.handleGetMessagesByThread(props.item.id)
 })
 
 const handleSendMessage = async(message) => {
@@ -101,20 +101,20 @@ const handleSendMessage = async(message) => {
         if(! trimmedMessage) return
 
         // adding user message to stack
-        chatStore.handlePushMessage(props.item._additional.id, { text: message, sender: 'user' })
+        chatStore.handlePushMessage(props.item.id, { text: message, sender: 'user' })
 
-        const { reply = null, item, intent, amenity } = await chatStore.handleRequestDetails(props.item._additional.id, trimmedMessage, {})
+        const { reply = null, item, intent, amenity } = await chatStore.handleRequestDetails(props.item.internal_id, trimmedMessage, {})
         if(! item) throw new Error('No results found for' + trimmedMessage)
         
-        chatStore.handlePushMessage(props.item._additional.id, { text: reply, sender: 'bot' })
+        chatStore.handlePushMessage(props.item.id, { text: reply, sender: 'bot' })
 
         emit('select', amenity ? 'map' : 'general')
 
         insertMessage(
-            user.value?.id, props.item._additional.id, props.item._additional.id, trimmedMessage, 'user'
+            user.value?.id, props.item.id, props.item.id, trimmedMessage, 'user'
         )
   } catch(err) {
-    chatStore.handlePushMessage(props.item._additional.id, {
+    chatStore.handlePushMessage(props.item.id, {
       text: err,
       sender: 'bot',
     })
