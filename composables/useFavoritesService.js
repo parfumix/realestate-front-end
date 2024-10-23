@@ -41,8 +41,7 @@ export const useFavoritesService = () => {
             const { data, error: fetchError } = await client
                 .from('favorites')
                 .select('*')
-                .eq('user_id', userId)
-                .order('created_at', { ascending: true });
+                .eq('user_id', userId);
 
             if (fetchError) {
                 throw new Error(fetchError);
@@ -64,10 +63,6 @@ export const useFavoritesService = () => {
                 .eq('user_id', userId)
                 .eq('property_id', propertyId)
                 .single(); // Fetch a single record
-
-            if (error && error.code !== 'PGRST116') { // If not a 'No record found' error
-                throw new Error(error.message);
-            }
 
             if (existingFavorite) {
                 // If favorite exists, remove it

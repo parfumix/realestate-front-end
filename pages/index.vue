@@ -46,13 +46,14 @@ const filterStore = useFilterStore()
 const chatStore = useChatStore()
 const modalStore = useModalStore();
 
+const { user } = useAuthService()
+
 const openRealEstatePropertyModal = () => {
   modalStore.openModal(RealEstatePropertyModal);
 }
 const { items, selectedItem, isQueryLoading } = storeToRefs(chatStore)
 
 const { insertMessage } = useUserMessages()
-const { user } = useAuthService()
 
 const isListView = ref(true)
 const randomInt = ref(Math.random())

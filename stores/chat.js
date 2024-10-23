@@ -37,6 +37,10 @@ export const useChatStore = defineStore('chatStore', () => {
         ],
     });
 
+    // Items management
+    const items = ref([]);
+    const selectedItem = ref(null);
+
     const handlePushMessage = async(threadId, { text, sender }) => {
         if (!messages.value[threadId]) {
             messages.value[threadId] = [];
@@ -65,16 +69,18 @@ export const useChatStore = defineStore('chatStore', () => {
         return prompts.value[threadId] || [];
     };
 
-    // Items management
-    const items = ref([]);
-    const selectedItem = ref(null);
-
     const handleSelectItem = (item) => {
         selectedItem.value = item;
     };
 
     const handleResetItem = () => {
         selectedItem.value = null;
+    };
+
+    const handleUpdateItem = (itemId, newData) => {
+        const index = items.value.findIndex(el => el.id === itemId)
+        if (index == -1) return
+        items.value[index] = {...items.value[index], ...newData}
     };
 
     const handleResetItems = () => {
@@ -149,6 +155,7 @@ export const useChatStore = defineStore('chatStore', () => {
         // Items
         items,
         selectedItem,
+        handleUpdateItem,
         handleSelectItem,
         handleResetItem,
         handleResetItems,

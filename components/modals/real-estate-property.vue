@@ -9,7 +9,7 @@
       <transition name="fade">
         <div class="h-full" v-if="activeTab === 'general'" key="general">
           <h3 class="text-2xl pt-4 px-1 bg-white text-black font-semibold leading-6" v-html="propertyTitle" />
-          <ModalsRealEstateActions :item="item" />
+          <ModalsRealEstateActions />
 
           <div class="overflow-y-auto max-h-[calc(100vh-200px)] pb-[20px]">
             <ModalsRealEstateGallerySlider :items="item?.meta?.images" />
@@ -21,7 +21,7 @@
 
       <transition name="fade">
         <div v-if="activeTab === 'map'" key="map">
-          <ModalsRealEstateMap :item="item" />
+          <ModalsRealEstateMap :item="item" />  
         </div>
       </transition>
     </div>
