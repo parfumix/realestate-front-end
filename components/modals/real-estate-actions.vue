@@ -15,6 +15,8 @@
 import { format } from 'date-fns'
 import { ro } from 'date-fns/locale'
 
+import SignInModal from '@/components/auth-modals/sing-in.vue';
+
 const chatStore = useChatStore()
 const { selectedItem: item } = storeToRefs(chatStore)
 
