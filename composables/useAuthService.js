@@ -48,6 +48,8 @@ export const useAuthService = () => {
       }
     } catch (error) {
       throw error
+    } finally {
+      user.value = null
     }
   }
 
@@ -91,6 +93,7 @@ export const useAuthService = () => {
   }
 
   const isAuthenticated = () => {
+    if(! user.value) return false
     return user.value?.role == 'authenticated' && user.value?.is_anonymous === false
   }
 
