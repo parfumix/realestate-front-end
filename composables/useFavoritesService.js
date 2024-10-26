@@ -8,7 +8,7 @@ export const useFavoritesService = () => {
             const { data, error } = await client.from('favorites').insert([{
                 user_id: userId,
                 property_id: propertyId,
-            }])
+            }]).select()
 
             if (error) throw new Error(error);
 
