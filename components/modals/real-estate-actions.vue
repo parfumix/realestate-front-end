@@ -16,6 +16,7 @@ import { format } from 'date-fns'
 import { ro } from 'date-fns/locale'
 
 import SignInModal from '@/components/auth-modals/sing-in.vue';
+const { isAuthenticated } = useAuthService()
 
 const chatStore = useChatStore()
 const { selectedItem: item } = storeToRefs(chatStore)
@@ -34,7 +35,10 @@ const openSignInModal = () => {
 
 const actions = ref([{
     handler: async() => {
-        if(user.value?.is_anonymous) return openSignInModal()
+        if(! isAuthenticated()) {
+            openSignInModal()
+            return
+        }
 
         // modify object locally
         chatStore.handleUpdateItem(item.value.id, {

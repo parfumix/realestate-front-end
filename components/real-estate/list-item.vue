@@ -29,6 +29,7 @@ const modalStore = useModalStore();
 const chatStore = useChatStore();
 
 const { toggleFavorite } = useFavoritesService()
+const { isAuthenticated } = useAuthService()
 
 const props = defineProps({
     item: {
@@ -41,7 +42,10 @@ const openSignInModal = () => {
 }
 
 const handleTogglFavorite = async() => {
-    if(user.value?.is_anonymous) return openSignInModal()
+    if(! isAuthenticated()) {
+        openSignInModal()
+        return
+    }
 
     // modify object locally
     chatStore.handleUpdateItem(props.item.id, {
