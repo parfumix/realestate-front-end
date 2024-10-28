@@ -52,6 +52,7 @@ const openRealEstatePropertyModal = () => {
   modalStore.openModal(RealEstatePropertyModal);
 }
 const { items, selectedItem, isQueryLoading } = storeToRefs(chatStore)
+const { isModalVisible } = storeToRefs(modalStore)
 
 const { insertMessage } = useUserMessages()
 
@@ -59,7 +60,11 @@ const isListView = ref(true)
 const randomInt = ref(Math.random())
 
 watch(() => selectedItem.value, newVal => {
-  if(newVal) openRealEstatePropertyModal()
+  if(newVal?.id) openRealEstatePropertyModal()
+})
+
+watch(() => isModalVisible.value, newval => {
+  if(! newval) chatStore.handleResetItem()
 })
 
 const defaultThreadMessages = computed(() => {

@@ -81,6 +81,10 @@ export const useChatStore = defineStore('chatStore', () => {
         const index = items.value.findIndex(el => el.id === itemId)
         if (index == -1) return
         items.value[index] = {...items.value[index], ...newData}
+
+        if(selectedItem.value?.id && selectedItem.value?.id == itemId ) {
+            selectedItem.value = {...selectedItem.value, ...newData}
+        }
     };
 
     const handleResetItems = () => {

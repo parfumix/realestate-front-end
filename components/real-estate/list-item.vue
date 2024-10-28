@@ -28,7 +28,7 @@ const { user } = useAuthService()
 const modalStore = useModalStore();
 const chatStore = useChatStore();
 
-const { toggleFavorite } = useFavoritesService()
+const { removeFavorite, addFavorite } = useFavoritesService()
 const { isAuthenticated } = useAuthService()
 
 const props = defineProps({
@@ -47,11 +47,15 @@ const handleTogglFavorite = async() => {
         return
     }
 
+    const isFavorited = props.item.is_favorited
+
     // modify object locally
     chatStore.handleUpdateItem(props.item.id, {
-        is_favorited: !props.item.is_favorited
+        is_favorited: !isFavorited
     })
 
-    await toggleFavorite(user.value?.id, props.item.id)
+    return isFavorited
+        ? await removeFavorite(user.value.id, props.item.id)
+        : await addFavorite(user.value.id, props.item.id);
 }
 </script>
