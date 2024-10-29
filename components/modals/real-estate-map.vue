@@ -5,7 +5,7 @@
       <ul>
         <li v-for="amenity in amenities" :key="amenity">{{ amenity }}</li>
       </ul>
-      <div id="map" style="height: 400px; width: 100%"></div>
+      <div id="map-item" style="height: 400px; width: 100%"></div>
     </div>
   </ClientOnly>
 </template>
@@ -66,7 +66,7 @@ onMounted(async () => {
   await fetchAmenities();
 
   // Initialize Leaflet map
-  map = L.map('map').setView(mapCenter.value, mapZoom.value);
+  map = L.map('map-item').setView(mapCenter.value, mapZoom.value);
 
   // Add tile layer
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
