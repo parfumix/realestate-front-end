@@ -2,10 +2,25 @@
   <ClientOnly>
     <div class="map-container">
       <div id="map-item" style="height: 400px; width: 100%"></div>
-      <select v-model="selectedAmenityType" @change="fetchAndDisplayAmenities">
-        <option v-for="type in typeOfAmenities" :key="type" :value="type">{{ type }}</option>
-      </select>
     </div>
+
+    <div class="border-b border-gray-200">
+      <nav class="-mb-px flex space-x-8" aria-label="Tabs">
+        <a v-for="tab in typeOfAmenities" :key="tab.name" href="#"
+          :class="[tab?.current ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:border-gray-200 hover:text-gray-700', 'flex whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium']"
+          :aria-current="tab.current ? 'page' : undefined">
+          {{ tab?.name }}
+          <span v-if="tab?.count"
+            :class="[tab.current ? 'bg-blue-100 text-blue-600' : 'bg-gray-100 text-gray-900', 'ml-3 hidden rounded-full py-0.5 px-2.5 text-xs font-medium md:inline-block']">{{
+              tab.count }}</span>
+        </a>
+      </nav>
+    </div>
+
+    <!-- <select v-model="selectedAmenityType" @change="fetchAndDisplayAmenities">
+        <option v-for="type in typeOfAmenities" :key="type" :value="type">{{ type }}</option>
+      </select> -->
+
   </ClientOnly>
 </template>
 
@@ -36,26 +51,26 @@ const amenitiesMarkers = ref([]);
 const selectedAmenityType = ref("school");
 
 const typeOfAmenities = [
-  "school",
-  "hospital",
-  "pharmacy",
-  "restaurant",
-  "cafe",
-  "bank",
-  "atm",
-  "bus_station",
-  "train_station",
-  "subway",
-  "police",
-  "fire_station",
-  "library",
-  "gym",
-  "park",
-  "playground",
-  "cinema",
-  "shopping_mall",
-  "supermarket",
-  "parking"
+  { type: "school", name: "School" },
+  { type: "hospital", name: "Hospital" },
+  { type: "pharmacy", name: "Pharmacy" },
+  { type: "restaurant", name: "Restaurant" },
+  { type: "cafe", name: "Cafe" },
+  { type: "bank", name: "Bank" },
+  { type: "atm", name: "ATM" },
+  { type: "bus_station", name: "Bus Station" },
+  { type: "train_station", name: "Train Station" },
+  { type: "subway", name: "Subway" },
+  { type: "police", name: "Police Station" },
+  { type: "fire_station", name: "Fire Station" },
+  { type: "library", name: "Library" },
+  { type: "gym", name: "Gym" },
+  { type: "park", name: "Park" },
+  { type: "playground", name: "Playground" },
+  { type: "cinema", name: "Cinema" },
+  { type: "shopping_mall", name: "Shopping Mall" },
+  { type: "supermarket", name: "Supermarket" },
+  { type: "parking", name: "Parking Lot" }
 ];
 
 // Initialize map and layers
@@ -67,7 +82,7 @@ onMounted(async () => {
 
 function initializeMap() {
   map = L.map('map-item').setView(mapCenter.value, mapZoom.value);
-  
+
   // Add tile layer
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; OpenStreetMap contributors'
