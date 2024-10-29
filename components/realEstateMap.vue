@@ -3,7 +3,7 @@
     <div id="map" style="width: 100%; height: 100%;" />
 
     <Teleport v-if="selectedItem" :to="`.popup-content-${selectedItem.id}`">
-      <RealEstateListItem :item="selectedItem" />
+      <RealEstateListItem :item="selectedItem" :hideBookmark="true" />
     </Teleport>
   </ClientOnly>
 </template>

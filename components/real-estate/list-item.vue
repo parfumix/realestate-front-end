@@ -8,7 +8,7 @@
                 <div class="flex-1">
                     <p @click="() => chatStore.handleSelectItem(item)" class="text-sm text-left font-extrabold font-medium text-gray-900 leading-5 pb-2 hover:underline cursor-pointer" :title="item?.title">{{ (item?.title || '').substring(36, item?.title) + '…' }}</p>
                 </div>
-                <div>
+                <div v-if="!hideBookmark">
                     <svg xmlns="http://www.w3.org/2000/svg" v-if="! item.is_favorited" @click="handleTogglFavorite" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5 cursor-pointer"><path stroke-linecap="round" stroke-linejoin="round" d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0 1 11.186 0Z" /></svg>
                     <svg xmlns="http://www.w3.org/2000/svg" v-else @click="handleTogglFavorite" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5 cursor-pointer"><path stroke-linecap="round" stroke-linejoin="round" d="m3 3 1.664 1.664M21 21l-1.5-1.5m-5.485-1.242L12 17.25 4.5 21V8.742m.164-4.078a2.15 2.15 0 0 1 1.743-1.342 48.507 48.507 0 0 1 11.186 0c1.1.128 1.907 1.077 1.907 2.185V19.5M4.664 4.664 19.5 19.5" /></svg>
                 </div>
@@ -34,6 +34,10 @@ const { isAuthenticated } = useAuthService()
 const props = defineProps({
     item: {
         type: Object
+    },
+    hideBookmark: {
+        type: Boolean,
+        default: false
     }
 })
 
