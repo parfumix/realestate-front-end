@@ -48,7 +48,7 @@ function initializeMap() {
 
 // Function to create a custom marker icon with price
 function createPriceIcon(price) {
-  const formattedPrice = $currencyFormat(price, 'fr-FR', 'EUR');
+  const formattedPrice = $currencyFormat(price);
   
   // Estimate icon width based on the length of the formatted price text
   const baseWidth = 50; // Minimum width

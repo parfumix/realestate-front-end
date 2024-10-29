@@ -14,7 +14,7 @@
                 </div>
             </div>
 
-            <p class="text-sm font-bold text-gray-900 text-left">{{ $currencyFormat(item.price, 'fr-FR', 'EUR') }}</p>
+            <p class="text-sm font-bold text-gray-900 text-left">{{ $currencyFormat(item.price) }}</p>
             <p class="text-[11px] font-normal text-gray-900 text-left" v-if="item.area && item.price">{{ parseFloat(item?.price / parseFloat(new String(item?.area).match(/\d+(\.\d+)?/))).toFixed(0) }} EUR<span class="text-gray-800"> / m2</span></p>
         </div>
     </li>

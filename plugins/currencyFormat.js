@@ -1,10 +1,10 @@
 export default defineNuxtPlugin(() => {
-  const formatCurrency = (value, locale = 'fr-FR', currency = 'EUR') => {
+  const formatCurrency = (value, locale = 'de-DE', currency = 'EUR') => {
     return new Intl.NumberFormat(locale, {
       style: 'currency',
       currency: currency,
-      minimumFractionDigits: 2, // Ensure two decimal places
-      maximumFractionDigits: 2,
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
     }).format(value);
   };
 
