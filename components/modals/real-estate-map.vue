@@ -1,10 +1,6 @@
 <template>
   <ClientOnly>
     <div class="map-container">
-      <!-- List of unique amenities -->
-      <ul>
-        <li v-for="amenity in amenities" :key="amenity">{{ amenity }}</li>
-      </ul>
       <div id="map-item" style="height: 400px; width: 100%"></div>
     </div>
   </ClientOnly>
@@ -12,6 +8,7 @@
 
 <script setup>
 import { ref, onMounted, watch } from 'vue';
+
 import L from 'leaflet';
 import "leaflet/dist/leaflet.css";
 
@@ -31,39 +28,36 @@ const props = defineProps({
 const mapCenter = ref([props.item.meta?.lat || 47.21322, props.item.meta?.lng || -1.559482]);
 const mapZoom = ref(13);
 
-// List of unique amenities
-const amenities = ref([]);
+const areaName = 'București' // Replace with the actual area name
 
-// Function to fetch amenities
-const fetchAmenities = async () => {
-  const { data } = await useFetch(() => {
-    const query = `
-        [out:json][timeout:25];
-        (
-          node["amenity"](47.20000,-1.60000,47.22000,-1.54000);
-          way["amenity"](47.20000,-1.60000,47.22000,-1.54000);
-          relation["amenity"](47.20000,-1.60000,47.22000,-1.54000);
-        );
-        out body;
-        >;
-        out skel qt;
-      `;
-    const url = `https://overpass-api.de/api/interpreter?data=${encodeURIComponent(query)}`;
-    return $fetch(url);
-  });
+const query = `
+  [out:json];
+  area["name"="${areaName}"]->.searchArea;
+  node["amenity"](area.searchArea);
+  out body;
+`
 
-  // Compute unique amenities
-  if (data.value?.elements?.length > 0) {
-    amenities.value = [...new Set(data.value.elements.map(a => a.tags.amenity))];
+// URL for the Overpass API with encoded query
+const url = `https://overpass-api.de/api/interpreter?data=${encodeURIComponent(query)}`
+
+// Fetch data using useFetch
+const { data, error } = await useFetch(url)
+
+// Access fetched data
+const amenities = ref([])
+
+onMounted(() => {
+  if (data.value) {
+    amenities.value = data.value.elements
   }
-};
+})
 
 // Initialize map and layers
 let map;
 let circle;
 
 onMounted(async () => {
-  await fetchAmenities();
+  await nextTick()
 
   // Initialize Leaflet map
   map = L.map('map-item').setView(mapCenter.value, mapZoom.value);
