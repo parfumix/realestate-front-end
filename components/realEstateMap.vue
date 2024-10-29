@@ -15,6 +15,7 @@ import 'leaflet.markercluster';
 import 'leaflet/dist/leaflet.css';
 import 'leaflet.markercluster/dist/MarkerCluster.Default.css';
 
+const { $currencyFormat } = useNuxtApp();
 
 const props = defineProps({
   items: {
@@ -25,7 +26,6 @@ const props = defineProps({
 
 let map; // Declare map globally to access in the watcher
 let markersCluster; // Declare markers cluster globally for easy reset
-
 
 let selectedItem = ref(null)
 const handleSelectCurrentItem = (item) => {
@@ -46,18 +46,34 @@ function initializeMap() {
   map.addLayer(markersCluster); // Add the cluster group to the map
 }
 
+// Function to create a custom marker icon with price
+function createPriceIcon(price) {
+  const formattedPrice = $currencyFormat(price, 'fr-FR', 'EUR');
+  
+  // Estimate icon width based on the length of the formatted price text
+  const baseWidth = 50; // Minimum width
+  const extraWidthPerChar = 5; // Approximate additional width per character
+  const iconWidth = baseWidth + (formattedPrice.length * extraWidthPerChar);
+
+  return L.divIcon({
+    className: 'bg-white rounded-[15px] text-center px-2 py-1 font-bold text-sm text-gray-800 shadow-md',
+    html: `<div class="text-gray-800">${formattedPrice}</div>`,
+    iconSize: [iconWidth, 30], // Dynamic width based on text length
+    iconAnchor: [iconWidth / 2, 15] // Center the icon anchor
+  });
+}
+
 // Function to update markers based on props.items
 function updateMarkers() {
-  // Remove all existing layers before updating
   markersCluster.clearLayers();
 
   const newMarkers = []; // Array to store new markers
 
   props.items.forEach((item) => {
-    let { meta: { lat, lng } = {} } = item
+    let { meta: { lat, lng } = {}, price } = item;
 
     if (lat && lng) {
-      const marker = L.marker([lat, lng]);
+      const marker = L.marker([lat, lng], { icon: createPriceIcon(price) });
 
       const popupContainerId = `popup-content-${item.id}`; // Unique ID for teleport target
       marker.bindPopup('<div></div>', { closeButton: false, keepInView: true, className: `min-w-[200px] max-h-[100px] ${popupContainerId}` }); // Simple popup for each marker
@@ -73,10 +89,8 @@ function updateMarkers() {
     }
   });
 
-  // Add new markers to the cluster group
   markersCluster.addLayers(newMarkers);
 
-  // Adjust map view to fit updated markers
   if (newMarkers.length > 0) {
     map.fitBounds(markersCluster.getBounds(), { padding: [50, 50] });
   } else {
@@ -90,7 +104,6 @@ onMounted(async () => {
   updateMarkers(); // Initialize markers
 });
 
-// Watch for changes in props.items and update markers
 watch(
   () => props.items,
   () => {
@@ -108,10 +121,10 @@ watch(
 
 .leaflet-popup-content-wrapper {
   background: transparent !important;
-  box-shadow: none !important
+  box-shadow: none !important;
 }
 
 .leaflet-popup-tip-container {
   display: none;
- }
+}
 </style>
