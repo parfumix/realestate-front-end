@@ -29,7 +29,7 @@
         </div>
 
         <div class="w-full" v-if="items.length > 0">
-          <RealEstateMap v-if="!isListView" :key="`${randomInt}-map`" :randInt="randomInt" :items="items" />
+          <RealEstateMap v-if="!isListView" :items="items" />
           <RealEstateList v-else :key="`${randomInt}-list`" :items="items" />
         </div>
         <EmptyResults v-else class="w-full h-full flex flex-col justify-center items-center" />

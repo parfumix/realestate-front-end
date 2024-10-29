@@ -5,7 +5,7 @@
 </template>
 
 <script setup>
-import { onMounted, nextTick } from 'vue';
+import { onMounted, nextTick, watch } from 'vue';
 import L from 'leaflet';
 import 'leaflet.markercluster';
 import 'leaflet/dist/leaflet.css';
@@ -15,11 +15,11 @@ const props = defineProps({
   items: {
     type: Array,
     default: () => []
-  },
-  randInt: {
-    type: Number,
-  },
+  }
 });
+
+let map; // Declare map globally to access it in the watcher
+let markers; // Declare markers globally to reset them
 
 // Function to initialize the map
 function initializeMap() {
@@ -27,21 +27,23 @@ function initializeMap() {
   const defaultZoom = 13; // Default zoom level
 
   // Create map instance
-  const map = L.map('map').setView(defaultCenter, defaultZoom);
+  map = L.map('map').setView(defaultCenter, defaultZoom);
 
   // Add tile layer to map
   L.tileLayer('https://{s}.tile.osm.org/{z}/{x}/{y}.png', {
     attribution: '&copy; <a href="https://osm.org/copyright">OpenStreetMap</a> contributors'
   }).addTo(map);
-
-  return map;
 }
 
-onMounted(async () => {
-  await nextTick();
+// Function to update markers based on items
+function updateMarkers() {
+  // Clear existing markers if they exist
+  if (markers) {
+    markers.clearLayers();
+  } else {
+    markers = L.markerClusterGroup();
+  }
 
-  const map = initializeMap();
-  const markers = L.markerClusterGroup();
   const markerCoordinates = [];
 
   // Loop through items to create markers
@@ -54,7 +56,7 @@ onMounted(async () => {
     }
   });
 
-  // Add all markers to the map
+  // Add updated markers to the map
   map.addLayer(markers);
 
   // Fit map to markers or default view if no markers are available
@@ -63,7 +65,26 @@ onMounted(async () => {
   } else {
     map.setView([-37.82, 175.23], 13); // Default view if no markers
   }
+}
+
+onMounted(async () => {
+  await nextTick();
+
+  // Initialize the map
+  initializeMap();
+
+  // Initial marker setup
+  updateMarkers();
 });
+
+// Watch for changes in props.items to update markers
+watch(
+  () => props.items,
+  () => {
+    updateMarkers();
+  },
+  { deep: true }
+);
 </script>
 
 <style>
