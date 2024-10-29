@@ -60,7 +60,7 @@ function updateMarkers() {
       const marker = L.marker([lat, lng]);
 
       const popupContainerId = `popup-content-${item.id}`; // Unique ID for teleport target
-      marker.bindPopup('<div></div>', { className: `max-w-[250px] max-h-[100px] ${popupContainerId}` }); // Simple popup for each marker
+      marker.bindPopup('<div></div>', { closeButton: false, keepInView: true, className: `min-w-[200px] max-h-[100px] ${popupContainerId}` }); // Simple popup for each marker
       newMarkers.push(marker); // Add marker to the array
 
       marker.on('popupopen', () => {
