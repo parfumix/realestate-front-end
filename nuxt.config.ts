@@ -2,7 +2,6 @@
 export default defineNuxtConfig({
   modules: [
     '@nuxtjs/tailwindcss',
-    '@nuxtjs/leaflet',
     'nuxt-headlessui',
     '@pinia/nuxt',
     '@nuxtjs/supabase',

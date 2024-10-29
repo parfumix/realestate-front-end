@@ -1,31 +1,15 @@
 <template>
   <ClientOnly>
-    <LMap
-      ref="map"
-      :zoom="6"
-      :center="mapCenter"
-      :useGlobalLeaflet="false"
-    >
-      <LTileLayer
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        layer-type="base"
-        name="OpenStreetMap"
-      />
-      <LMarker
-        v-for="(el, index) in elements"
-        :key="index"
-        :lat-lng="[el?.meta?.lat, el?.meta?.lng]"
-      >
-      </LMarker>
-    </LMap>
+    <div id="map" style="width: 100%; height: 100%;" />
   </ClientOnly>
 </template>
 
 <script setup>
-import "leaflet/dist/leaflet.css";
-import { LMap, LTileLayer, LMarker } from '@vue-leaflet/vue-leaflet';
-
-const map = ref(null);
+import { onMounted, nextTick } from 'vue';
+import L from 'leaflet';
+import 'leaflet.markercluster';
+import 'leaflet/dist/leaflet.css';
+import 'leaflet.markercluster/dist/MarkerCluster.Default.css';
 
 const props = defineProps({
   items: {
@@ -37,19 +21,54 @@ const props = defineProps({
   },
 });
 
-const elements = ref([]);
-const mapCenter = ref([47.21322, -1.559482]);
+// Function to initialize the map
+function initializeMap() {
+  const defaultCenter = [-37.82, 175.23]; // Default coordinates
+  const defaultZoom = 13; // Default zoom level
 
-// Watch for changes to items and update elements
-watch(
-      [() => props.items, () => props.randInt], 
-      ([newItems, newRand]) => {
-        elements.value = newItems.map(item => ({
-          ...item,
-          lat: item?.meta?.lat,
-          lng: item?.meta?.lng,
-        }));
-      },
-      { deep: true, immediate: true }
-    );
+  // Create map instance
+  const map = L.map('map').setView(defaultCenter, defaultZoom);
+
+  // Add tile layer to map
+  L.tileLayer('https://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; <a href="https://osm.org/copyright">OpenStreetMap</a> contributors'
+  }).addTo(map);
+
+  return map;
+}
+
+onMounted(async () => {
+  await nextTick();
+
+  const map = initializeMap();
+  const markers = L.markerClusterGroup();
+  const markerCoordinates = [];
+
+  // Loop through items to create markers
+  props.items.forEach(({ meta: { lat, lng } = {}, title }) => {
+    if (lat && lng) { // Ensure lat/lng exist
+      const marker = L.marker([lat, lng], { title });
+      marker.bindPopup(title || 'No title available');
+      markers.addLayer(marker);
+      markerCoordinates.push([lat, lng]);
+    }
+  });
+
+  // Add all markers to the map
+  map.addLayer(markers);
+
+  // Fit map to markers or default view if no markers are available
+  if (markerCoordinates.length > 0) {
+    map.fitBounds(L.latLngBounds(markerCoordinates), { padding: [50, 50] });
+  } else {
+    map.setView([-37.82, 175.23], 13); // Default view if no markers
+  }
+});
 </script>
+
+<style>
+#map {
+  width: 100%;
+  height: 100%;
+}
+</style>

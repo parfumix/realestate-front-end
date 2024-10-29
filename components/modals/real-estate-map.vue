@@ -1,27 +1,19 @@
 <template>
   <ClientOnly>
     <div class="map-container">
-
       <!-- List of unique amenities -->
       <ul>
         <li v-for="amenity in amenities" :key="amenity">{{ amenity }}</li>
       </ul>
-
-      <LMap ref="map" :zoom="mapZoom" :center="mapCenter" :useGlobalLeaflet="false" style="height: 400px; width: 100%">
-        <LTileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" layer-type="base" name="OpenStreetMap" />
-        <LCircle v-if="item.meta?.lat && item.meta?.lng" :lat-lng="[item.meta?.lat, item.meta?.lng]" :radius="radius" />
-      </LMap>
+      <div id="map" style="height: 400px; width: 100%"></div>
     </div>
   </ClientOnly>
 </template>
 
 <script setup>
-
-// https://chatgpt.com/share/67139b69-a568-8006-9f13-57639e6aafa7
-
+import { ref, onMounted, watch } from 'vue';
+import L from 'leaflet';
 import "leaflet/dist/leaflet.css";
-import { LMap, LTileLayer, LCircle } from '@vue-leaflet/vue-leaflet';
-import { ref } from 'vue';
 
 // Props to accept a single item and radius
 const props = defineProps({
@@ -35,10 +27,16 @@ const props = defineProps({
   },
 });
 
+// Center and Zoom based on item's location
+const mapCenter = ref([props.item.meta?.lat || 47.21322, props.item.meta?.lng || -1.559482]);
+const mapZoom = ref(13);
+
+// List of unique amenities
 const amenities = ref([]);
 
+// Function to fetch amenities
 const fetchAmenities = async () => {
-  const { data, error } = await useFetch(() => {
+  const { data } = await useFetch(() => {
     const query = `
         [out:json][timeout:25];
         (
@@ -55,30 +53,70 @@ const fetchAmenities = async () => {
   });
 
   // Compute unique amenities
-  const amenities = ref([]);
   if (data.value?.elements?.length > 0) {
     amenities.value = [...new Set(data.value.elements.map(a => a.tags.amenity))];
   }
-}
+};
+
+// Initialize map and layers
+let map;
+let circle;
 
 onMounted(async () => {
-  await fetchAmenities()
-})
+  await fetchAmenities();
 
-// Center the map based on item's lat and lng
-const mapCenter = ref([props.item.meta?.lat || 47.21322, props.item.meta?.lng || -1.559482]);
+  // Initialize Leaflet map
+  map = L.map('map').setView(mapCenter.value, mapZoom.value);
 
-// Dynamically adjust the zoom level to fit the circle
-const mapZoom = ref(13); // Initial zoom level
-if (props.radius > 0) {
-  mapZoom.value = Math.max(14 - Math.log2(props.radius / 500), 1); // Adjust zoom level based on radius
-}
+  // Add tile layer
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; <a href="https://osm.org/copyright">OpenStreetMap</a> contributors'
+  }).addTo(map);
 
+  // Add circle if item's coordinates are available
+  if (props.item.meta?.lat && props.item.meta?.lng) {
+    circle = L.circle([props.item.meta.lat, props.item.meta.lng], {
+      radius: props.radius,
+      color: 'blue',
+      fillOpacity: 0.1
+    }).addTo(map);
+
+    // Fit map view to circle radius
+    map.fitBounds(circle.getBounds(), { padding: [20, 20] });
+  }
+});
+
+// Watch for changes in radius to adjust zoom level and circle radius
+watch(() => props.radius, (newRadius) => {
+  if (circle) {
+    circle.setRadius(newRadius);
+    map.fitBounds(circle.getBounds(), { padding: [20, 20] });
+  }
+});
+
+// Watch for changes in item location to re-center the map
+watch(
+  () => props.item.meta,
+  (newMeta) => {
+    if (newMeta?.lat && newMeta?.lng) {
+      map.setView([newMeta.lat, newMeta.lng], mapZoom.value);
+      if (circle) {
+        circle.setLatLng([newMeta.lat, newMeta.lng]);
+      } else {
+        circle = L.circle([newMeta.lat, newMeta.lng], {
+          radius: props.radius,
+          color: 'blue',
+          fillOpacity: 0.1
+        }).addTo(map);
+      }
+    }
+  },
+  { deep: true }
+);
 </script>
 
 <style>
 .map-container {
   height: 100%;
-  /* Ensure the map container takes full available height */
 }
 </style>
