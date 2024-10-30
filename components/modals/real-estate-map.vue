@@ -6,14 +6,15 @@
 
     <div class="border-b border-gray-200">
       <nav class="-mb-px flex space-x-8" aria-label="Tabs">
-        <a v-for="tab in typeOfAmenities" :key="tab.name" href="#"
-          :class="[tab?.current ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:border-gray-200 hover:text-gray-700', 'flex whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium']"
-          :aria-current="tab.current ? 'page' : undefined"
+        <a v-for="tab in typeOfAmenities" :key="tab.type"
+          :class="[selectedAmenityType==tab.type ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:border-gray-200 hover:text-gray-700', 'flex whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium cursor-pointer']"
+          :aria-current="selectedAmenityType==tab.type ? 'page' : undefined"
           @click.prevent="changeAmenityType(tab.type)">
           {{ tab?.name }}
         </a>
       </nav>
     </div>
+
   </ClientOnly>
 </template>
 
@@ -38,39 +39,33 @@ const mapZoom = ref(13);
 let map;
 let circle;
 
+const typeOfAmenities = [
+  { type: "school", name: "Școli" },
+  { type: "hospital", name: "Spitale" },
+  { type: "pharmacy", name: "Farmacii" },
+  { type: "supermarket", name: "Supermarketuri" },
+  { type: "park", name: "Parcuri" },
+  { type: "restaurant", name: "Restaurante" },
+  { type: "cafe", name: "Cafenele" },
+  { type: "bank", name: "Bănci" },
+  { type: "bus_station", name: "Stații de autobuz" },
+  { type: "library", name: "Biblioteci" },
+  { type: "gym", name: "Săli de sport" },
+  { type: "shopping_mall", name: "Centre comerciale" },
+  { type: "parking", name: "Parcări" }
+];
+
 const amenitiesMarkers = ref([]);
-const selectedAmenityType = ref("school");
+const selectedAmenityType = ref(typeOfAmenities[0].type);
 
 const { amenities, fetchAmenities, loading, error } = useOverpass();
 
-const typeOfAmenities = [
-  { type: "school", name: "School" },
-  { type: "hospital", name: "Hospital" },
-  { type: "pharmacy", name: "Pharmacy" },
-  { type: "supermarket", name: "Supermarket" },
-  { type: "park", name: "Park" },
-  { type: "restaurant", name: "Restaurant" },
-  { type: "cafe", name: "Cafe" },
-  { type: "bank", name: "Bank" },
-  { type: "atm", name: "ATM" },
-  { type: "bus_station", name: "Bus Station" },
-  { type: "train_station", name: "Train Station" },
-  { type: "subway", name: "Subway" },
-  { type: "police", name: "Police Station" },
-  { type: "fire_station", name: "Fire Station" },
-  { type: "library", name: "Library" },
-  { type: "gym", name: "Gym" },
-  { type: "playground", name: "Playground" },
-  { type: "cinema", name: "Cinema" },
-  { type: "shopping_mall", name: "Shopping Mall" },
-  { type: "parking", name: "Parking Lot" }
-];
-
 // Initialize map and layers
 onMounted(async () => {
-  await nextTick();
-  initializeMap();
-  loadAmenities();
+  setTimeout(() => {
+    initializeMap();
+    loadAmenities();
+  })
 });
 
 function initializeMap() {
@@ -92,7 +87,9 @@ function initializeMap() {
 
 // Load amenities and place markers
 async function loadAmenities() {
-  await fetchAmenities(selectedAmenityType.value, props.item.meta?.lat, props.item.meta?.lng, props.radius);
+  await fetchAmenities(
+    selectedAmenityType.value, props.item.meta?.lat, props.item.meta?.lng, props.radius
+  );
 
   // Clear existing markers
   amenitiesMarkers.value.forEach(marker => marker.remove());
