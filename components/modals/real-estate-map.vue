@@ -4,17 +4,36 @@
       <div id="map-item" style="height: 400px; width: 100%"></div>
     </div>
 
-    <div class="border-b border-gray-200">
-      <nav class="-mb-px flex space-x-8" aria-label="Tabs">
-        <a v-for="tab in typeOfAmenities" :key="tab.type"
-          :class="[selectedAmenityType==tab.type ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:border-gray-200 hover:text-gray-700', 'flex whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium cursor-pointer']"
-          :aria-current="selectedAmenityType==tab.type ? 'page' : undefined"
+    <nav class="flex justify-between items-center border-0 rounded-full px-2">
+      <!-- Left navigation button -->
+      <div class="w-3 z-[60] mr-2">
+        <svg @click="templateSlidePrev" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+          stroke-width="1.5" stroke="currentColor" class="text-gray-500 cursor-pointer size-6">
+          <path stroke-linecap="round" stroke-linejoin="round"
+            d="m11.25 9-3 3m0 0 3 3m-3-3h7.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+        </svg>
+      </div>
+
+      <!-- Slider with items -->
+      <slider :slidesPerView="'auto'" ref="templateRef" class="mx-6 swiper-slide-templates"
+        :slideClass="'swiper-slide-templates-slide'" :items="typeOfAmenities" v-slot="{ item: tab }">
+        <a :key="tab.type"
+          :class="[selectedAmenityType == tab.type ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:border-gray-200 hover:text-gray-700', 'flex whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium cursor-pointer']"
+          :aria-current="selectedAmenityType == tab.type ? 'page' : undefined"
           @click.prevent="changeAmenityType(tab.type)">
           {{ tab?.name }}
         </a>
-      </nav>
-    </div>
+      </slider>
 
+      <!-- Right navigation button -->
+      <div class="w-3 z-[60] mx-2">
+        <svg @click="templateSlideNext" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+          stroke-width="1.5" stroke="currentColor" class="text-gray-500 cursor-pointer size-6">
+          <path stroke-linecap="round" stroke-linejoin="round"
+            d="m12.75 15 3-3m0 0-3-3m3 3h-7.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+        </svg>
+      </div>
+    </nav>
   </ClientOnly>
 </template>
 
@@ -32,6 +51,15 @@ const props = defineProps({
     default: 500
   },
 });
+
+const templateRef = ref(null)
+
+const templateSlideNext = () => {
+  return templateRef.value.slideNext()
+}
+const templateSlidePrev = () => {
+  return templateRef.value.slidePrev()
+}
 
 const mapCenter = ref([props.item.meta?.lat || 47.21322, props.item.meta?.lng || -1.559482]);
 const mapZoom = ref(13);
@@ -138,5 +166,11 @@ watch(() => props.item.meta, (newMeta) => {
 <style>
 .map-container {
   height: 100%;
+}
+
+.swiper-slide-templates .swiper-slide-templates-slide {
+  width: auto !important;
+  display: inline-block;
+  /* Add any additional styling for the first slider */
 }
 </style>
