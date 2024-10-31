@@ -59,7 +59,6 @@ function initializeMap() {
     preloadVisibleMarkers();
   });
 
-
   // Load the world GeoJSON and set its opacity to 0.1
   fetch('/world.geo.json')
     .then(response => response.json())
