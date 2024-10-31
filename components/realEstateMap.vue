@@ -11,6 +11,7 @@
 <script setup>
 import L from 'leaflet';
 import 'leaflet.markercluster';
+
 import 'leaflet/dist/leaflet.css';
 import 'leaflet.markercluster/dist/MarkerCluster.Default.css';
 
@@ -33,12 +34,16 @@ const handleSelectCurrentItem = (item) => {
 
 // Function to initialize the map and set up event listeners for preloading images
 function initializeMap() {
-  const defaultCenter = [-37.82, 175.23];
-  const defaultZoom = 13;
-  map = L.map('map').setView(defaultCenter, defaultZoom);
+  const defaultCenter = [45.9432, 24.9668];
+  const defaultZoom = 7;
 
-  L.tileLayer('https://{s}.tile.osm.org/{z}/{x}/{y}.png', {
-    attribution: '&copy; OpenStreetMap contributors'
+  map = L.map('map', {
+    maxZoom: 18,  // Set an appropriate max zoom level
+    minZoom: 4    // You may also set minZoom to control how far out users can zoom
+  }).setView(defaultCenter, defaultZoom);
+
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    opacity: 1
   }).addTo(map);
 
   markersCluster = L.markerClusterGroup();
@@ -53,6 +58,43 @@ function initializeMap() {
   map.on('moveend', () => {
     preloadVisibleMarkers();
   });
+
+
+  // Load the world GeoJSON and set its opacity to 0.1
+  fetch('/world.geo.json')
+    .then(response => response.json())
+    .then(worldData => {
+      var worldLayer = L.geoJSON(worldData, {
+        style: {
+          color: '#ccc',       // Border color for the world
+          fillColor: '#ccc',    // Fill color for the world
+          opacity: 0.2,           // Border opacity for the world
+          fillOpacity: 0.5      // Set fill opacity to 0.1
+        }
+      }).addTo(map);
+
+      // Fit the map view to the country's borders
+      map.fitBounds(worldLayer.getBounds());
+    });
+
+  // Load GeoJSON data for the specific country
+  fetch('/ro.geo.json')  // Replace with the path to your GeoJSON file in the root directory
+    .then(response => response.json())
+    .then(data => {
+      // Add GeoJSON layer with border-only styling
+      var countryLayer = L.geoJSON(data, {
+        style: {
+          color: '#808080',     // Gray border color for Romania
+          fillColor: '#000',    // Fill color for Romania
+          opacity: 0,           // Border opacity for the country
+          fillOpacity: 0
+        }
+      }).addTo(map);
+
+      // Fit the map view to the country's borders
+      map.fitBounds(countryLayer.getBounds());
+    })
+
 }
 
 // Function to create a custom marker icon with price
