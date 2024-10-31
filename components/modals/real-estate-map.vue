@@ -40,6 +40,8 @@
 <script setup>
 import L from 'leaflet';
 import "leaflet/dist/leaflet.css";
+import { ref, onMounted, watch } from 'vue';
+import { useWikimapia } from '~/composables/useWikimapia'; // Import the new composable
 
 const props = defineProps({
   item: {
@@ -52,14 +54,14 @@ const props = defineProps({
   },
 });
 
-const templateRef = ref(null)
+const templateRef = ref(null);
 
 const templateSlideNext = () => {
-  return templateRef.value.slideNext()
-}
+  return templateRef.value.slideNext();
+};
 const templateSlidePrev = () => {
-  return templateRef.value.slidePrev()
-}
+  return templateRef.value.slidePrev();
+};
 
 const mapCenter = ref([props.item.meta?.lat || 47.21322, props.item.meta?.lng || -1.559482]);
 const mapZoom = ref(13);
@@ -68,28 +70,145 @@ let map;
 let circle;
 
 const typeOfAmenities = [
-  { type: "school", name: "Școli" },
-  { type: "hospital", name: "Spitale" },
-  { type: "pharmacy", name: "Farmacii" },
-  { type: "supermarket", name: "Supermarketuri" },
-  { type: "park", name: "Parcuri" },
-  { type: "restaurant", name: "Restaurante" },
-  { type: "cafe", name: "Cafenele" },
-  { type: "bank", name: "Bănci" },
-  { type: "bus_station", name: "Stații de autobuz" },
-  { type: "library", name: "Biblioteci" },
-  { type: "gym", name: "Săli de sport" },
-  { type: "shopping_mall", name: "Centre comerciale" },
-  { type: "parking", name: "Parcări" }
+  {
+    type: "school",
+    name: "Școli",
+    icon: L.icon({
+      iconUrl: '/icons/school-icon.svg',
+      iconSize: [32, 32],
+      iconAnchor: [16, 32],
+      popupAnchor: [0, -32]
+    })
+  },
+  {
+    type: "hospital",
+    name: "Spitale",
+    icon: L.icon({
+      iconUrl: '/icons/hospital-icon.svg',
+      iconSize: [32, 32],
+      iconAnchor: [16, 32],
+      popupAnchor: [0, -32]
+    })
+  },
+  {
+    type: "pharmacy",
+    name: "Farmacii",
+    icon: L.icon({
+      iconUrl: '/icons/pharmacy-icon.svg',
+      iconSize: [32, 32],
+      iconAnchor: [16, 32],
+      popupAnchor: [0, -32]
+    })
+  },
+  {
+    type: "supermarket",
+    name: "Supermarketuri",
+    icon: L.icon({
+      iconUrl: '/icons/supermarket-icon.svg',
+      iconSize: [32, 32],
+      iconAnchor: [16, 32],
+      popupAnchor: [0, -32]
+    })
+  },
+  {
+    type: "park",
+    name: "Parcuri",
+    icon: L.icon({
+      iconUrl: '/icons/park-icon.svg',
+      iconSize: [32, 32],
+      iconAnchor: [16, 32],
+      popupAnchor: [0, -32]
+    })
+  },
+  {
+    type: "restaurant",
+    name: "Restaurante",
+    icon: L.icon({
+      iconUrl: '/icons/restaurant-icon.svg',
+      iconSize: [32, 32],
+      iconAnchor: [16, 32],
+      popupAnchor: [0, -32]
+    })
+  },
+  {
+    type: "cafe",
+    name: "Cafenele",
+    icon: L.icon({
+      iconUrl: '/icons/cafe-icon.svg',
+      iconSize: [32, 32],
+      iconAnchor: [16, 32],
+      popupAnchor: [0, -32]
+    })
+  },
+  {
+    type: "bank",
+    name: "Bănci",
+    icon: L.icon({
+      iconUrl: '/icons/bank-icon.svg',
+      iconSize: [32, 32],
+      iconAnchor: [16, 32],
+      popupAnchor: [0, -32]
+    })
+  },
+  {
+    type: "bus_station",
+    name: "Stații de autobuz",
+    icon: L.icon({
+      iconUrl: '/icons/bus-station-icon.svg',
+      iconSize: [32, 32],
+      iconAnchor: [16, 32],
+      popupAnchor: [0, -32]
+    })
+  },
+  {
+    type: "library",
+    name: "Biblioteci",
+    icon: L.icon({
+      iconUrl: '/icons/library-icon.svg',
+      iconSize: [32, 32],
+      iconAnchor: [16, 32],
+      popupAnchor: [0, -32]
+    })
+  },
+  {
+    type: "gym",
+    name: "Săli de sport",
+    icon: L.icon({
+      iconUrl: '/icons/gym-icon.svg',
+      iconSize: [32, 32],
+      iconAnchor: [16, 32],
+      popupAnchor: [0, -32]
+    })
+  },
+  {
+    type: "shopping_mall",
+    name: "Centre comerciale",
+    icon: L.icon({
+      iconUrl: '/icons/shopping-mall-icon.svg',
+      iconSize: [32, 32],
+      iconAnchor: [16, 32],
+      popupAnchor: [0, -32]
+    })
+  },
+  {
+    type: "parking",
+    name: "Parcări",
+    icon: L.icon({
+      iconUrl: '/icons/parking-icon.svg',
+      iconSize: [32, 32],
+      iconAnchor: [16, 32],
+      popupAnchor: [0, -32]
+    })
+  }
 ];
 
 const amenitiesMarkers = ref([]);
 const selectedAmenityType = ref(typeOfAmenities[0].type);
 
-const { amenities, fetchAmenities, loading, error } = useOverpass();
+const { places, fetchNearestPlaces, loading, error } = useWikimapia();
 
 // Initialize map and layers
-onMounted(async () => {
+onMounted(() => {
   setTimeout(() => {
     initializeMap();
     loadAmenities();
@@ -113,24 +232,35 @@ function initializeMap() {
   }
 }
 
-// Load amenities and place markers
 async function loadAmenities() {
-  await fetchAmenities(
-    selectedAmenityType.value, props.item.meta?.lat, props.item.meta?.lng, props.radius
-  );
+  const { lat, lng } = props.item.meta;
+  await fetchNearestPlaces(lat, lng, selectedAmenityType.value);
 
   // Clear existing markers
   amenitiesMarkers.value.forEach(marker => marker.remove());
   amenitiesMarkers.value = [];
 
-  // Add new markers
-  amenities.value.forEach(element => {
-    const marker = L.marker([element.lat, element.lon])
+  // Define a default icon as a fallback
+  const defaultIcon = L.icon({
+    iconUrl: '../../icons/default-icon.svg', // Path to your default SVG icon
+    iconSize: [32, 32],
+    iconAnchor: [16, 32],
+    popupAnchor: [0, -32]
+  });
+
+  // Add new markers for each place with the correct icon
+  places.value.forEach(({ title, distance, location, type }) => {
+    // Find the matching amenity type to get the icon
+    const amenity = typeOfAmenities.find(amenity => amenity.type === type);
+    const icon = amenity ? amenity.icon : defaultIcon; // Use defaultIcon if no match is found
+
+    const marker = L.marker([location.lat, location.lon], { icon })
       .addTo(map)
-      .bindPopup(`<strong>${selectedAmenityType.value}</strong><br>${element.tags?.name || "Unnamed"}`);
+      .bindPopup(`<strong>${title}</strong><br>Distance: ${distance} meters`);
     amenitiesMarkers.value.push(marker);
   });
 }
+
 
 function changeAmenityType(type) {
   selectedAmenityType.value = type;
@@ -171,6 +301,5 @@ watch(() => props.item.meta, (newMeta) => {
 .swiper-slide-templates .swiper-slide-templates-slide {
   width: auto !important;
   display: inline-block;
-  /* Add any additional styling for the first slider */
 }
 </style>
