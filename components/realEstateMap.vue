@@ -34,8 +34,8 @@ const handleSelectCurrentItem = (item) => {
 
 // Function to initialize the map and set up event listeners for preloading images
 function initializeMap() {
-  const defaultCenter = [45.9432, 24.9668];
-  const defaultZoom = 7;
+  const defaultCenter = [45.90529985724799, 24.895019531250004];
+  const defaultZoom = 8;
 
   map = L.map('map', {
     maxZoom: 18,  // Set an appropriate max zoom level
@@ -94,7 +94,6 @@ function initializeMap() {
       // Fit the map view to the country's borders
       map.fitBounds(countryLayer.getBounds());
     })
-
 }
 
 // Function to create a custom marker icon with price
