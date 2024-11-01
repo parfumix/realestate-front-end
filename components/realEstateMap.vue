@@ -2,98 +2,224 @@
   <ClientOnly>
     <div id="map" style="width: 100%; height: 100%;" />
 
-    <Teleport v-if="selectedItem" :to="`.popup-content-${selectedItem.id}`">
+    <Teleport v-if="selectedItem" :to="`.popup-content-${selectedItem.internal_id}`">
       <RealEstateListItem :item="selectedItem" :hideBookmark="true" />
     </Teleport>
   </ClientOnly>
 </template>
 
 <script setup>
+// watch chat for quuery
+// search real estate properties when query present by quuery
+// save default state on local storage is_map, is_list
+
 import L from 'leaflet';
-import 'leaflet.markercluster';
+import "overlapping-marker-spiderfier-leaflet/dist/oms";
+const OverlappingMarkerSpiderfier = window.OverlappingMarkerSpiderfier;
 
-import 'leaflet/dist/leaflet.css';
-import 'leaflet.markercluster/dist/MarkerCluster.Default.css';
-
+import { useCustomFetch } from '~/composables/useCustomFetch';
 const { $currencyFormat } = useNuxtApp();
 
-const props = defineProps({
-  items: {
-    type: Array,
-    default: () => []
-  }
-});
-
 let map;
+let spiderfier;
 let markersCluster;
+
 let selectedItem = ref(null);
 
 const handleSelectCurrentItem = (item) => {
   selectedItem.value = item;
-};
+}
 
-// Function to initialize the map and set up event listeners for preloading images
+// Function to initialize the map
 function initializeMap() {
-  const defaultCenter = [45.90529985724799, 24.895019531250004];
-  const defaultZoom = 8;
+  const defaultLatLngBucharest = [45.90529985724799, 24.895019531250004]
+  const defaultCenter = defaultLatLngBucharest;
+  const defaultZoom = 7;
 
   map = L.map('map', {
-    maxZoom: 18,  // Set an appropriate max zoom level
-    minZoom: 4    // You may also set minZoom to control how far out users can zoom
+    maxZoom: 18,
+    minZoom: 6,
   }).setView(defaultCenter, defaultZoom);
 
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     opacity: 1
   }).addTo(map);
 
-  markersCluster = L.markerClusterGroup();
+  markersCluster = L.layerGroup();
   map.addLayer(markersCluster);
 
-  // Listen for cluster open event to preload images
-  markersCluster.on('clusterclick', (event) => {
-    preloadClusterImages(event.layer.getAllChildMarkers());
+  // Initialize OverlappingMarkerSpiderfier
+  spiderfier = new OverlappingMarkerSpiderfier(map, {
+    keepSpiderfied: true,
+    nearbyDistance: 20, // Adjust as needed
   });
 
-  // Listen to map move end event to preload images for visible markers
+  // Set up spiderfy events
+  spiderfier.addListener('click', (marker) => {
+    marker.openPopup();
+  });
+
+  spiderfier.addListener('spiderfy', (markers) => {
+    markers.forEach(marker => marker.setIcon(new L.Icon.Default({ iconUrl: L.Icon.Default.imagePath + '/marker-icon.png' })));
+    map.closePopup();
+  });
+
+  spiderfier.addListener('unspiderfy', (markers) => {
+    markers.forEach(marker => marker.setIcon(new L.Icon.Default({ iconUrl: L.Icon.Default.imagePath + '/marker-icon.png' })));
+  });
+
+  // Load and add the world GeoJSON to the map with a light fill
+fetch('/world.geo.json')
+  .then(response => response.json())
+  .then(worldData => {
+    L.geoJSON(worldData, {
+      style: {
+        color: '#ccc',        // Border color for the world
+        fillColor: '#ccc',    // Fill color for the world
+        weight: 1,            // Border width
+        opacity: 0.2,         // Border opacity for the world
+        fillOpacity: 0.3     // Fill opacity to make it lighter
+      }
+    }).addTo(map);            // Add the layer to the map
+  })
+  .catch(error => console.error('Error loading world GeoJSON:', error));
+
+// Load and add Romania’s GeoJSON with only the border displayed
+fetch('/ro.geo.json')
+  .then(response => response.json())
+  .then(countryData => {
+    L.geoJSON(countryData, {
+      style: {
+        color: '#808080',     // Border color for Romania
+        weight: 2,            // Slightly thicker border
+        opacity: 1,           // Full opacity for the border
+        fillOpacity: 0        // No fill color (transparent)
+      }
+    }).addTo(map);            // Add the layer to the map
+  })
+  .catch(error => console.error('Error loading Romania GeoJSON:', error));
+
+
+  // Fetch clusters initially and whenever the map view changes
   map.on('moveend', () => {
-    preloadVisibleMarkers();
+    fetchClusters()
   });
+}
 
-  // Load the world GeoJSON and set its opacity to 0.1
-  fetch('/world.geo.json')
-    .then(response => response.json())
-    .then(worldData => {
-      var worldLayer = L.geoJSON(worldData, {
-        style: {
-          color: '#ccc',       // Border color for the world
-          fillColor: '#ccc',    // Fill color for the world
-          opacity: 0.2,           // Border opacity for the world
-          fillOpacity: 0.5      // Set fill opacity to 0.1
-        }
-      }).addTo(map);
+// Function to fetch clusters based on map bounds and zoom level
+async function fetchClusters() {
+  const bounds = map.getBounds();
+  const zoom = map.getZoom();
 
-      // Fit the map view to the country's borders
-      map.fitBounds(worldLayer.getBounds());
+  const bbox = [
+    bounds.getWest(),
+    bounds.getSouth(),
+    bounds.getEast(),
+    bounds.getNorth()
+  ];
+
+  try {
+    const { data, error } = await useCustomFetch('properties-clustered', {
+      method: 'POST',
+      body: {
+        zoom: zoom,
+        bbox: bbox
+      }
     });
 
-  // Load GeoJSON data for the specific country
-  fetch('/ro.geo.json')  // Replace with the path to your GeoJSON file in the root directory
-    .then(response => response.json())
-    .then(data => {
-      // Add GeoJSON layer with border-only styling
-      var countryLayer = L.geoJSON(data, {
-        style: {
-          color: '#808080',     // Gray border color for Romania
-          fillColor: '#000',    // Fill color for Romania
-          opacity: 0,           // Border opacity for the country
-          fillOpacity: 0
-        }
-      }).addTo(map);
+    if (error.value) {
+      console.error("Error fetching clusters:", error.value);
+      return;
+    }
 
-      // Fit the map view to the country's borders
-      map.fitBounds(countryLayer.getBounds());
-    })
+    updateMarkers(data.value);
+  } catch (error) {
+    console.error("Error during fetchClusters:", error);
+  }
 }
+
+// Function to update markers based on fetched cluster data
+function updateMarkers(clusterData) {
+  markersCluster.clearLayers();
+  spiderfier.clearMarkers();
+
+  const bounds = L.latLngBounds();
+  const coordinateMap = new Map();
+
+  // Helper function to preload an image
+  function preloadImage(url) {
+    const img = new Image();
+    img.src = url;
+  }
+
+  clusterData.forEach((feature) => {
+    const [lng, lat] = feature.geometry.coordinates;
+
+    if (!lat || !lng) {
+      console.warn("Invalid coordinates for marker:", feature);
+      return; // Skip this marker if it has invalid coordinates
+    }
+
+    if (feature.properties.cluster) {
+      const marker = L.marker([lat, lng], {
+        icon: L.divIcon({
+          className: 'bg-white rounded-full text-center px-2 py-1 font-bold text-sm text-gray-800 shadow-md',
+          html: `<div>${feature.properties.point_count}</div>`,
+          iconSize: [30, 30],
+        })
+      });
+
+      marker.on('click', () => {
+        map.setView([lat, lng], map.getZoom() + 2);
+      });
+
+      markersCluster.addLayer(marker);
+      bounds.extend([lat, lng]);
+    } else {
+      const { price, internal_id: id, meta } = feature.properties;
+      const coordinateKey = `${lat},${lng}`;
+
+      if (!coordinateMap.has(coordinateKey)) {
+        coordinateMap.set(coordinateKey, []);
+      }
+      
+      // Preload marker image if `image_url` exists
+      preloadImage(meta?.images?.[0]);
+
+      const marker = L.marker([lat, lng], {
+        icon: createPriceIcon(price),
+      });
+
+      const popupContainerId = `popup-content-${id}`;
+      marker.bindPopup('<div></div>', {
+        closeButton: false,
+        keepInView: true,
+        className: `min-w-[200px] max-h-[100px] ${popupContainerId}`
+      });
+
+      marker.on('popupopen', () => handleSelectCurrentItem(feature.properties));
+      marker.on('popupclose', () => handleSelectCurrentItem(null));
+
+      coordinateMap.get(coordinateKey).push(marker);
+      markersCluster.addLayer(marker);
+      spiderfier.addMarker(marker);
+
+      bounds.extend([lat, lng]);
+    }
+  });
+
+  // Automatically trigger spiderfy by simulating a click on markers at the same location
+  coordinateMap.forEach((markers) => {
+    if (markers.length > 1) {
+      markers[0].fire('click'); // Programmatically trigger a click event
+    }
+  });
+
+  // if (bounds.isValid()) {
+  //   map.fitBounds(bounds, { padding: [50, 50] });
+  // }
+}
+
 
 // Function to create a custom marker icon with price
 function createPriceIcon(price) {
@@ -110,90 +236,12 @@ function createPriceIcon(price) {
   });
 }
 
-// Function to update markers based on props.items
-function updateMarkers() {
-  markersCluster.clearLayers();
-
-  const newMarkers = [];
-  props.items.forEach((item) => {
-    let { meta: { lat, lng } = {}, price } = item;
-
-    if (lat && lng) {
-      const marker = L.marker([lat, lng], {
-        icon: createPriceIcon(price),
-        item // Add item data to marker options for easy access
-      });
-
-      const popupContainerId = `popup-content-${item.id}`;
-      marker.bindPopup('<div></div>', {
-        closeButton: false,
-        keepInView: true,
-        className: `min-w-[200px] max-h-[100px] ${popupContainerId}`
-      });
-
-      newMarkers.push(marker);
-
-      marker.on('popupopen', () => {
-        handleSelectCurrentItem(item);
-      });
-
-      marker.on('popupclose', () => {
-        handleSelectCurrentItem(null);
-      });
-    }
-  });
-
-  markersCluster.addLayers(newMarkers);
-
-  if (newMarkers.length > 0) {
-    map.fitBounds(markersCluster.getBounds(), { padding: [50, 50] });
-  } else {
-    map.setView([-37.82, 175.23], 13);
-  }
-}
-
-// Function to preload images for markers in a cluster
-function preloadClusterImages(markers) {
-  markers.forEach((marker) => {
-    const item = marker.options.item;
-    if (item && item.meta.images && item.meta.images[0]) {
-      preloadImage(item.meta.images[0]);
-    }
-  });
-}
-
-// Function to preload images for markers currently visible in map bounds
-function preloadVisibleMarkers() {
-  const bounds = map.getBounds();
-  markersCluster.eachLayer((marker) => {
-    if (bounds.contains(marker.getLatLng())) {
-      const item = marker.options.item;
-      if (item && item.meta.images && item.meta.images[0]) {
-        preloadImage(item.meta.images[0]);
-      }
-    }
-  });
-}
-
-// Helper function to preload an image
-function preloadImage(src) {
-  const img = new Image();
-  img.src = src;
-}
-
+// Initialize map on component mount
 onMounted(async () => {
   await nextTick();
   initializeMap();
-  updateMarkers();
-});
-
-watch(
-  () => props.items,
-  () => {
-    updateMarkers();
-  },
-  { deep: true }
-);
+  fetchClusters();
+})
 </script>
 
 <style>

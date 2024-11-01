@@ -29,7 +29,7 @@
         </div>
 
         <div class="w-full">
-          <RealEstateMap v-if="!isListView" :items="items" />
+          <RealEstateMap v-if="!isListView" />
           <RealEstateList v-else :items="items" />
         </div>
       </div>
