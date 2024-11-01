@@ -69,35 +69,35 @@ function initializeMap() {
   });
 
   // Load and add the world GeoJSON to the map with a light fill
-fetch('/world.geo.json')
-  .then(response => response.json())
-  .then(worldData => {
-    L.geoJSON(worldData, {
-      style: {
-        color: '#ccc',        // Border color for the world
-        fillColor: '#ccc',    // Fill color for the world
-        weight: 1,            // Border width
-        opacity: 0.2,         // Border opacity for the world
-        fillOpacity: 0.3     // Fill opacity to make it lighter
-      }
-    }).addTo(map);            // Add the layer to the map
-  })
-  .catch(error => console.error('Error loading world GeoJSON:', error));
+  fetch('/world.geo.json')
+    .then(response => response.json())
+    .then(worldData => {
+      L.geoJSON(worldData, {
+        style: {
+          color: '#ccc',        // Border color for the world
+          fillColor: '#ccc',    // Fill color for the world
+          weight: 1,            // Border width
+          opacity: 0.2,         // Border opacity for the world
+          fillOpacity: 0.3     // Fill opacity to make it lighter
+        }
+      }).addTo(map);            // Add the layer to the map
+    })
+    .catch(error => console.error('Error loading world GeoJSON:', error));
 
-// Load and add Romania’s GeoJSON with only the border displayed
-fetch('/ro.geo.json')
-  .then(response => response.json())
-  .then(countryData => {
-    L.geoJSON(countryData, {
-      style: {
-        color: '#808080',     // Border color for Romania
-        weight: 2,            // Slightly thicker border
-        opacity: 1,           // Full opacity for the border
-        fillOpacity: 0        // No fill color (transparent)
-      }
-    }).addTo(map);            // Add the layer to the map
-  })
-  .catch(error => console.error('Error loading Romania GeoJSON:', error));
+  // Load and add Romania’s GeoJSON with only the border displayed
+  fetch('/ro.geo.json')
+    .then(response => response.json())
+    .then(countryData => {
+      L.geoJSON(countryData, {
+        style: {
+          color: '#808080',     // Border color for Romania
+          weight: 2,            // Slightly thicker border
+          opacity: 1,           // Full opacity for the border
+          fillOpacity: 0        // No fill color (transparent)
+        }
+      }).addTo(map);            // Add the layer to the map
+    })
+    .catch(error => console.error('Error loading Romania GeoJSON:', error));
 
 
   // Fetch clusters initially and whenever the map view changes
@@ -161,12 +161,10 @@ function updateMarkers(clusterData) {
     }
 
     if (feature.properties.cluster) {
+      const pointCount = feature.properties.point_count; // Number of markers in the cluster
+
       const marker = L.marker([lat, lng], {
-        icon: L.divIcon({
-          className: 'bg-white rounded-full text-center px-2 py-1 font-bold text-sm text-gray-800 shadow-md',
-          html: `<div>${feature.properties.point_count}</div>`,
-          iconSize: [30, 30],
-        })
+        icon: createClusterIcon(pointCount) // Create dynamic icon based on count
       });
 
       marker.on('click', () => {
@@ -182,7 +180,7 @@ function updateMarkers(clusterData) {
       if (!coordinateMap.has(coordinateKey)) {
         coordinateMap.set(coordinateKey, []);
       }
-      
+
       // Preload marker image if `image_url` exists
       preloadImage(meta?.images?.[0]);
 
@@ -219,7 +217,25 @@ function updateMarkers(clusterData) {
   //   map.fitBounds(bounds, { padding: [50, 50] });
   // }
 }
+// Helper function to create a dynamic icon based on the cluster count
+function createClusterIcon(count) {
+  const baseSize = 20;                // Base icon size for small clusters
+  const maxSize = 40;                 // Maximum icon size for large clusters
+  const scalingFactor = 5;            // Controls how quickly the icon grows
 
+  // Calculate icon size using a capped scaling based on the square root of the count
+  const iconSize = Math.min(baseSize + Math.sqrt(count) * scalingFactor, maxSize);
+
+  return L.divIcon({
+    className: '',  // No additional class is needed here since TailwindCSS will handle styling through inline HTML
+    html: `<div class="flex items-center justify-center rounded-full bg-white text-gray-800 font-bold shadow-md" 
+                style="width: ${iconSize}px; height: ${iconSize}px;">
+               ${count}
+             </div>`,
+    iconSize: [iconSize, iconSize],
+    iconAnchor: [iconSize / 2, iconSize / 2]
+  });
+}
 
 // Function to create a custom marker icon with price
 function createPriceIcon(price) {
