@@ -78,6 +78,10 @@ function initializeMap() {
 
   // Set up spiderfy events
   spiderfier.addListener('click', (marker) => {
+    // if (!map.getBounds().contains(marker.getLatLng())) {
+    //   map.flyTo(marker.getLatLng(), map.getZoom() + 2);
+    // }
+
     marker.openPopup();
   });
 
