@@ -23,11 +23,23 @@ const { $currencyFormat } = useNuxtApp();
 let map;
 let spiderfier;
 let markersCluster;
+const clustersCache = {};
 
 let selectedItem = ref(null);
 
 const handleSelectCurrentItem = (item) => {
   selectedItem.value = item;
+}
+
+function throttle(func, delay) {
+  let lastCall = 0;
+  return function (...args) {
+    const now = Date.now();
+    if (now - lastCall >= delay) {
+      lastCall = now;
+      func.apply(this, args);
+    }
+  };
 }
 
 // Function to initialize the map
@@ -51,7 +63,17 @@ function initializeMap() {
   // Initialize OverlappingMarkerSpiderfier
   spiderfier = new OverlappingMarkerSpiderfier(map, {
     keepSpiderfied: true,
-    nearbyDistance: 20, // Adjust as needed
+    nearbyDistance: 30,            // Distance threshold for spiderfying
+    circleFootSeparation: 40,      // Separation for circular layout
+    spiralFootSeparation: 50,      // Separation for spiral layout
+    circleStartAngle: Math.PI / 6, // Starting angle for circular layout
+    spiralLengthStart: 20,         // Starting length of the spiral
+    spiralLengthFactor: 10,         // Tightness of the spiral
+    legWeight: 1.5,                // Thickness of the spiderfy lines (legs)
+    legColors: {
+      usual: '#3e92c9',            // Default line color, e.g., orange-red
+      highlighted: '#67bdf5'       // Highlighted line color, e.g., yellow
+    }
   });
 
   // Set up spiderfy events
@@ -59,14 +81,23 @@ function initializeMap() {
     marker.openPopup();
   });
 
+  // Listener for when markers are spiderfied (expanded around a central point)
   spiderfier.addListener('spiderfy', (markers) => {
-    markers.forEach(marker => marker.setIcon(new L.Icon.Default({ iconUrl: L.Icon.Default.imagePath + '/marker-icon.png' })));
+    markers.forEach(marker => {
+      marker.setIcon(createPriceIcon(marker.options.feature.price));
+    });
+
     map.closePopup();
   });
 
+  // Listener for when markers are unspiderfied (return to original positions)
   spiderfier.addListener('unspiderfy', (markers) => {
-    markers.forEach(marker => marker.setIcon(new L.Icon.Default({ iconUrl: L.Icon.Default.imagePath + '/marker-icon.png' })));
+    markers.forEach(marker => {
+      console.log(marker)
+      marker.setIcon(createClusterIcon(1));
+    });
   });
+
 
   // Load and add the world GeoJSON to the map with a light fill
   fetch('/world.geo.json')
@@ -99,11 +130,9 @@ function initializeMap() {
     })
     .catch(error => console.error('Error loading Romania GeoJSON:', error));
 
-
   // Fetch clusters initially and whenever the map view changes
-  map.on('moveend', () => {
-    fetchClusters()
-  });
+  const fetchClustersThrottled = throttle(fetchClusters, 700); // Run once every 300ms
+  map.on('moveend', fetchClustersThrottled);
 }
 
 // Function to fetch clusters based on map bounds and zoom level
@@ -118,6 +147,14 @@ async function fetchClusters() {
     bounds.getNorth()
   ];
 
+  const cacheKey = JSON.stringify({ bbox, zoom });
+
+  // Check if data for this bbox and zoom is already in the cache
+  if (clustersCache[cacheKey]) {
+    updateMarkers(clustersCache[cacheKey]); // Use cached data
+    return;
+  }
+
   try {
     const { data, error } = await useCustomFetch('properties-clustered', {
       method: 'POST',
@@ -131,6 +168,9 @@ async function fetchClusters() {
       console.error("Error fetching clusters:", error.value);
       return;
     }
+
+    // Cache the fetched data
+    clustersCache[cacheKey] = data.value;
 
     updateMarkers(data.value);
   } catch (error) {
@@ -164,7 +204,8 @@ function updateMarkers(clusterData) {
       const pointCount = feature.properties.point_count; // Number of markers in the cluster
 
       const marker = L.marker([lat, lng], {
-        icon: createClusterIcon(pointCount) // Create dynamic icon based on count
+        icon: createClusterIcon(pointCount), // Create dynamic icon based on count
+        feature: feature.properties // Set custom options here
       });
 
       marker.on('click', () => {
@@ -186,6 +227,7 @@ function updateMarkers(clusterData) {
 
       const marker = L.marker([lat, lng], {
         icon: createPriceIcon(price),
+        feature: feature.properties // Set custom options here
       });
 
       const popupContainerId = `popup-content-${id}`;
