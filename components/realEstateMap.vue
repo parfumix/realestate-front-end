@@ -44,6 +44,12 @@ function throttle(func, delay) {
 
 // Function to initialize the map
 function initializeMap() {
+  // Define the southwest and northeast corners of Romania
+  const romaniaBounds = [
+    [43.6, 20.2],   // Southwest corner (latitude, longitude)
+    [48.3, 29.7]    // Northeast corner (latitude, longitude)
+  ];
+
   const defaultLatLngBucharest = [45.90529985724799, 24.895019531250004]
   const defaultCenter = defaultLatLngBucharest;
   const defaultZoom = 7;
@@ -52,6 +58,12 @@ function initializeMap() {
     maxZoom: 18,
     minZoom: 6,
   }).setView(defaultCenter, defaultZoom);
+
+  // Set max bounds to keep the map restricted within Romania
+  map.setMaxBounds(romaniaBounds);
+
+  // Optionally, you can set options to disable dragging outside bounds
+  map.options.maxBoundsViscosity = 0.5;
 
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     opacity: 1
@@ -245,6 +257,7 @@ function updateMarkers(clusterData) {
       marker.on('popupclose', () => handleSelectCurrentItem(null));
 
       coordinateMap.get(coordinateKey).push(marker);
+
       markersCluster.addLayer(marker);
       spiderfier.addMarker(marker);
 
