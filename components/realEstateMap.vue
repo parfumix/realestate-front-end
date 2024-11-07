@@ -175,7 +175,7 @@ async function fetchClusters() {
 
   try {
     filterStore.setMapFilters(zoom, bbox)
-    emit('moveend', activeMessage.value, { filters: activeFilters.value, zoom: mapZoom.value, bbox: mapBbox.value })
+    emit('moveend', activeMessage.value, activeFilters.value, { zoom: mapZoom.value, bbox: mapBbox.value })
 
     // Cache the fetched data
 //    clustersCache[cacheKey] = data.value;
