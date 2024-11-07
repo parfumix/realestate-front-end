@@ -9,41 +9,40 @@
 </template>
 
 <script setup>
-// watch chat for quuery
-// search real estate properties when query present by quuery
-// save default state on local storage is_map, is_list
-
 import L from 'leaflet';
 import "overlapping-marker-spiderfier-leaflet/dist/oms";
 const OverlappingMarkerSpiderfier = window.OverlappingMarkerSpiderfier;
 
-import { useCustomFetch } from '~/composables/useCustomFetch';
+const filterStore = useFilterStore()
+const { activeFilters, activeMessage } = storeToRefs(filterStore)
+
+import { useThrottle } from '~/composables/useThrottle';
+
+const chatStore = useChatStore()
+const { 
+  mapItems
+ } = storeToRefs(chatStore)
+
 const { $currencyFormat } = useNuxtApp();
+
+const emit = defineEmits(['moveend'])
 
 let map;
 let spiderfier;
 let markersCluster;
+
+let isFetching = false
 const clustersCache = {};
 
 let selectedItem = ref(null);
+const fetchClustersThrottled = useThrottle(fetchClusters, 700);
 
 const handleSelectCurrentItem = (item) => {
   selectedItem.value = item;
 }
 
-function throttle(func, delay) {
-  let lastCall = 0;
-  return function (...args) {
-    const now = Date.now();
-    if (now - lastCall >= delay) {
-      lastCall = now;
-      func.apply(this, args);
-    }
-  };
-}
-
 // Function to initialize the map
-function initializeMap() {
+const initializeMap = async() => {
   // Define the southwest and northeast corners of Romania
   const romaniaBounds = [
     [43.6, 20.2],   // Southwest corner (latitude, longitude)
@@ -109,14 +108,13 @@ function initializeMap() {
   // Listener for when markers are unspiderfied (return to original positions)
   spiderfier.addListener('unspiderfy', (markers) => {
     markers.forEach(marker => {
-      console.log(marker)
       marker.setIcon(createClusterIcon(1));
     });
   });
 
 
   // Load and add the world GeoJSON to the map with a light fill
-  fetch('/world.geo.json')
+  await fetch('/world.geo.json')
     .then(response => response.json())
     .then(worldData => {
       L.geoJSON(worldData, {
@@ -132,7 +130,7 @@ function initializeMap() {
     .catch(error => console.error('Error loading world GeoJSON:', error));
 
   // Load and add Romania’s GeoJSON with only the border displayed
-  fetch('/ro.geo.json')
+  await fetch('/ro.geo.json')
     .then(response => response.json())
     .then(countryData => {
       L.geoJSON(countryData, {
@@ -147,12 +145,15 @@ function initializeMap() {
     .catch(error => console.error('Error loading Romania GeoJSON:', error));
 
   // Fetch clusters initially and whenever the map view changes
-  const fetchClustersThrottled = throttle(fetchClusters, 700); // Run once every 300ms
   map.on('moveend', fetchClustersThrottled);
 }
 
 // Function to fetch clusters based on map bounds and zoom level
 async function fetchClusters() {
+  if(isFetching) return
+
+  isFetching = true
+
   const bounds = map.getBounds();
   const zoom = map.getZoom();
 
@@ -168,29 +169,20 @@ async function fetchClusters() {
   // Check if data for this bbox and zoom is already in the cache
   if (clustersCache[cacheKey]) {
     updateMarkers(clustersCache[cacheKey]); // Use cached data
+    isFetching = false;
     return;
   }
 
   try {
-    const { data, error } = await useCustomFetch('properties-clustered', {
-      method: 'POST',
-      body: {
-        zoom: zoom,
-        bbox: bbox
-      }
-    });
-
-    if (error.value) {
-      console.error("Error fetching clusters:", error.value);
-      return;
-    }
+    emit('moveend', activeMessage.value, { filters: activeFilters.value, zoom, bbox })
 
     // Cache the fetched data
-    clustersCache[cacheKey] = data.value;
+//    clustersCache[cacheKey] = data.value;
 
-    updateMarkers(data.value);
   } catch (error) {
     console.error("Error during fetchClusters:", error);
+  } finally {
+    isFetching = false
   }
 }
 
@@ -276,6 +268,7 @@ function updateMarkers(clusterData) {
   //   map.fitBounds(bounds, { padding: [50, 50] });
   // }
 }
+
 // Helper function to create a dynamic icon based on the cluster count
 function createClusterIcon(count) {
   const baseSize = 20;                // Base icon size for small clusters
@@ -315,8 +308,14 @@ function createPriceIcon(price) {
 onMounted(async () => {
   await nextTick();
   initializeMap();
-  fetchClusters();
+  //fetchClusters();
 })
+
+watch(() => mapItems.value, (newVal) => {
+  setTimeout(() => {
+    updateMarkers(newVal);
+  })
+}, { deep: true })
 </script>
 
 <style>

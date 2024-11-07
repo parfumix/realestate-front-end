@@ -1,8 +1,9 @@
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
-import { query, loadMore, requestDetails } from '../api/chat';
+import { query, requestDetails } from '../api/chat';
 
 export const useChatStore = defineStore('chatStore', () => {
+
     // Unified prompts by thread name
     const prompts = ref({
         default: [
@@ -37,8 +38,13 @@ export const useChatStore = defineStore('chatStore', () => {
         ],
     });
 
+    const TYPE_MAP_ITEMS = 'map'
+    const TYPE_LIST_ITEMS = 'list'
+
     // Items management
     const items = ref([]);
+    const mapItems = ref([]);
+
     const selectedItem = ref(null);
 
     const handlePushMessage = async(threadId, { text, sender }) => {
@@ -89,25 +95,42 @@ export const useChatStore = defineStore('chatStore', () => {
 
     const handleResetItems = () => {
         items.value = [];
+        mapItems.value = [];
     };
 
-    const handlePushItem = (item) => {
-        items.value.push(item);
+    const handlePushItem = (item, type = TYPE_LIST_ITEMS) => {
+        if(type == TYPE_LIST_ITEMS) items.value.push(item);
+        if(type == TYPE_MAP_ITEMS) mapItems.value.push(item);
     };
 
-    const handlePushItems = (newItems) => {
-        items.value = [...items.value, ...newItems];
+    const handlePushItems = ({ items: newItems, mapItems: newMapItems }) => {
+        if(newItems) items.value = [...items.value, ...newItems];
+        if(newMapItems) mapItems.value = [...mapItems.value, ...newMapItems];
     };
 
     // Loading state
     const isQueryLoading = ref(false);
     const isQueryLoadingProperty = ref(false);
 
+    function removeEmptyValues(obj) {
+        Object.keys(obj).forEach((key) => {
+          const value = obj[key];
+          if (Array.isArray(value) && value.length === 0) {
+            delete obj[key];
+          }
+        });
+        return obj;
+    }
+
     // API interactions
-    const handleQuery = async (q = null, filters = {}) => {
+    const handleQuery = async (q = null, filters = {}, offset = 0) => {
         try {
             isQueryLoading.value = true;
-            const { data, error } = await query(q, filters);
+
+            const filteredFilters = removeEmptyValues(filters)
+            const haveAnyFilters = Object.keys(filteredFilters).length
+
+            const { data, error } = await query(q, haveAnyFilters ? filteredFilters : null, offset);
             if (error.value) throw new Error(error.value);
             return data.value;
         } catch (err) {
@@ -115,17 +138,6 @@ export const useChatStore = defineStore('chatStore', () => {
             throw err;
         } finally {
             isQueryLoading.value = false;
-        }
-    };
-
-    const handleLoadMore = async () => {
-        try {
-            const { data, error } = await loadMore();
-            if (error.value) throw new Error(error.value);
-            return data.value;
-        } catch (err) {
-            console.error('Error in handleLoadMore:', err);
-            throw err;
         }
     };
 
@@ -156,8 +168,12 @@ export const useChatStore = defineStore('chatStore', () => {
         handleClearMessages,
         handleGetMessagesByThread,
 
+        TYPE_MAP_ITEMS,
+        TYPE_LIST_ITEMS,
+        
         // Items
         items,
+        mapItems,
         selectedItem,
         handleUpdateItem,
         handleSelectItem,
@@ -172,7 +188,6 @@ export const useChatStore = defineStore('chatStore', () => {
 
         // API interactions
         handleQuery,
-        handleLoadMore,
         handleRequestDetails,
     };
 })

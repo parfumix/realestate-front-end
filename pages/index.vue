@@ -1,7 +1,7 @@
 <template>
   <div class="bg-gray-100 flex flex-col items-center " style="height: calc(100vh - 40px);">
 
-    <Filters class="w-full z-[60]" />
+    <Filters class="w-full z-[60]" @applyFilters="handleApplyFilters" />
 
     <div class="flex max-w-7xl mx-auto w-full justify-center items-center px-4 sm:px-6 lg:px-8 mt-2 " style="height: calc(100vh - 150px);">
       
@@ -24,17 +24,16 @@
       <!-- Pass the real estate listings to the map component -->
       <div class="hidden sm:flex sm:w-7/12  h-full ml-4 z-[50] relative">
         <div :key="items.length" class="absolute inset-y-0 right-0 top-0 w-[15px] flex justify-center -mr-[40px] -mt-[30px] flex flex-col items-end justify-start space-y-2">
-          <svg @click="() => handleSwitch(true)" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="cursor-pointer size-7"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 6.75h12M8.25 12h12m-12 5.25h12M3.75 6.75h.007v.008H3.75V6.75Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0ZM3.75 12h.007v.008H3.75V12Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm-.375 5.25h.007v.008H3.75v-.008Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" /></svg>
-          <svg @click="() => handleSwitch(false)" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="cursor-pointer size-7"><path stroke-linecap="round" stroke-linejoin="round" d="M9 6.75V15m6-6v8.25m.503 3.498 4.875-2.437c.381-.19.622-.58.622-1.006V4.82c0-.836-.88-1.38-1.628-1.006l-3.869 1.934c-.317.159-.69.159-1.006 0L9.503 3.252a1.125 1.125 0 0 0-1.006 0L3.622 5.689C3.24 5.88 3 6.27 3 6.695V19.18c0 .836.88 1.38 1.628 1.006l3.869-1.934c.317-.159.69-.159 1.006 0l4.994 2.497c.317.158.69.158 1.006 0Z" /></svg>
+          <svg @click="() => handleSwitchView(chatStore.TYPE_LIST_ITEMS)" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="cursor-pointer size-7"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 6.75h12M8.25 12h12m-12 5.25h12M3.75 6.75h.007v.008H3.75V6.75Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0ZM3.75 12h.007v.008H3.75V12Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm-.375 5.25h.007v.008H3.75v-.008Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" /></svg>
+          <svg @click="() => handleSwitchView(chatStore.TYPE_MAP_ITEMS)" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="cursor-pointer size-7"><path stroke-linecap="round" stroke-linejoin="round" d="M9 6.75V15m6-6v8.25m.503 3.498 4.875-2.437c.381-.19.622-.58.622-1.006V4.82c0-.836-.88-1.38-1.628-1.006l-3.869 1.934c-.317.159-.69.159-1.006 0L9.503 3.252a1.125 1.125 0 0 0-1.006 0L3.622 5.689C3.24 5.88 3 6.27 3 6.695V19.18c0 .836.88 1.38 1.628 1.006l3.869-1.934c.317-.159.69-.159 1.006 0l4.994 2.497c.317.158.69.158 1.006 0Z" /></svg>
         </div>
 
         <div class="w-full">
-          <RealEstateMap v-if="!isListView" />
-          <RealEstateList v-else :items="items" />
+          <RealEstateMap v-if="defaultView==chatStore.TYPE_MAP_ITEMS" @moveend="handleFetchItems" />
+          <RealEstateList v-else />
         </div>
       </div>
     </div>
-
   </div>
 </template>
 
@@ -47,16 +46,22 @@ const modalStore = useModalStore();
 
 const { user } = useAuthService()
 
+let defaultView = ref(
+  localStorage.getItem('defaultView') ?? 'map'
+)
+
 const openRealEstatePropertyModal = () => {
   modalStore.openModal(RealEstatePropertyModal);
 }
-const { items, selectedItem, isQueryLoading } = storeToRefs(chatStore)
+
+const { 
+  items, selectedItem, isQueryLoading,
+ } = storeToRefs(chatStore)
+
 const { isModalVisible } = storeToRefs(modalStore)
+const { activeFilters, activeMessage } = storeToRefs(filterStore)
 
 const { insertMessage } = useUserMessages()
-
-const isListView = ref(true)
-const randomInt = ref(Math.random())
 
 watch(() => selectedItem.value, newVal => {
   if(newVal?.id) openRealEstatePropertyModal()
@@ -74,18 +79,26 @@ const defaultThreadPrompts = computed(() => {
   return chatStore.handleGetPromptsByThread('default')
 })
 
-const { results } = await chatStore.handleQuery()
-chatStore.handleResetItems()
-chatStore.handlePushItems(results)
+const handleFetchItems = async(trimmedMessage = null, params = {}) => {
+  const { reply, items, mapItems, filters, prompts = [] } = await chatStore.handleQuery(trimmedMessage, params)
 
-const handleSwitch = (mode) => {
-  if(isListView.value == mode) return
-  
-  isListView.value = mode
-  randomInt.value = Math.random()
+  chatStore.handleResetItems()
+  chatStore.handlePushItems({ items, mapItems })
+
+  return { reply, items, mapItems, filters, prompts }
 }
 
-const mapKey = ref(0);
+const handleApplyFilters = async() => {
+  // if user manually set filters, than we should omit user query and search through properties using just filters
+  handleFetchItems(null, activeFilters.value)
+}
+
+const handleSwitchView = async(mode) => {
+  if(defaultView.value == mode) return
+  
+  defaultView.value = mode
+  localStorage.setItem('defaultView', mode)
+}
 
 const handleSelectPrompt = async(prompt) => {
   await handleSendMessage(prompt)
@@ -100,14 +113,11 @@ const handleSendMessage = async (message) => {
     chatStore.handlePushMessage('default', { text: message, sender: 'user' })
     chatStore.handleSetPromptsByThread('default', [])
 
-    const { reply, results, filters, prompts = [] } = await chatStore.handleQuery(trimmedMessage, {})
-    if(! results) throw new Error('No results found for' + trimmedMessage)
-
+    const { reply, items, filters, prompts = [] } = await handleFetchItems(trimmedMessage, activeFilters.value)
+    if(! items) throw new Error('No results found for' + trimmedMessage)
+    
     chatStore.handleSetPromptsByThread('default', prompts)
     chatStore.handlePushMessage('default', { text: reply, sender: 'bot' })
-
-    chatStore.handleResetItems()
-    chatStore.handlePushItems(results)
 
     // apply filters automatically
     let parsedFilters = JSON.parse(JSON.stringify(filters))
@@ -116,8 +126,7 @@ const handleSendMessage = async (message) => {
       filterStore.setActiveFilter(key, parsedFilters[key])
     });
 
-    // Update the items for the map and re-render it
-    mapKey.value++; // Change the key to force the map to re-render
+    filterStore.setActiveMesasge(trimmedMessage)
 
     insertMessage(
       user.value?.id, null, 'default', trimmedMessage, 'user', parsedFilters
@@ -130,4 +139,6 @@ const handleSendMessage = async (message) => {
     })
   }
 }
+
+handleFetchItems(activeMessage.value, activeFilters.value)
 </script>

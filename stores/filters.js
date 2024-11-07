@@ -111,10 +111,26 @@ export const useFilterStore = defineStore('filters', () => {
     'location': [],
     'transaction_type': [],
   }
-  let activeFilters = reactive(defaultFilters);
+
+  // by default trying to reach localStorage filters, if not accesible than use default filters
+  let activeFilters = reactive(JSON.parse(localStorage.getItem('defaultFilters')) ?? defaultFilters);
+  let activeMessage = ref(null)
+
+  // set filters to localStorage any time filters changes
+  watch(() => hasFiltersChanged.value, () => {
+    localStorage.setItem('defaultFilters', JSON.stringify(activeFilters ?? null))
+  })
 
   const setActiveFilter = (filterName, value) => {
     activeFilters[filterName] = value;
+  }
+
+  const setActiveMesasge = (message) => {
+    activeMessage.value = message
+  }
+
+  const resetActiveMessage = () => {
+    activeMessage.value = null
   }
 
   const resetActiveFilters = () => {
@@ -147,10 +163,17 @@ export const useFilterStore = defineStore('filters', () => {
     handleSortOption,
 
     filters,
+
     activeFilters,
+    activeMessage,
+
     handleToggleFilter,
     setActiveFilter,
+    setActiveMesasge,
+
+    resetActiveMessage,
     resetActiveFilters,
+    
     resetHasFiltersChanged,
 
     toggleOpen,

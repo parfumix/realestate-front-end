@@ -11,11 +11,20 @@ const props = defineProps({
     }
 })
 
+const filterStore = useFilterStore()
+const { activeFilters, activeMessage } = storeToRefs(filterStore)
+
 const chatStore = useChatStore()
 const scrollable = ref(null)
+const isLoading = ref(false)
+
+const offset = ref(12)  // Track the offset for pagination
+const itemsPerPage = 12  // Define items per page or fetch it from the store if dynamic
 
 // Function to handle scroll event
 const handleScroll = async() => {
+  if(isLoading.value == true) return
+
   // Get the scroll position and height inside the div
   const scrollPosition = scrollable.value.scrollTop;
   const scrollHeight = scrollable.value.scrollHeight;
@@ -23,10 +32,14 @@ const handleScroll = async() => {
 
   // Check if the user has scrolled to the bottom of the div
   if (scrollHeight - scrollPosition <= clientHeight + 1) {
-    const { results } = await chatStore.handleLoadMore()
-    if(! results) return
+    isLoading.value = true
 
-    chatStore.handlePushItems(results)
+    const { items, mapItems } = await chatStore.handleQuery(activeMessage.value, activeFilters.value, offset.value)
+    if(! items.length) return
+
+    offset.value += itemsPerPage
+    chatStore.handlePushItems({ items, mapItems })
+    isLoading.value = false
   }
 };
 </script>

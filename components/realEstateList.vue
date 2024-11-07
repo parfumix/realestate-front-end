@@ -8,13 +8,6 @@
 </template>
 
 <script setup>
-import { defineProps } from 'vue'
-
-const props = defineProps({
-  items: {
-    type: Array,
-    required: true,
-    default: () => [],
-  },
-})
+const chatStore = useChatStore()
+const { items } = storeToRefs(chatStore)
 </script>

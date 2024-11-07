@@ -1,7 +1,7 @@
 import { useCustomFetch } from '~/composables/useCustomFetch'
 
-const query = async (query = null, filters = {}) => {
-  const { data, error } = await useCustomFetch('query', {
+const query = async (query = null, filters = {}, offset = 0) => {
+  const { data, error } = await useCustomFetch(`query?offset=${offset}`, {
     method: 'POST',
     body: JSON.stringify({ q: query, filters }),
     headers: {
@@ -12,16 +12,8 @@ const query = async (query = null, filters = {}) => {
   return { data, error };
 };
 
-const loadMore = async() => {
-  const { data, error } = await useCustomFetch(`load-more`, {
-    method: 'GET',
-  });
-
-  return { data, error }
-}
-
 const requestDetails = async(propertyId, query) => {
-  const { data, error } = await useCustomFetch(`request-details/${propertyId}`, {
+  const { data, error } = await useCustomFetch(`details/${propertyId}`, {
     method: 'POST',
     body: JSON.stringify({ q: query }),
     headers: {
@@ -32,5 +24,5 @@ const requestDetails = async(propertyId, query) => {
 }
 
 export {
-  query, loadMore, requestDetails
+  query, requestDetails
 }
