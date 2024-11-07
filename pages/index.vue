@@ -79,8 +79,8 @@ const defaultThreadPrompts = computed(() => {
   return chatStore.handleGetPromptsByThread('default')
 })
 
-const handleFetchItems = async(trimmedMessage = null, params = {}) => {
-  const { reply, items, mapItems, filters, prompts = [] } = await chatStore.handleQuery(trimmedMessage, params)
+const handleFetchItems = async(trimmedMessage = null, appliedFilters = null, mapFilters = null) => {
+  const { reply, items, mapItems, filters, prompts = [] } = await chatStore.handleQuery(trimmedMessage, appliedFilters, mapFilters)
 
   chatStore.handleResetItems()
   chatStore.handlePushItems({ items, mapItems })

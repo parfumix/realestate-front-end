@@ -12,7 +12,7 @@ const props = defineProps({
 })
 
 const filterStore = useFilterStore()
-const { activeFilters, activeMessage } = storeToRefs(filterStore)
+const { activeMessage, activeFilters, mapZoom, mapBbox } = storeToRefs(filterStore)
 
 const chatStore = useChatStore()
 const scrollable = ref(null)
@@ -34,7 +34,11 @@ const handleScroll = async() => {
   if (scrollHeight - scrollPosition <= clientHeight + 1) {
     isLoading.value = true
 
-    const { items, mapItems } = await chatStore.handleQuery(activeMessage.value, activeFilters.value, offset.value)
+    let mapFilters = { zoom: mapZoom.value, bbox: mapBbox.value }
+
+    const { items, mapItems } = await chatStore.handleQuery(
+      activeMessage.value, activeFilters.value, { zoom: mapZoom.value, bbox: mapBbox.value }, offset.value
+    )
     if(! items.length) return
 
     offset.value += itemsPerPage

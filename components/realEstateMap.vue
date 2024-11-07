@@ -14,7 +14,7 @@ import "overlapping-marker-spiderfier-leaflet/dist/oms";
 const OverlappingMarkerSpiderfier = window.OverlappingMarkerSpiderfier;
 
 const filterStore = useFilterStore()
-const { activeFilters, activeMessage } = storeToRefs(filterStore)
+const { activeMessage, activeFilters, mapZoom, mapBbox } = storeToRefs(filterStore)
 
 import { useThrottle } from '~/composables/useThrottle';
 
@@ -174,7 +174,8 @@ async function fetchClusters() {
   }
 
   try {
-    emit('moveend', activeMessage.value, { filters: activeFilters.value, zoom, bbox })
+    filterStore.setMapFilters(zoom, bbox)
+    emit('moveend', activeMessage.value, { filters: activeFilters.value, zoom: mapZoom.value, bbox: mapBbox.value })
 
     // Cache the fetched data
 //    clustersCache[cacheKey] = data.value;
@@ -308,7 +309,6 @@ function createPriceIcon(price) {
 onMounted(async () => {
   await nextTick();
   initializeMap();
-  //fetchClusters();
 })
 
 watch(() => mapItems.value, (newVal) => {

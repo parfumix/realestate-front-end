@@ -1,9 +1,9 @@
 import { useCustomFetch } from '~/composables/useCustomFetch'
 
-const query = async (query = null, filters = {}, offset = 0) => {
+const query = async (q = null, filters = null, mapFilters = null, offset = 0) => {
   const { data, error } = await useCustomFetch(`query?offset=${offset}`, {
     method: 'POST',
-    body: JSON.stringify({ q: query, filters }),
+    body: JSON.stringify({ q, filters, mapFilters }),
     headers: {
       'Content-Type': 'application/json',
     },

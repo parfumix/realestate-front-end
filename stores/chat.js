@@ -113,24 +113,34 @@ export const useChatStore = defineStore('chatStore', () => {
     const isQueryLoadingProperty = ref(false);
 
     function removeEmptyValues(obj) {
+        if(! obj) return {}
+        
         Object.keys(obj).forEach((key) => {
           const value = obj[key];
           if (Array.isArray(value) && value.length === 0) {
             delete obj[key];
           }
+          if(! value) delete obj[key];
         });
         return obj;
     }
 
     // API interactions
-    const handleQuery = async (q = null, filters = {}, offset = 0) => {
+    const handleQuery = async (q = null, filters = null, mapFilters = null, offset = 0) => {
         try {
             isQueryLoading.value = true;
 
             const filteredFilters = removeEmptyValues(filters)
-            const haveAnyFilters = Object.keys(filteredFilters).length
+            const filteredMapFilters = removeEmptyValues(mapFilters)
 
-            const { data, error } = await query(q, haveAnyFilters ? filteredFilters : null, offset);
+            const haveAnyFilters = Object.keys(filteredFilters).length
+            const haveAnyMapFilters = Object.keys(filteredMapFilters).length
+
+            const { data, error } = await query(
+                q, 
+                haveAnyFilters ? filteredFilters : null,
+                haveAnyMapFilters ? filteredMapFilters : null,
+                offset);
             if (error.value) throw new Error(error.value);
             return data.value;
         } catch (err) {
