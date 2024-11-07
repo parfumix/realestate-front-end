@@ -309,6 +309,7 @@ function createPriceIcon(price) {
 onMounted(async () => {
   await nextTick();
   initializeMap();
+  updateMarkers(mapItems.value)
 })
 
 watch(() => mapItems.value, (newVal) => {
