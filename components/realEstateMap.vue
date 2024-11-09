@@ -19,9 +19,7 @@ const { activeMessage, mapZoom, mapBbox } = storeToRefs(filterStore)
 import { useThrottle } from '~/composables/useThrottle';
 
 const chatStore = useChatStore()
-const { 
-  mapItems
- } = storeToRefs(chatStore)
+const { mapItems } = storeToRefs(chatStore)
 
 const { $currencyFormat } = useNuxtApp();
 
@@ -43,15 +41,19 @@ const handleSelectCurrentItem = (item) => {
 
 // Function to initialize the map
 const initializeMap = async() => {
-  // Define the southwest and northeast corners of Romania
   const romaniaBounds = [
-    [43.6, 20.2],   // Southwest corner (latitude, longitude)
-    [48.3, 29.7]    // Northeast corner (latitude, longitude)
+    [43.6, 20.2],
+    [48.3, 29.7]
   ];
 
-  const defaultLatLngBucharest = [45.90529985724799, 24.895019531250004]
-  const defaultCenter = defaultLatLngBucharest;
-  const defaultZoom = 7;
+  const defaultZoom = mapZoom.value;
+
+  const defaultCenter = mapBbox.value
+    ? [
+        (mapBbox.value[1] + mapBbox.value[3]) / 2,
+        (mapBbox.value[0] + mapBbox.value[2]) / 2,
+      ]
+    : [45.90529985724799, 24.895019531250004]; // Default center if mapBbox not available
 
   map = L.map('map', {
     maxZoom: 18,

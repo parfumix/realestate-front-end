@@ -93,9 +93,14 @@ export const useChatStore = defineStore('chatStore', () => {
         }
     };
 
-    const handleResetItems = () => {
-        items.value = [];
-        mapItems.value = [];
+    const handleResetItems = (type = null) => {
+        if(! type) {
+            items.value = [];
+            mapItems.value = [];
+        }
+
+        if(type == TYPE_LIST_ITEMS) items.value = [];
+        if(type == TYPE_MAP_ITEMS) mapItems.value = [];
     };
 
     const handlePushItem = (item, type = TYPE_LIST_ITEMS) => {
@@ -103,9 +108,9 @@ export const useChatStore = defineStore('chatStore', () => {
         if(type == TYPE_MAP_ITEMS) mapItems.value.push(item);
     };
 
-    const handlePushItems = ({ items: newItems, mapItems: newMapItems }) => {
-        if(newItems) items.value = [...items.value, ...newItems];
-        if(newMapItems) mapItems.value = [...mapItems.value, ...newMapItems];
+    const handlePushItems = ({ items: newItems = [], mapItems: newMapItems = [] }) => {
+        if(newItems.length) items.value = [...items.value, ...newItems];
+        if(newMapItems.length) mapItems.value = [...mapItems.value, ...newMapItems];
     };
 
     // Loading state
@@ -126,7 +131,7 @@ export const useChatStore = defineStore('chatStore', () => {
     }
 
     // API interactions
-    const handleQuery = async (q = null, filters = null, mapFilters = null, offset = 0) => {
+    const handleQuery = async (q = null, filters = null, mapFilters = null, offset = null, isMap = null) => {
         try {
             isQueryLoading.value = true;
 
@@ -140,7 +145,10 @@ export const useChatStore = defineStore('chatStore', () => {
                 q, 
                 haveAnyFilters ? filteredFilters : null,
                 haveAnyMapFilters ? filteredMapFilters : null,
-                offset);
+                
+                offset,
+                isMap
+            );
             if (error.value) throw new Error(error.value);
             return data.value;
         } catch (err) {

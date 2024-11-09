@@ -29,7 +29,7 @@
         </div>
 
         <div class="w-full">
-          <RealEstateMap v-if="defaultView==chatStore.TYPE_MAP_ITEMS" @moveend="handleFetchItems" />
+          <RealEstateMap v-if="defaultView==chatStore.TYPE_MAP_ITEMS" @moveend="handleMapFetchItems" />
           <RealEstateList v-else />
         </div>
       </div>
@@ -79,8 +79,18 @@ const defaultThreadPrompts = computed(() => {
   return chatStore.handleGetPromptsByThread('default')
 })
 
+/**
+ * In case of map while user moing map around, I have to keep items list as it is and just fetch new items from map
+ */
+const handleMapFetchItems = async(trimmedMessage = null, appliedFilters = null, mapFilters = null) => {
+  const { mapItems } = await chatStore.handleQuery(trimmedMessage, appliedFilters, mapFilters, null, 1)
+
+  chatStore.handleResetItems(chatStore.TYPE_MAP_ITEMS)
+  chatStore.handlePushItems({ mapItems })
+}
+
 const handleFetchItems = async(trimmedMessage = null, appliedFilters = null, mapFilters = null) => {
-  const { reply, items, mapItems, filters, prompts = [] } = await chatStore.handleQuery(trimmedMessage, appliedFilters, mapFilters)
+  const { reply, items = null, mapItems, filters, prompts = [] } = await chatStore.handleQuery(trimmedMessage, appliedFilters, mapFilters)
 
   chatStore.handleResetItems()
   chatStore.handlePushItems({ items, mapItems })

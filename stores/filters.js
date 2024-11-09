@@ -116,8 +116,8 @@ export const useFilterStore = defineStore('filters', () => {
   let activeMessage = ref(null)
   let activeFilters = reactive(JSON.parse(localStorage.getItem('defaultFilters')) ?? defaultFilters);
 
-  let mapZoom = ref(null)
-  let mapBbox = ref(null)
+  let mapZoom = ref(parseInt(localStorage.getItem('mapZoom') ?? 7))
+  let mapBbox = ref(localStorage.getItem('mapBbox') ? JSON.parse(localStorage.getItem('mapBbox')) : null)
 
   // set filters to localStorage any time filters changes
   watch(() => hasFiltersChanged.value, () => {
@@ -131,6 +131,9 @@ export const useFilterStore = defineStore('filters', () => {
   const setMapFilters = (zoom = 6, bbox = null) => {
     mapZoom.value = zoom
     mapBbox.value = bbox
+
+    localStorage.setItem('mapZoom', parseInt(zoom))
+    localStorage.setItem('mapBbox', JSON.stringify(bbox))
   }
 
   const setActiveMesasge = (message) => {
