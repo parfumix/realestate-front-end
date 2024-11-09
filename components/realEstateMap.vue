@@ -57,7 +57,7 @@ const initializeMap = async() => {
 
   map = L.map('map', {
     maxZoom: 18,
-    minZoom: 6,
+    minZoom: 6.4,
   }).setView(defaultCenter, defaultZoom);
 
   // Set max bounds to keep the map restricted within Romania
