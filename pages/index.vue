@@ -150,5 +150,5 @@ const handleSendMessage = async (message) => {
   }
 }
 
-handleFetchItems(activeMessage.value, filterStore.activeFilters.value, { mapZoom: mapZoom.value, mapBbox: mapBbox.value })
+handleFetchItems(activeMessage.value, filterStore.activeFilters, { mapZoom: mapZoom.value, mapBbox: mapBbox.value })
 </script>
