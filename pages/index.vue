@@ -59,7 +59,7 @@ const {
  } = storeToRefs(chatStore)
 
 const { isModalVisible } = storeToRefs(modalStore)
-const { activeMessage } = storeToRefs(filterStore)
+const { activeMessage, mapZoom, mapBbox } = storeToRefs(filterStore)
 
 const { insertMessage } = useUserMessages()
 
@@ -100,7 +100,7 @@ const handleFetchItems = async(trimmedMessage = null, appliedFilters = null, map
 
 const handleApplyFilters = async() => {
   // if user manually set filters, than we should omit user query and search through properties using just filters
-  handleFetchItems(null, filterStore.activeFilters)
+  handleFetchItems(null, filterStore.activeFilters, { mapZoom: mapZoom.value, mapBbox: mapBbox.value })
 }
 
 const handleSwitchView = async(mode) => {
@@ -123,7 +123,7 @@ const handleSendMessage = async (message) => {
     chatStore.handlePushMessage('default', { text: message, sender: 'user' })
     chatStore.handleSetPromptsByThread('default', [])
 
-    const { reply, items, filters, prompts = [] } = await handleFetchItems(trimmedMessage, filterStore.activeFilters)
+    const { reply, items, filters, prompts = [] } = await handleFetchItems(trimmedMessage, filterStore.activeFilters, { mapZoom: mapZoom.value, mapBbox: mapBbox.value })
     if(! items) throw new Error('No results found for' + trimmedMessage)
     
     chatStore.handleSetPromptsByThread('default', prompts)
@@ -150,5 +150,5 @@ const handleSendMessage = async (message) => {
   }
 }
 
-handleFetchItems(activeMessage.value, filterStore.activeFilters.value)
+handleFetchItems(activeMessage.value, filterStore.activeFilters.value, { mapZoom: mapZoom.value, mapBbox: mapBbox.value })
 </script>
