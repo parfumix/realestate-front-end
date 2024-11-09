@@ -1,5 +1,5 @@
 <template>
-    <ul class="grid grid-cols-2 gap-x-4 gap-y-4 sm:grid-cols-3 sm:gap-x-6 lg:grid-cols-3 xl:gap-x-4 no-scrollbar overflow-y-auto pb-2" ref="scrollable" @scroll="handleScroll">
+    <ul :class="[{'sm:grid-cols-2': defaultView==chatStore.TYPE_LIST_HYBRID}, 'grid grid-cols-2 sm:grid-cols-3 gap-x-4 gap-y-4 sm:gap-x-6 xl:gap-x-4 no-scrollbar overflow-y-auto pb-2']" ref="scrollable" @scroll="handleScroll">
         <RealEstateListItem v-for="item in items" :item="item" :key="item.id" class="relative" />
     </ul>
 </template>
@@ -10,6 +10,10 @@ const props = defineProps({
         type: Array
     }
 })
+
+let defaultView = ref(
+  localStorage.getItem('defaultView') ?? 'map'
+)
 
 const filterStore = useFilterStore()
 const { activeMessage, mapZoom, mapBbox } = storeToRefs(filterStore)

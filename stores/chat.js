@@ -40,6 +40,7 @@ export const useChatStore = defineStore('chatStore', () => {
 
     const TYPE_MAP_ITEMS = 'map'
     const TYPE_LIST_ITEMS = 'list'
+    const TYPE_LIST_HYBRID = 'hybrid'
 
     // Items management
     const items = ref([]);
@@ -188,6 +189,7 @@ export const useChatStore = defineStore('chatStore', () => {
 
         TYPE_MAP_ITEMS,
         TYPE_LIST_ITEMS,
+        TYPE_LIST_HYBRID,
         
         // Items
         items,
