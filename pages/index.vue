@@ -83,14 +83,20 @@ const defaultThreadPrompts = computed(() => {
  * In case of map while user moing map around, I have to keep items list as it is and just fetch new items from map
  */
 const handleMapFetchItems = async(trimmedMessage = null, appliedFilters = null, mapFilters = null) => {
-  const { mapItems } = await chatStore.handleQuery(trimmedMessage, appliedFilters, mapFilters, null, 1)
+  const filtersCopy = { ...appliedFilters }; 
+  const mapFiltersCopy = { ...mapFilters }; 
+
+  const { mapItems } = await chatStore.handleQuery(trimmedMessage, filtersCopy, mapFiltersCopy, null, 1)
 
   chatStore.handleResetItems(chatStore.TYPE_MAP_ITEMS)
   chatStore.handlePushItems({ mapItems })
 }
 
 const handleFetchItems = async(trimmedMessage = null, appliedFilters = null, mapFilters = null) => {
-  const { reply, items = null, mapItems, filters, prompts = [] } = await chatStore.handleQuery(trimmedMessage, appliedFilters, mapFilters)
+  const filtersCopy = { ...appliedFilters }; 
+  const mapFiltersCopy = { ...mapFilters }; 
+
+  const { reply, items = null, mapItems, filters, prompts = [] } = await chatStore.handleQuery(trimmedMessage, filtersCopy, mapFiltersCopy)
 
   chatStore.handleResetItems()
   chatStore.handlePushItems({ items, mapItems })
