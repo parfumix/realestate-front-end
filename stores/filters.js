@@ -121,7 +121,9 @@ export const useFilterStore = defineStore('filters', () => {
 
   // set filters to localStorage any time filters changes
   watch(() => hasFiltersChanged.value, () => {
-    localStorage.setItem('defaultFilters', JSON.stringify(activeFilters ?? null))
+    Object.keys(activeFilters).length === 0
+      ? localStorage.removeItem('defaultFilters')
+      : localStorage.setItem('defaultFilters', JSON.stringify(activeFilters))
   })
 
   const setActiveFilter = (filterName, value) => {
