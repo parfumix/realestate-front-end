@@ -12,7 +12,7 @@ const props = defineProps({
 })
 
 const filterStore = useFilterStore()
-const { activeMessage, activeFilters, mapZoom, mapBbox } = storeToRefs(filterStore)
+const { activeMessage, mapZoom, mapBbox } = storeToRefs(filterStore)
 
 const chatStore = useChatStore()
 const scrollable = ref(null)
@@ -37,7 +37,7 @@ const handleScroll = async() => {
     let mapFilters = { zoom: mapZoom.value, bbox: mapBbox.value }
 
     const { items, mapItems } = await chatStore.handleQuery(
-      activeMessage.value, activeFilters.value, { zoom: mapZoom.value, bbox: mapBbox.value }, offset.value
+      activeMessage.value, filterStore.activeFilters, { zoom: mapZoom.value, bbox: mapBbox.value }, offset.value
     )
     if(! items.length) return
 

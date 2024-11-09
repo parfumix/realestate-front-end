@@ -14,7 +14,7 @@ import "overlapping-marker-spiderfier-leaflet/dist/oms";
 const OverlappingMarkerSpiderfier = window.OverlappingMarkerSpiderfier;
 
 const filterStore = useFilterStore()
-const { activeMessage, activeFilters, mapZoom, mapBbox } = storeToRefs(filterStore)
+const { activeMessage, mapZoom, mapBbox } = storeToRefs(filterStore)
 
 import { useThrottle } from '~/composables/useThrottle';
 
@@ -175,7 +175,7 @@ async function fetchClusters() {
 
   try {
     filterStore.setMapFilters(zoom, bbox)
-    emit('moveend', activeMessage.value, activeFilters.value, { zoom: mapZoom.value, bbox: mapBbox.value })
+    emit('moveend', activeMessage.value, filterStore.activeFilters, { zoom: mapZoom.value, bbox: mapBbox.value })
 
     // Cache the fetched data
 //    clustersCache[cacheKey] = data.value;

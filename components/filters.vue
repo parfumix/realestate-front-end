@@ -117,7 +117,7 @@
                           class="flex items-center">
                           <input :id="`filter-${section.id}-${optionIdx}`" :name="`${section.id}[]`"
                             :value="option.value" @click="toggleFilter(section.id, option.value)" type="checkbox"
-                            :checked="activeFilters[section.id].includes(option.value)"
+                            :checked="filterStore.activeFilters[section.id].includes(option.value)"
                             class="h-4 w-4 rounded border-gray-300 text-grat-600" />
                           <label :for="`filter-${section.id}-${optionIdx}`"
                             class="ml-3 whitespace-nowrap pr-6 text-sm font-medium text-gray-900">{{ option?.label
@@ -146,7 +146,7 @@
 
             <div class="mt-2 sm:ml-4 sm:mt-0">
               <div class="-m-1 flex flex-wrap items-center">
-                <span v-for="(activeFilter, index) in activeFilters" :key="index" class="flex flex-row">
+                <span v-for="(activeFilter, index) in filterStore.activeFilters" :key="index" class="flex flex-row">
                   <span v-for="filter in activeFilter" :key="`${index}-sub`"
                     class="m-1 inline-flex items-center rounded-full border border-gray-200 bg-white py-1.5 pl-3 pr-2 text-sm font-medium text-gray-900">
                     <span>{{ filters.find(el => el.id == index)?.['options'].find(el => el.value == filter)?.label
@@ -198,7 +198,7 @@ const emit = defineEmits(['applyFilters'])
 
 // Use the Pinia filter store
 const filterStore = useFilterStore()
-const { filters, activeSorting, activeFilters, hasFiltersChanged } = storeToRefs(filterStore)
+const { filters, activeSorting, hasFiltersChanged } = storeToRefs(filterStore)
 
 const handleSort = sort => {
   filterStore.handleSortOption(sort)
@@ -207,7 +207,6 @@ const handleSort = sort => {
 watch(() => hasFiltersChanged.value, newVal => {
   if(newVal == true) {
     emit('applyFilters')
-    console.log(123)
     filterStore.resetHasFiltersChanged()
   }
 })

@@ -103,13 +103,13 @@ export const useFilterStore = defineStore('filters', () => {
   }
 
   const defaultFilters = {
-    'property_type': [],
-    'price': [],
-    'room_count': [],
-    'area': [],
-    'floor': [],
-    'location': [],
-    'transaction_type': [],
+    "property_type": [],
+    "price": [],
+    "room_count": [],
+    "area:": [],
+    "floor": [],
+    "location": [],
+    "transaction_type": [],
   }
 
   // by default trying to reach localStorage filters, if not accesible than use default filters
