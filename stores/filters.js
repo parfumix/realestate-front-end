@@ -151,6 +151,7 @@ export const useFilterStore = defineStore('filters', () => {
   }
 
   const handleToggleFilter = (type, value) => {
+    activeMessage.value = null
     let valueIndex = activeFilters?.[type].findIndex(el => el == value);
 
     if (valueIndex >= 0) {
