@@ -132,7 +132,7 @@ export const useChatStore = defineStore('chatStore', () => {
     }
 
     // API interactions
-    const handleQuery = async (q = null, filters = null, mapFilters = null, offset = null, isMap = null) => {
+    const handleQuery = async (q = null, filters = null, mapFilters = null, offset = null, isMovingMap = null) => {
         try {
             isQueryLoading.value = true;
 
@@ -148,7 +148,7 @@ export const useChatStore = defineStore('chatStore', () => {
                 haveAnyMapFilters ? filteredMapFilters : null,
                 
                 offset,
-                isMap
+                isMovingMap
             );
             if (error.value) throw new Error(error.value);
             return data.value;

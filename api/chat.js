@@ -1,6 +1,6 @@
 import { useCustomFetch } from '~/composables/useCustomFetch'
 
-const query = async (q = null, filters = null, mapFilters = null, offset = null, isMap = null) => {
+const query = async (q = null, filters = null, mapFilters = null, offset = null, isMovingMap = null) => {
    // Start with the base URL
    let url = 'query';
 
@@ -9,7 +9,7 @@ const query = async (q = null, filters = null, mapFilters = null, offset = null,
  
    // Add parameters only if they are not null
    if (offset !== null) queryParams.push(`offset=${offset}`);
-   if (isMap !== null) queryParams.push(`map=${isMap}`);
+   if (isMovingMap !== null) queryParams.push(`moving_map=${isMovingMap}`);
  
    // Join the query parameters with '&' if there are any
    if (queryParams.length > 0) {
