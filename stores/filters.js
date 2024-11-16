@@ -138,6 +138,10 @@ export const useFilterStore = defineStore('filters', () => {
     localStorage.setItem('mapBbox', JSON.stringify(bbox))
   }
 
+  const resetMapFilters = () => {
+    setMapFilters(null, null)
+  }
+
   const setActiveMesasge = (message) => {
     activeMessage.value = message
   }
@@ -151,7 +155,9 @@ export const useFilterStore = defineStore('filters', () => {
   }
 
   const handleToggleFilter = (type, value) => {
+    if(type == 'location') setMapFilters(11)
     activeMessage.value = null
+
     let valueIndex = activeFilters?.[type].findIndex(el => el == value);
 
     if (valueIndex >= 0) {

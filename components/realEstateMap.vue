@@ -57,7 +57,7 @@ const initializeMap = async() => {
 
   map = L.map('map', {
     maxZoom: 18,
-    minZoom: 6.4,
+    minZoom: 6,
   }).setView(defaultCenter, defaultZoom);
 
   // Set max bounds to keep the map restricted within Romania
@@ -153,7 +153,6 @@ const initializeMap = async() => {
 // Function to fetch clusters based on map bounds and zoom level
 async function fetchClusters() {
   if(isFetching) return
-
   isFetching = true
 
   const bounds = map.getBounds();
@@ -193,8 +192,8 @@ async function fetchClusters() {
 function updateMarkers(clusterData) {
   markersCluster.clearLayers();
   spiderfier.clearMarkers();
+  const bounds = L.latLngBounds(); // Initialize bounds object
 
-  const bounds = L.latLngBounds();
   const coordinateMap = new Map();
 
   // Helper function to preload an image
@@ -211,7 +210,9 @@ function updateMarkers(clusterData) {
       return; // Skip this marker if it has invalid coordinates
     }
 
-    if (feature.properties.cluster) {
+    bounds.extend(L.latLng(lat, lng));
+
+    if (feature.properties?.cluster) {
       const pointCount = feature.properties.point_count; // Number of markers in the cluster
 
       const marker = L.marker([lat, lng], {
@@ -224,7 +225,6 @@ function updateMarkers(clusterData) {
       });
 
       markersCluster.addLayer(marker);
-      bounds.extend([lat, lng]);
     } else {
       const { price, internal_id: id, meta } = feature.properties;
       const coordinateKey = `${lat},${lng}`;
@@ -255,8 +255,16 @@ function updateMarkers(clusterData) {
 
       markersCluster.addLayer(marker);
       spiderfier.addMarker(marker);
+    }
 
-      bounds.extend([lat, lng]);
+    // Fit the map to the bounds of all markers
+    if(bounds.isValid()) {
+      isFetching = true
+      map.fitBounds(bounds, { padding: [150, 150] } ); // Add padding for better visibility
+
+      setTimeout(() => {
+        isFetching = false
+      }, 500)
     }
   });
 
@@ -266,10 +274,6 @@ function updateMarkers(clusterData) {
       markers[0].fire('click'); // Programmatically trigger a click event
     }
   });
-
-  // if (bounds.isValid()) {
-  //   map.fitBounds(bounds, { padding: [50, 50] });
-  // }
 }
 
 // Helper function to create a dynamic icon based on the cluster count
@@ -311,7 +315,6 @@ function createPriceIcon(price) {
 onMounted(async () => {
   await nextTick();
   initializeMap();
-  updateMarkers(mapItems.value)
 })
 
 watch(() => mapItems.value, (newVal) => {

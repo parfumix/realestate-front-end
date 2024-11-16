@@ -88,7 +88,7 @@ const handleMapFetchItems = async(trimmedMessage = null, appliedFilters = null, 
   const filtersCopy = { ...appliedFilters }; 
   const mapFiltersCopy = { ...mapFilters }; 
 
-  const { mapItems } = await chatStore.handleQuery(trimmedMessage, filtersCopy, mapFiltersCopy, null, 1)
+  const { map: { items: mapItems } } = await chatStore.handleQuery(trimmedMessage, filtersCopy, mapFiltersCopy, null, 1)
 
   chatStore.handleResetItems(chatStore.TYPE_MAP_ITEMS)
   chatStore.handlePushItems({ mapItems })
@@ -98,7 +98,7 @@ const handleFetchItems = async(trimmedMessage = null, appliedFilters = null, map
   const filtersCopy = { ...appliedFilters }; 
   const mapFiltersCopy = { ...mapFilters }; 
 
-  const { reply, items = null, mapItems, filters, prompts = [] } = await chatStore.handleQuery(trimmedMessage, filtersCopy, mapFiltersCopy)
+  const { reply, items = null, map: { items: mapItems }, filters, prompts = [] } = await chatStore.handleQuery(trimmedMessage, filtersCopy, mapFiltersCopy)
 
   chatStore.handleResetItems()
   chatStore.handlePushItems({ items, mapItems })
@@ -108,7 +108,7 @@ const handleFetchItems = async(trimmedMessage = null, appliedFilters = null, map
 
 const handleApplyFilters = async() => {
   // if user manually set filters, than we should omit user query and search through properties using just filters
-  handleFetchItems(null, filterStore.activeFilters, { mapZoom: mapZoom.value, mapBbox: mapBbox.value })
+  handleFetchItems(null, filterStore.activeFilters, { zoom: mapZoom.value, bbox: mapBbox.value })
 }
 
 const handleSwitchView = async(mode) => {
@@ -131,7 +131,7 @@ const handleSendMessage = async (message) => {
     chatStore.handlePushMessage('default', { text: message, sender: 'user' })
     chatStore.handleSetPromptsByThread('default', [])
 
-    const { reply, items, filters, prompts = [] } = await handleFetchItems(trimmedMessage, filterStore.activeFilters, { mapZoom: mapZoom.value, mapBbox: mapBbox.value })
+    const { reply, items, filters, prompts = [] } = await handleFetchItems(trimmedMessage, filterStore.activeFilters, { zoom: mapZoom.value, bbox: mapBbox.value })
     if(! items) throw new Error('No results found for' + trimmedMessage)
     
     chatStore.handleSetPromptsByThread('default', prompts)
@@ -158,5 +158,5 @@ const handleSendMessage = async (message) => {
   }
 }
 
-handleFetchItems(activeMessage.value, filterStore.activeFilters, { mapZoom: mapZoom.value, mapBbox: mapBbox.value })
+handleFetchItems(activeMessage.value, filterStore.activeFilters, { zoom: mapZoom.value, bbox: mapBbox.value })
 </script>
