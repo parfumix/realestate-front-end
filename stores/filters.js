@@ -180,24 +180,27 @@ export const useFilterStore = defineStore('filters', () => {
     sortOptions,
     activeSorting,
     hasFiltersChanged,
-    handleSortOption,
 
     filters,
-
-    mapZoom,
-    mapBbox,
     activeFilters,
     activeMessage,
 
-    handleToggleFilter,
+    mapZoom,
+    mapBbox,
+
+    handleSortOption,
+
     setActiveFilter,
     setActiveMesasge,
+
+    resetMapFilters,
     setMapFilters,
 
     resetActiveMessage,
     resetActiveFilters,
     
     resetHasFiltersChanged,
+    handleToggleFilter,
 
     toggleOpen,
   }
