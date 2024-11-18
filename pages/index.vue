@@ -139,6 +139,8 @@ const handleSendMessage = async (message) => {
 
     // apply filters automatically
     let parsedFilters = JSON.parse(JSON.stringify(filters))
+    if(parsedFilters?.['location']?.length) filterStore.setMapFilters(7)
+
     Object.keys(parsedFilters).forEach(key => {
       if(! parsedFilters?.[key]) return
       filterStore.setActiveFilter(key, parsedFilters[key])
