@@ -49,7 +49,7 @@ const modalStore = useModalStore();
 const { user } = useAuthService()
 
 let defaultView = ref(
-  localStorage.getItem('defaultView') ?? 'map'
+  localStorage.getItem('defaultView') ?? 'list'
 )
 
 const openRealEstatePropertyModal = () => {
