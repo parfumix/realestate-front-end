@@ -30,6 +30,7 @@ let spiderfier;
 let markersCluster;
 
 let isFetching = false
+let isMovingMap = true
 const clustersCache = {};
 
 let selectedItem = ref(null);
@@ -153,6 +154,8 @@ const initializeMap = async() => {
 // Function to fetch clusters based on map bounds and zoom level
 async function fetchClusters() {
   if(isFetching) return
+
+  isMovingMap = true
   isFetching = true
 
   const bounds = map.getBounds();
@@ -192,7 +195,7 @@ async function fetchClusters() {
 function updateMarkers(clusterData) {
   markersCluster.clearLayers();
   spiderfier.clearMarkers();
-  const bounds = L.latLngBounds(); // Initialize bounds object
+  const newBounds = L.latLngBounds(); // Initialize bounds object
 
   const coordinateMap = new Map();
 
@@ -210,7 +213,7 @@ function updateMarkers(clusterData) {
       return; // Skip this marker if it has invalid coordinates
     }
 
-    bounds.extend(L.latLng(lat, lng));
+    newBounds.extend(L.latLng(lat, lng));
 
     if (feature.properties?.cluster) {
       const pointCount = feature.properties.point_count; // Number of markers in the cluster
@@ -256,16 +259,6 @@ function updateMarkers(clusterData) {
       markersCluster.addLayer(marker);
       spiderfier.addMarker(marker);
     }
-
-    // Fit the map to the bounds of all markers
-    if(bounds.isValid()) {
-      isFetching = true
-      map.fitBounds(bounds, { padding: [150, 150] } ); // Add padding for better visibility
-
-      setTimeout(() => {
-        isFetching = false
-      }, 500)
-    }
   });
 
   // Automatically trigger spiderfy by simulating a click on markers at the same location
@@ -274,6 +267,20 @@ function updateMarkers(clusterData) {
       markers[0].fire('click'); // Programmatically trigger a click event
     }
   });
+
+  // Fit the map to the bounds of all markers
+  if(newBounds.isValid() && ! isMovingMap) {
+      isFetching = true
+
+      map.fitBounds(newBounds, { padding: [150, 150], animate: true } )
+      map.setZoom(mapZoom.value)
+
+      setTimeout(() => {
+        isFetching = false
+      }, 500)
+    } else {
+      isMovingMap = false
+    }
 }
 
 // Helper function to create a dynamic icon based on the cluster count
