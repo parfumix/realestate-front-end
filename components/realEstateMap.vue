@@ -324,6 +324,10 @@ onMounted(async () => {
   initializeMap();
 })
 
+watch(() => mapZoom.value, newval => {
+  map.setZoom(newval)
+})
+
 watch(() => mapItems.value, (newVal) => {
   setTimeout(() => {
     updateMarkers(newVal);
