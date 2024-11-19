@@ -158,7 +158,7 @@ export const useFilterStore = defineStore('filters', () => {
     if(type == 'location') setMapFilters(7)
     activeMessage.value = null
 
-    let valueIndex = activeFilters?.[type].findIndex(el => el == value);
+    let valueIndex = activeFilters?.[type]?.findIndex(el => el == value);
 
     if (valueIndex >= 0) {
       // Remove the value if it exists
