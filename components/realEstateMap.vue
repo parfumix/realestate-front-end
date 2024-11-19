@@ -31,7 +31,6 @@ let markersCluster;
 
 let isFetching = false
 let isMovingMap = true
-const clustersCache = {};
 
 let selectedItem = ref(null);
 const fetchClustersThrottled = useThrottle(fetchClusters, 700);
@@ -168,22 +167,9 @@ async function fetchClusters() {
     bounds.getNorth()
   ];
 
-  const cacheKey = JSON.stringify({ bbox, zoom });
-
-  // Check if data for this bbox and zoom is already in the cache
-  if (clustersCache[cacheKey]) {
-    updateMarkers(clustersCache[cacheKey]); // Use cached data
-    isFetching = false;
-    return;
-  }
-
   try {
     filterStore.setMapFilters(zoom, bbox)
     emit('moveend', activeMessage.value, filterStore.activeFilters, { zoom: mapZoom.value, bbox: mapBbox.value })
-
-    // Cache the fetched data
-//    clustersCache[cacheKey] = data.value;
-
   } catch (error) {
     console.error("Error during fetchClusters:", error);
   } finally {
