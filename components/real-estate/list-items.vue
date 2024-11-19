@@ -12,7 +12,7 @@ const props = defineProps({
 })
 
 let defaultView = ref(
-  localStorage.getItem('defaultView') ?? 'map'
+  localStorage.getItem('defaultView') ?? 'list'
 )
 
 const filterStore = useFilterStore()

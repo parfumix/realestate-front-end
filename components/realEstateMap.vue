@@ -328,7 +328,7 @@ watch(() => mapItems.value, (newVal) => {
   setTimeout(() => {
     updateMarkers(newVal);
   })
-}, { deep: true })
+}, { deep: true, immediate: true })
 </script>
 
 <style>

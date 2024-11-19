@@ -165,7 +165,7 @@ export const useFilterStore = defineStore('filters', () => {
       activeFilters?.[type].splice(valueIndex, 1);
     } else {
       // Add the value if it does not exist
-      activeFilters[type] = [...activeFilters[type], value];
+      activeFilters[type] = activeFilters?.[type] ? [...activeFilters?.[type], value] : [value]
     }
 
     hasFiltersChanged.value = true
