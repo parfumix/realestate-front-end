@@ -138,8 +138,10 @@ const handleSendMessage = async (message) => {
     chatStore.handlePushMessage('default', { text: reply, sender: 'bot' })
 
     // apply filters automatically
-    let parsedFilters = JSON.parse(JSON.stringify(filters))
-    if(parsedFilters?.['location']?.length) filterStore.setMapFilters(7)
+    let parsedFilters = JSON.parse(JSON.stringify(filters ?? {}))
+    if(parsedFilters?.['location']?.length) {
+      filterStore.setMapFilters(parsedFilters?.['location']?.length == 1 ? 8 : 6.4)
+    }
 
     Object.keys(parsedFilters).forEach(key => {
       if(! parsedFilters?.[key]) return
