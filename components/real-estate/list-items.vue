@@ -38,13 +38,13 @@ const handleScroll = async() => {
   if (scrollHeight - scrollPosition <= clientHeight + 1) {
     isLoading.value = true
 
-    const { items, map: { items: mapItems } } = await chatStore.handleQuery(
+    const { items } = await chatStore.handleQuery(
       activeMessage.value, filterStore.activeFilters, { zoom: mapZoom.value, bbox: mapBbox.value }, offset.value
     )
     if(! items.length) return
 
     offset.value += itemsPerPage
-    chatStore.handlePushItems({ items, mapItems })
+    chatStore.handlePushItems({ items })
     isLoading.value = false
   }
 };
