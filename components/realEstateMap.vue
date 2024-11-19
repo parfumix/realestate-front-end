@@ -111,7 +111,7 @@ const initializeMap = async() => {
   // Listener for when markers are unspiderfied (return to original positions)
   spiderfier.addListener('unspiderfy', (markers) => {
     markers.forEach(marker => {
-      marker.setIcon(createClusterIcon(1));
+      marker.setIcon(createClusterIcon(markers.length));
     });
   });
 
