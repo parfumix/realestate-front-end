@@ -15,6 +15,7 @@ const OverlappingMarkerSpiderfier = window.OverlappingMarkerSpiderfier;
 
 const filterStore = useFilterStore()
 const { activeMessage, mapZoom, mapBbox } = storeToRefs(filterStore)
+import { getRomanianBounds } from '../utils'
 
 import { useThrottle } from '~/composables/useThrottle';
 
@@ -41,10 +42,7 @@ const handleSelectCurrentItem = (item) => {
 
 // Function to initialize the map
 const initializeMap = async() => {
-  const romaniaBounds = [
-    [43.6, 20.2],
-    [48.3, 29.7]
-  ];
+  const romaniaBounds = getRomanianBounds();
 
   const defaultZoom = mapZoom.value;
 
@@ -56,6 +54,7 @@ const initializeMap = async() => {
     : [45.90529985724799, 24.895019531250004]; // Default center if mapBbox not available
 
   map = L.map('map', {
+    scrollWheelZoom: false,
     maxZoom: 18,
     minZoom: 6,
   }).setView(defaultCenter, defaultZoom);
@@ -258,8 +257,8 @@ function updateMarkers(clusterData) {
   if(newBounds.isValid() && ! isMovingMap) {
       isFetching = true
 
-      map.fitBounds(newBounds, { padding: [150, 150], animate: true } )
-      map.setZoom(mapZoom.value)
+      console.log('fit bounds', newBounds.toBBoxString())
+      map.fitBounds(newBounds, { padding: [50, 50], animate: true } )
 
       setTimeout(() => {
         isFetching = false

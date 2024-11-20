@@ -46,6 +46,8 @@ const filterStore = useFilterStore()
 const chatStore = useChatStore()
 const modalStore = useModalStore();
 
+import { getRomanianBounds } from '../utils'
+
 const { user } = useAuthService()
 
 let defaultView = ref(
@@ -131,7 +133,9 @@ const handleSendMessage = async (message) => {
     chatStore.handlePushMessage('default', { text: message, sender: 'user' })
     chatStore.handleSetPromptsByThread('default', [])
 
-    const { reply, items, filters, prompts = [] } = await handleFetchItems(trimmedMessage, filterStore.activeFilters, { zoom: mapZoom.value, bbox: mapBbox.value })
+    // we're usign all romanian bbox because search can contain new locations so we need to clusterize items by whole country
+    const mapFilters = { zoom: 6, bbox: getRomanianBounds(true) }
+    const { reply, items, filters, prompts = [] } = await handleFetchItems(trimmedMessage, filterStore.activeFilters, mapFilters)
     if(! items) throw new Error('No results found for' + trimmedMessage)
     
     chatStore.handleSetPromptsByThread('default', prompts)
@@ -139,9 +143,6 @@ const handleSendMessage = async (message) => {
 
     // apply filters automatically
     let parsedFilters = JSON.parse(JSON.stringify(filters ?? {}))
-    if(parsedFilters?.['location']?.length) {
-      filterStore.setMapFilters(parsedFilters?.['location']?.length == 1 ? 8 : 6.4)
-    }
 
     Object.keys(parsedFilters).forEach(key => {
       if(! parsedFilters?.[key]) return
