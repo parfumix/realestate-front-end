@@ -233,6 +233,7 @@ function updateMarkers(clusterData) {
       marker.bindPopup('<div></div>', {
         closeButton: false,
         keepInView: true,
+        autoPan: false,
         className: `min-w-[200px] max-h-[100px] ${popupContainerId}`
       });
 
@@ -260,7 +261,7 @@ function updateMarkers(clusterData) {
       console.log('fit bounds', newBounds.toBBoxString())
 
       map.fitBounds(newBounds, { padding: [50, 50], animate: true } )
-      filterStore.setMapFilters(map.getZoom(), newBounds.toBBoxString())
+      filterStore.setMapFilters(map.getZoom(), newBounds.toBBoxString().split(',').map(coord => parseFloat(coord)))
 
       setTimeout(() => {
         isFetching = false
