@@ -63,7 +63,7 @@ const initializeMap = async() => {
   map.setMaxBounds(romaniaBounds);
 
   // Optionally, you can set options to disable dragging outside bounds
-  map.options.maxBoundsViscosity = 0.5;
+  map.options.maxBoundsViscosity = 1;
 
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     opacity: 1
