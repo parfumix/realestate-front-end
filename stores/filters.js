@@ -156,7 +156,6 @@ export const useFilterStore = defineStore('filters', () => {
   }
 
   const handleToggleFilter = (type, value) => {
-    if(type == 'location') setMapFilters(7, getRomanianBounds(true))
     activeMessage.value = null
 
     let valueIndex = activeFilters?.[type]?.findIndex(el => el == value);
