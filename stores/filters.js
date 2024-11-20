@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia';
+import { getRomanianBounds } from '~/utils';
 
 export const useFilterStore = defineStore('filters', () => {
   const open = ref(false);
@@ -155,7 +156,7 @@ export const useFilterStore = defineStore('filters', () => {
   }
 
   const handleToggleFilter = (type, value) => {
-    if(type == 'location') setMapFilters(7)
+    if(type == 'location') setMapFilters(7, getRomanianBounds(true))
     activeMessage.value = null
 
     let valueIndex = activeFilters?.[type]?.findIndex(el => el == value);

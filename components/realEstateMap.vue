@@ -258,7 +258,9 @@ function updateMarkers(clusterData) {
       isFetching = true
 
       console.log('fit bounds', newBounds.toBBoxString())
+
       map.fitBounds(newBounds, { padding: [50, 50], animate: true } )
+      filterStore.setMapFilters(map.getZoom(), newBounds.toBBoxString())
 
       setTimeout(() => {
         isFetching = false
@@ -307,10 +309,6 @@ function createPriceIcon(price) {
 onMounted(async () => {
   await nextTick();
   initializeMap();
-})
-
-watch(() => mapZoom.value, newval => {
-  map.setZoom(newval)
 })
 
 watch(() => mapItems.value, (newVal) => {
