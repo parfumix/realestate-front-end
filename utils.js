@@ -5,3 +5,16 @@ export const getRomanianBounds = (flat = false) => {
       [48.3, 29.7]
     ]
   }
+
+  export const removeEmptyValues = (obj) => {
+    if(! obj) return {}
+    
+    Object.keys(obj).forEach((key) => {
+      const value = obj[key];
+      if (Array.isArray(value) && value.length === 0) {
+        delete obj[key];
+      }
+      if(! value) delete obj[key];
+    });
+    return obj;
+}

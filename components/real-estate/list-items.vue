@@ -15,7 +15,7 @@ const props = defineProps({
 })
 
 const filterStore = useFilterStore()
-const { activeMessage, mapZoom, mapBbox } = storeToRefs(filterStore)
+const { activeMessage, mapZoom, mapBbox, activeFilters } = storeToRefs(filterStore)
 
 const chatStore = useChatStore()
 const scrollable = ref(null)
@@ -24,13 +24,13 @@ const isLoading = ref(false)
 const offset = ref(12)  // Track the offset for pagination
 const itemsPerPage = 12  // Define items per page or fetch it from the store if dynamic
 
+watch(() => activeFilters, () => {
+    offset.value = 12
+}, { deep: true })
+
 // Function to handle scroll event
 const handleScroll = async() => {
-  console.log('scroll')
   if(isLoading.value == true) return
-
-  // TODO add throttle
-  // when switch to map change location and switch back to list load more it's not working
 
   // Get the scroll position and height inside the div
   const scrollPosition = scrollable.value.scrollTop;

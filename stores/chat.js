@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
 import { query, requestDetails } from '../api/chat';
+import { removeEmptyValues } from '../utils'
 
 export const useChatStore = defineStore('chatStore', () => {
 
@@ -42,6 +43,10 @@ export const useChatStore = defineStore('chatStore', () => {
     const TYPE_LIST_ITEMS = 'list'
     const TYPE_LIST_HYBRID = 'hybrid'
 
+     // Loading state
+     const isQueryLoading = ref(false);
+     const isQueryLoadingProperty = ref(false);
+ 
     // Items management
     const items = ref([]);
     const mapItems = ref([]);
@@ -113,23 +118,6 @@ export const useChatStore = defineStore('chatStore', () => {
         if(newItems.length) items.value = [...items.value, ...newItems];
         if(newMapItems.length) mapItems.value = [...mapItems.value, ...newMapItems];
     };
-
-    // Loading state
-    const isQueryLoading = ref(false);
-    const isQueryLoadingProperty = ref(false);
-
-    function removeEmptyValues(obj) {
-        if(! obj) return {}
-        
-        Object.keys(obj).forEach((key) => {
-          const value = obj[key];
-          if (Array.isArray(value) && value.length === 0) {
-            delete obj[key];
-          }
-          if(! value) delete obj[key];
-        });
-        return obj;
-    }
 
     // API interactions
     const handleQuery = async (q = null, filters = null, mapFilters = null, offset = null, isMovingMap = null) => {
