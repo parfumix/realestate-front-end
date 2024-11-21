@@ -8,12 +8,11 @@
 const props = defineProps({
     items: {
         type: Array
+    },
+    defaultView: {
+      type: String
     }
 })
-
-let defaultView = ref(
-  localStorage.getItem('defaultView') ?? 'list'
-)
 
 const filterStore = useFilterStore()
 const { activeMessage, mapZoom, mapBbox } = storeToRefs(filterStore)

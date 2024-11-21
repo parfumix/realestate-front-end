@@ -31,8 +31,8 @@
         </div>
 
         <div class="w-full">
-          <RealEstateMap v-if="defaultView==chatStore.TYPE_MAP_ITEMS || defaultView==chatStore.TYPE_LIST_HYBRID" @moveend="handleMapFetchItems" />
-          <RealEstateList v-else-if="defaultView==chatStore.TYPE_LIST_ITEMS" />
+          <RealEstateMap :defaultView="defaultView" v-show="defaultView==chatStore.TYPE_MAP_ITEMS || defaultView==chatStore.TYPE_LIST_HYBRID" @moveend="handleMapFetchItems" />
+          <RealEstateList :defaultView="defaultView" v-show="defaultView==chatStore.TYPE_LIST_ITEMS" />
         </div>
       </div>
     </div>

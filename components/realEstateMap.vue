@@ -1,11 +1,10 @@
 <template>
-  <ClientOnly>
-    <div id="map" style="width: 100%; height: 100%;" />
-
+  <div style="width: 100%; height: 100%;">
+    <div id="map" v-show="defaultView == chatStore.TYPE_MAP_ITEMS" style="width: 100%; height: 100%;" />
     <Teleport v-if="selectedItem" :to="`.popup-content-${selectedItem.internal_id}`">
       <RealEstateListItem :item="selectedItem" :hideBookmark="true" />
     </Teleport>
-  </ClientOnly>
+  </div>
 </template>
 
 <script setup>
@@ -25,6 +24,12 @@ const { mapItems } = storeToRefs(chatStore)
 const { $currencyFormat } = useNuxtApp();
 
 const emit = defineEmits(['moveend'])
+
+const props = defineProps({
+  defaultView: {
+    type: String
+  }
+})
 
 let map;
 let spiderfier;
@@ -311,13 +316,17 @@ function createPriceIcon(price) {
   });
 }
 
-// Initialize map on component mount
-onMounted(async () => {
-  await nextTick();
-  initializeMap();
-})
+watch(() => props.defaultView, (newView) => {
+  if (newView === chatStore.TYPE_MAP_ITEMS && !map) {
+    nextTick(async() => {
+      await initializeMap()
+      updateMarkers(mapItems.value);
+    });
+  }
+}, { immediate: true });
 
 watch(() => mapItems.value, (newVal) => {
+  if(! map) return
   setTimeout(() => {
     updateMarkers(newVal);
   })
