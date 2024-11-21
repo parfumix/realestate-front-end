@@ -158,8 +158,8 @@ export const useFilterStore = defineStore('filters', () => {
   const handleToggleFilter = (type, value) => {
     activeMessage.value = null
 
-    let beforeLocations = null
-    let afterLocations = null
+    let beforeLocations = []
+    let afterLocations = []
     if(type == 'location') beforeLocations = [...activeFilters['location']]
 
     let valueIndex = activeFilters?.[type]?.findIndex(el => el == value);
