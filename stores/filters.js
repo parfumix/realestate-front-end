@@ -160,7 +160,7 @@ export const useFilterStore = defineStore('filters', () => {
 
     let beforeLocations = []
     let afterLocations = []
-    if(type == 'location') beforeLocations = [...activeFilters['location']]
+    if(type == 'location') beforeLocations = [...activeFilters?.['location'] ?? []]
 
     let valueIndex = activeFilters?.[type]?.findIndex(el => el == value);
 
@@ -172,7 +172,7 @@ export const useFilterStore = defineStore('filters', () => {
       activeFilters[type] = activeFilters?.[type] ? [...activeFilters?.[type], value] : [value]
     }
 
-    if(type == 'location') afterLocations = [...activeFilters['location']]
+    if(type == 'location') afterLocations = [...activeFilters?.['location'] ?? []]
 
     if(beforeLocations.length && !afterLocations.length) {
       setMapFilters(6, getRomanianBounds(true))
