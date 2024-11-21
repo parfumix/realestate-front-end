@@ -108,11 +108,18 @@ const initializeMap = async() => {
 
   // Listener for when markers are unspiderfied (return to original positions)
   spiderfier.addListener('unspiderfy', (markers) => {
+    // Handle individual markers
     markers.forEach(marker => {
-      marker.setIcon(createClusterIcon(markers.length));
+      marker.setIcon(createPriceIcon(marker.options.feature.price));
+    });
+
+    // Optionally reset cluster icons (if clusters need to reflect unspiderfy state)
+    markersCluster.eachLayer(layer => {
+      if (layer instanceof L.Marker && layer.options.feature?.cluster) {
+        layer.setIcon(createClusterIcon(layer.options.feature.point_count));
+      }
     });
   });
-
 
   // Load and add the world GeoJSON to the map with a light fill
   await fetch('/world.geo.json')
