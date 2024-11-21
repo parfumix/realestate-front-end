@@ -158,6 +158,10 @@ export const useFilterStore = defineStore('filters', () => {
   const handleToggleFilter = (type, value) => {
     activeMessage.value = null
 
+    let beforeLocations = null
+    let afterLocations = null
+    if(type == 'location') beforeLocations = [...activeFilters['location']]
+
     let valueIndex = activeFilters?.[type]?.findIndex(el => el == value);
 
     if (valueIndex >= 0) {
@@ -166,6 +170,12 @@ export const useFilterStore = defineStore('filters', () => {
     } else {
       // Add the value if it does not exist
       activeFilters[type] = activeFilters?.[type] ? [...activeFilters?.[type], value] : [value]
+    }
+
+    if(type == 'location') afterLocations = [...activeFilters['location']]
+
+    if(beforeLocations.length && !afterLocations.length) {
+      setMapFilters(6, getRomanianBounds(true))
     }
 
     hasFiltersChanged.value = true

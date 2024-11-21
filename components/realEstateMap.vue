@@ -258,8 +258,6 @@ function updateMarkers(clusterData) {
   if(clusterData.length && newBounds.isValid() && ! isMovingMap) {
       isFetching = true
 
-      console.log('fit bounds', newBounds.toBBoxString())
-
       map.fitBounds(newBounds, { padding: [50, 50], animate: true } )
       filterStore.setMapFilters(map.getZoom(), newBounds.toBBoxString().split(',').map(coord => parseFloat(coord)))
 
