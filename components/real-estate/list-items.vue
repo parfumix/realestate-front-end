@@ -26,7 +26,11 @@ const itemsPerPage = 12  // Define items per page or fetch it from the store if 
 
 // Function to handle scroll event
 const handleScroll = async() => {
+  console.log('scroll')
   if(isLoading.value == true) return
+
+  // TODO add throttle
+  // when switch to map change location and switch back to list load more it's not working
 
   // Get the scroll position and height inside the div
   const scrollPosition = scrollable.value.scrollTop;
@@ -40,7 +44,10 @@ const handleScroll = async() => {
     const { items } = await chatStore.handleQuery(
       activeMessage.value, filterStore.activeFilters, { zoom: mapZoom.value, bbox: mapBbox.value }, offset.value
     )
-    if(! items.length) return
+    if(! items.length) {
+      isLoading.value = false
+      return
+    }
 
     offset.value += itemsPerPage
     chatStore.handlePushItems({ items })
