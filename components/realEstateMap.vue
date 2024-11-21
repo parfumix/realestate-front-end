@@ -255,7 +255,7 @@ function updateMarkers(clusterData) {
   });
 
   // Fit the map to the bounds of all markers
-  if(newBounds.isValid() && ! isMovingMap) {
+  if(clusterData.length && newBounds.isValid() && ! isMovingMap) {
       isFetching = true
 
       console.log('fit bounds', newBounds.toBBoxString())
