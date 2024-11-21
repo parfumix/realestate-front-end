@@ -1,5 +1,5 @@
 <template>
-    <ul :class="[{'sm:grid-cols-2': defaultView==chatStore.TYPE_LIST_HYBRID, 'sm:grid-cols-3': defaultView==chatStore.TYPE_LIST_ITEMS}, 'grid gap-x-4 gap-y-4 sm:gap-x-6 xl:gap-x-4 no-scrollbar overflow-y-auto pb-2']" ref="scrollable" @scroll="handleScroll">
+    <ul :class="[{'sm:grid-cols-3': defaultView==chatStore.TYPE_LIST_ITEMS}, 'sm:grid-cols-2 grid gap-x-4 gap-y-4 sm:gap-x-6 xl:gap-x-4 no-scrollbar overflow-y-auto pb-2']" ref="scrollable" @scroll="handleScroll">
         <RealEstateListItem v-for="item in items" :item="item" :key="item.id" class="relative" />
     </ul>
 </template>
