@@ -39,19 +39,26 @@ const handleScroll = async() => {
 
   // Check if the user has scrolled to the bottom of the div
   if (scrollHeight - scrollPosition <= clientHeight + 1) {
-    isLoading.value = true
+    try {
+      isLoading.value = true
 
-    const { items } = await chatStore.handleQuery(
-      activeMessage.value, filterStore.activeFilters, { zoom: mapZoom.value, bbox: mapBbox.value }, offset.value
-    )
-    if(! items.length) {
+      const { items } = await chatStore.handleQuery(
+        activeMessage.value, filterStore.activeFilters, { zoom: mapZoom.value, bbox: mapBbox.value }, offset.value
+      )
+
+      if(! items.length) {
+        isLoading.value = false
+        return
+      }
+
+      offset.value += itemsPerPage
+      chatStore.handlePushItems({ items })
+
+    } catch(err) {
+
+    } finally {
       isLoading.value = false
-      return
     }
-
-    offset.value += itemsPerPage
-    chatStore.handlePushItems({ items })
-    isLoading.value = false
   }
 };
 </script>
