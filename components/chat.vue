@@ -4,7 +4,7 @@
     <slot name="header"></slot>
 
     <!-- Chat Window -->
-    <div class="flex-1 p-4 overflow-y-auto" ref="scrollContainer">
+    <div :class="{'flex-1 p-4 overflow-y-auto': defaultView!=chatStore.TYPE_LIST_HYBRID, 'hidden': defaultView==chatStore.TYPE_LIST_HYBRID}" ref="scrollContainer">
       <div class="space-y-4">
         <div v-for="(message, index) in messages" :key="index" class="flex">
           <div v-if="message.sender === 'user'" class="ml-auto relative">
@@ -64,11 +64,16 @@ const props = defineProps({
   isLoading: {
     type: Boolean
   },
+  defaultView: {
+    type: String
+  },
 })
 
 const scrollContainer = ref(null);
 
 const emit = defineEmits(['submit'])
+
+const chatStore = useChatStore()
 
 // Function to smoothly scroll to the bottom
 const scrollToBottom = () => {
