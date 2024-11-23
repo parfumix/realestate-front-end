@@ -5,7 +5,7 @@
 
     <div class="flex max-w-7xl mx-auto w-full justify-center items-center px-4 sm:px-6 lg:px-8 mt-2 " style="height: calc(100vh - 150px);">
       
-      <RealEstateList v-if="defaultView==chatStore.TYPE_LIST_HYBRID" class="sm:w-5/12" />
+      <RealEstateList :defaultView="defaultView" v-if="defaultView==chatStore.TYPE_LIST_HYBRID" class="sm:w-5/12" />
       <Chat v-else @submit="handleSendMessage" :isLoading="isQueryLoading" :messages="defaultThreadMessages" class="sm:w-5/12">
         <template #header>
           <div class="bg-blue-500 text-white py-2 px-4 rounded-t-lg flex items-center">

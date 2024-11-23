@@ -261,7 +261,6 @@ async function loadAmenities() {
   });
 }
 
-
 function changeAmenityType(type) {
   selectedAmenityType.value = type;
   loadAmenities();

@@ -28,6 +28,8 @@ const { user } = useAuthService()
 const modalStore = useModalStore();
 const chatStore = useChatStore();
 
+const router = useRouter()
+
 const { removeFavorite, addFavorite } = useFavoritesService()
 const { isAuthenticated } = useAuthService()
 
@@ -46,6 +48,7 @@ const openSignInModal = () => {
 }
 
 const handleSelect = () => {
+    router.push({ hash: `#property=${props.item.id}` })
     chatStore.handleSelectItem(props.item)
 }
 
