@@ -41,7 +41,6 @@
 import L from 'leaflet';
 import "leaflet/dist/leaflet.css";
 import { ref, onMounted, watch } from 'vue';
-import { useWikimapia } from '~/composables/useWikimapia'; // Import the new composable
 
 const props = defineProps({
   item: {
@@ -69,143 +68,64 @@ const mapZoom = ref(13);
 let map;
 let circle;
 
-const typeOfAmenities = [
-  {
-    type: "school",
-    name: "Școli",
-    icon: L.icon({
-      iconUrl: '/icons/school-icon.svg',
-      iconSize: [32, 32],
-      iconAnchor: [16, 32],
-      popupAnchor: [0, -32]
-    })
-  },
-  {
-    type: "hospital",
-    name: "Spitale",
-    icon: L.icon({
-      iconUrl: '/icons/hospital-icon.svg',
-      iconSize: [32, 32],
-      iconAnchor: [16, 32],
-      popupAnchor: [0, -32]
-    })
-  },
-  {
-    type: "pharmacy",
-    name: "Farmacii",
-    icon: L.icon({
-      iconUrl: '/icons/pharmacy-icon.svg',
-      iconSize: [32, 32],
-      iconAnchor: [16, 32],
-      popupAnchor: [0, -32]
-    })
-  },
-  {
-    type: "supermarket",
-    name: "Supermarketuri",
-    icon: L.icon({
-      iconUrl: '/icons/supermarket-icon.svg',
-      iconSize: [32, 32],
-      iconAnchor: [16, 32],
-      popupAnchor: [0, -32]
-    })
-  },
-  {
-    type: "park",
-    name: "Parcuri",
-    icon: L.icon({
-      iconUrl: '/icons/park-icon.svg',
-      iconSize: [32, 32],
-      iconAnchor: [16, 32],
-      popupAnchor: [0, -32]
-    })
-  },
-  {
-    type: "restaurant",
-    name: "Restaurante",
-    icon: L.icon({
-      iconUrl: '/icons/restaurant-icon.svg',
-      iconSize: [32, 32],
-      iconAnchor: [16, 32],
-      popupAnchor: [0, -32]
-    })
-  },
-  {
-    type: "cafe",
-    name: "Cafenele",
-    icon: L.icon({
-      iconUrl: '/icons/cafe-icon.svg',
-      iconSize: [32, 32],
-      iconAnchor: [16, 32],
-      popupAnchor: [0, -32]
-    })
-  },
-  {
-    type: "bank",
-    name: "Bănci",
-    icon: L.icon({
-      iconUrl: '/icons/bank-icon.svg',
-      iconSize: [32, 32],
-      iconAnchor: [16, 32],
-      popupAnchor: [0, -32]
-    })
-  },
-  {
-    type: "bus_station",
-    name: "Stații de autobuz",
-    icon: L.icon({
-      iconUrl: '/icons/bus-station-icon.svg',
-      iconSize: [32, 32],
-      iconAnchor: [16, 32],
-      popupAnchor: [0, -32]
-    })
-  },
-  {
-    type: "library",
-    name: "Biblioteci",
-    icon: L.icon({
-      iconUrl: '/icons/library-icon.svg',
-      iconSize: [32, 32],
-      iconAnchor: [16, 32],
-      popupAnchor: [0, -32]
-    })
-  },
-  {
-    type: "gym",
-    name: "Săli de sport",
-    icon: L.icon({
-      iconUrl: '/icons/gym-icon.svg',
-      iconSize: [32, 32],
-      iconAnchor: [16, 32],
-      popupAnchor: [0, -32]
-    })
-  },
-  {
-    type: "shopping_mall",
-    name: "Centre comerciale",
-    icon: L.icon({
-      iconUrl: '/icons/shopping-mall-icon.svg',
-      iconSize: [32, 32],
-      iconAnchor: [16, 32],
-      popupAnchor: [0, -32]
-    })
-  },
-  {
-    type: "parking",
-    name: "Parcări",
-    icon: L.icon({
-      iconUrl: '/icons/parking-icon.svg',
-      iconSize: [32, 32],
-      iconAnchor: [16, 32],
-      popupAnchor: [0, -32]
-    })
-  }
+// Category mapping object
+const amenities = [
+    // Education
+    "school",
+    "kindergarten",
+    "library",
+    
+    // Sustenance
+    "cafe",
+    "restaurant",
+    "supermarket",
+    
+    // Healthcare
+    "hospital",
+    "pharmacy",
+    
+    // Transportation
+    "bus_station",
+    "parking",
+    
+    // Recreation
+    "park",
+    "gym"
 ];
+
+const amenityDetails = {
+  school: { name: "Școli", iconUrl: '/icons/school-icon.svg' },
+  kindergarten: { name: "Grădinițe", iconUrl: '/icons/kindergarten-icon.svg' },
+  library: { name: "Biblioteci", iconUrl: '/icons/library-icon.svg' },
+  cafe: { name: "Cafenele", iconUrl: '/icons/cafe-icon.svg' },
+  restaurant: { name: "Restaurante", iconUrl: '/icons/restaurant-icon.svg' },
+  supermarket: { name: "Supermarketuri", iconUrl: '/icons/supermarket-icon.svg' },
+  hospital: { name: "Spitale", iconUrl: '/icons/hospital-icon.svg' },
+  pharmacy: { name: "Farmacii", iconUrl: '/icons/pharmacy-icon.svg' },
+  bus_station: { name: "Stații de autobuz", iconUrl: '/icons/bus-station-icon.svg' },
+  parking: { name: "Parcări", iconUrl: '/icons/parking-icon.svg' },
+  park: { name: "Parcuri", iconUrl: '/icons/park-icon.svg' },
+  gym: { name: "Săli de sport", iconUrl: '/icons/gym-icon.svg' }
+};
+
+const typeOfAmenities = amenities.map(type => {
+  const details = amenityDetails[type];
+  return {
+    type,
+    name: details.name,
+    icon: L.icon({
+      iconUrl: details.iconUrl,
+      iconSize: [32, 32],
+      iconAnchor: [16, 32],
+      popupAnchor: [0, -32]
+    })
+  };
+});
 
 const amenitiesMarkers = ref([]);
 const selectedAmenityType = ref(typeOfAmenities[0].type);
 
-const { places, fetchNearestPlaces, loading, error } = useWikimapia();
+import { fetchNearestPlaces } from '../../api/map.js'
 
 // Initialize map and layers
 onMounted(() => {
@@ -234,7 +154,8 @@ function initializeMap() {
 
 async function loadAmenities() {
   const { lat, lng } = props.item.meta;
-  await fetchNearestPlaces(lat, lng, selectedAmenityType.value);
+
+  const { data: { value: places } } = await fetchNearestPlaces(lat, lng, selectedAmenityType.value);
 
   // Clear existing markers
   amenitiesMarkers.value.forEach(marker => marker.remove());
@@ -249,14 +170,15 @@ async function loadAmenities() {
   });
 
   // Add new markers for each place with the correct icon
-  places.value.forEach(({ title, distance, location, type }) => {
+  places.forEach(({ name, dist_meters, lat, long, type }) => {
     // Find the matching amenity type to get the icon
     const amenity = typeOfAmenities.find(amenity => amenity.type === type);
     const icon = amenity ? amenity.icon : defaultIcon; // Use defaultIcon if no match is found
 
-    const marker = L.marker([location.lat, location.lon], { icon })
+    const marker = L.marker([lat, long], { icon })
       .addTo(map)
-      .bindPopup(`<strong>${title}</strong><br>Distance: ${distance} meters`);
+      .bindPopup(`<strong>${name}</strong><br>Distance: ${dist_meters} meters`);
+
     amenitiesMarkers.value.push(marker);
   });
 }
