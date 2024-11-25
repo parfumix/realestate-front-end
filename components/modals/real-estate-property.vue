@@ -21,7 +21,7 @@
 
       <transition name="fade">
         <div v-show="activeTab == 'map'" key="map">
-          <ModalsRealEstateMap :activeTab="activeTab" :item="item" />  
+          <ModalsRealEstateMap v-if="item.meta?.lng && item.meta?.lat" :activeTab="activeTab" :item="item" />  
         </div>
       </transition>
     </div>

@@ -1,6 +1,6 @@
 <template>
   <div style="height: 400px; width: 100%">
-    <div id="map-item" style="height: 100%; width: 100%; border: 1px solid red" />
+    <div id="map-item" style="height: 100%; width: 100%;" />
 
     <nav class="flex justify-between items-center border-0 rounded-full px-2">
       <!-- Left navigation button -->
@@ -130,7 +130,7 @@ const initializeMap = async() => {
   map = L.map('map-item', {
     scrollWheelZoom: false,
     maxZoom: 18,
-    minZoom: 6,
+    minZoom: 8,
   }).setView(mapCenter.value, mapZoom.value);
 
   // Set max bounds to keep the map restricted within Romania
@@ -154,7 +154,6 @@ const initializeMap = async() => {
 
 const loadAmenities = async() => {
   const { lat, lng } = props.item.meta;
-
   const { data: { value: places } } = await fetchNearestPlaces(lat, lng, selectedAmenityType.value);
 
   // Clear existing markers
