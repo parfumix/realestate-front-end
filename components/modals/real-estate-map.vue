@@ -116,6 +116,8 @@ const typeOfAmenities = amenities.map(type => {
   };
 });
 
+const amenityCache = ref({});
+
 const amenitiesMarkers = ref([]);
 const selectedAmenityType = ref(typeOfAmenities[0].type);
 
@@ -152,10 +154,27 @@ const initializeMap = async() => {
   map.fitBounds(circle.getBounds(), { padding: [20, 20] });
 }
 
-const loadAmenities = async() => {
+const loadAmenities = async () => {
   const { lat, lng } = props.item.meta;
+  const cacheKey = `${lat},${lng},${selectedAmenityType.value}`;
+
+  // Check if the data is already in the cache
+  if (amenityCache.value[cacheKey]) {
+    updateAmenitiesMarkers(amenityCache.value[cacheKey]);
+    return;
+  }
+
+  // Fetch data if not cached
   const { data: { value: places } } = await fetchNearestPlaces(lat, lng, selectedAmenityType.value);
 
+  // Cache the data
+  amenityCache.value[cacheKey] = places;
+
+  // Update markers on the map
+  updateAmenitiesMarkers(places);
+};
+
+const updateAmenitiesMarkers = (places) => {
   // Clear existing markers
   amenitiesMarkers.value.forEach(marker => marker.remove());
   amenitiesMarkers.value = [];
@@ -180,7 +199,7 @@ const loadAmenities = async() => {
 
     amenitiesMarkers.value.push(marker);
   });
-}
+};
 
 const changeAmenityType = (type) => {
   selectedAmenityType.value = type;
