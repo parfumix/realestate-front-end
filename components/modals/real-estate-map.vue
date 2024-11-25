@@ -163,7 +163,7 @@ async function loadAmenities() {
 
   // Define a default icon as a fallback
   const defaultIcon = L.icon({
-    iconUrl: '../../icons/default-icon.svg', // Path to your default SVG icon
+    iconUrl: '/icons/default-icon.svg', // Path to your default SVG icon
     iconSize: [32, 32],
     iconAnchor: [16, 32],
     popupAnchor: [0, -32]
