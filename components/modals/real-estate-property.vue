@@ -20,8 +20,8 @@
       </transition>
 
       <transition name="fade">
-        <div v-if="activeTab === 'map'" key="map">
-          <ModalsRealEstateMap :item="item" />  
+        <div v-show="activeTab == 'map'" key="map">
+          <ModalsRealEstateMap :activeTab="activeTab" :item="item" />  
         </div>
       </transition>
     </div>

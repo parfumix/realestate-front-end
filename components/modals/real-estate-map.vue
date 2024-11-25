@@ -1,8 +1,6 @@
 <template>
-  <ClientOnly>
-    <div class="map-container">
-      <div id="map-item" style="height: 400px; width: 100%"></div>
-    </div>
+  <div style="height: 400px; width: 100%">
+    <div id="map-item" style="height: 100%; width: 100%; border: 1px solid red" />
 
     <nav class="flex justify-between items-center border-0 rounded-full px-2">
       <!-- Left navigation button -->
@@ -34,23 +32,23 @@
         </svg>
       </div>
     </nav>
-  </ClientOnly>
+  </div>
 </template>
 
 <script setup>
 import L from 'leaflet';
 import "leaflet/dist/leaflet.css";
-import { ref, onMounted, watch } from 'vue';
+
+import { getRomanianBounds } from '../utils'
 
 const props = defineProps({
   item: {
     type: Object,
     default: () => ({})
   },
-  radius: {
-    type: Number,
-    default: 500
-  },
+  activeTab: {
+    type: String,
+  }
 });
 
 const templateRef = ref(null);
@@ -62,11 +60,7 @@ const templateSlidePrev = () => {
   return templateRef.value.slidePrev();
 };
 
-const mapCenter = ref([props.item.meta?.lat || 47.21322, props.item.meta?.lng || -1.559482]);
-const mapZoom = ref(13);
-
 let map;
-let circle;
 
 // Category mapping object
 const amenities = [
@@ -127,32 +121,38 @@ const selectedAmenityType = ref(typeOfAmenities[0].type);
 
 import { fetchNearestPlaces } from '../../api/map.js'
 
-// Initialize map and layers
-onMounted(() => {
-  setTimeout(() => {
-    initializeMap();
-    loadAmenities();
-  })
-});
+const initializeMap = async() => {
+  const romaniaBounds = getRomanianBounds();
 
-function initializeMap() {
-  map = L.map('map-item').setView(mapCenter.value, mapZoom.value);
+  const mapCenter = ref([props.item.meta?.lat || 47.21322, props.item.meta?.lng || -1.559482]);
+  const mapZoom = ref(13);
+
+  map = L.map('map-item', {
+    scrollWheelZoom: false,
+    maxZoom: 18,
+    minZoom: 6,
+  }).setView(mapCenter.value, mapZoom.value);
+
+  // Set max bounds to keep the map restricted within Romania
+  map.setMaxBounds(romaniaBounds);
+
+  // Optionally, you can set options to disable dragging outside bounds
+  map.options.maxBoundsViscosity = 1;
 
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '&copy; OpenStreetMap contributors'
+    opacity: 1
   }).addTo(map);
 
-  if (props.item.meta?.lat && props.item.meta?.lng) {
-    circle = L.circle([props.item.meta.lat, props.item.meta.lng], {
-      radius: props.radius,
-      color: 'blue',
-      fillOpacity: 0.1
-    }).addTo(map);
-    map.fitBounds(circle.getBounds(), { padding: [20, 20] });
-  }
+  let circle = L.circle([props.item.meta.lat, props.item.meta.lng], {
+    radius: 500,
+    color: 'blue',
+    fillOpacity: 0.1
+  }).addTo(map);
+
+  map.fitBounds(circle.getBounds(), { padding: [20, 20] });
 }
 
-async function loadAmenities() {
+const loadAmenities = async() => {
   const { lat, lng } = props.item.meta;
 
   const { data: { value: places } } = await fetchNearestPlaces(lat, lng, selectedAmenityType.value);
@@ -183,42 +183,23 @@ async function loadAmenities() {
   });
 }
 
-function changeAmenityType(type) {
+const changeAmenityType = (type) => {
   selectedAmenityType.value = type;
   loadAmenities();
 }
 
-// Watch for changes in radius or location
-watch(() => props.radius, () => {
-  if (circle) {
-    circle.setRadius(props.radius);
-    map.fitBounds(circle.getBounds(), { padding: [20, 20] });
-    loadAmenities();
+watch(() => props.activeTab, (newTab) => {
+  if (newTab == 'map' && !map) {
+    nextTick(async() => {
+      await initializeMap()
+      await loadAmenities()
+    });
   }
-});
+}, { immediate: true });
 
-watch(() => props.item.meta, (newMeta) => {
-  if (newMeta?.lat && newMeta?.lng) {
-    map.setView([newMeta.lat, newMeta.lng], mapZoom.value);
-    if (circle) {
-      circle.setLatLng([newMeta.lat, newMeta.lng]);
-    } else {
-      circle = L.circle([newMeta.lat, newMeta.lng], {
-        radius: props.radius,
-        color: 'blue',
-        fillOpacity: 0.1
-      }).addTo(map);
-    }
-    loadAmenities();
-  }
-}, { deep: true });
 </script>
 
 <style>
-.map-container {
-  height: 100%;
-}
-
 .swiper-slide-templates .swiper-slide-templates-slide {
   width: auto !important;
   display: inline-block;
