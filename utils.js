@@ -18,3 +18,17 @@ export const getRomanianBounds = (flat = false) => {
     });
     return obj;
 }
+
+export const calculateTravelTime = (distanceMeters, mode = 'walking') => {
+  const speeds = {
+    walking: 5, // km/h
+    cycling: 15,
+    driving: 60,
+  };
+
+  const speed = speeds[mode];
+  const distanceKm = distanceMeters / 1000; // Convert meters to kilometers
+  const travelTimeHours = distanceKm / speed;
+
+  return Math.round(travelTimeHours * 60); // Convert to minutes and round off
+};

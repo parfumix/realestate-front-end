@@ -1,8 +1,8 @@
 <template>
-  <div>
-    <div id="map-item" style="height: 350px; width: 100%;" />
+  <div class="h-[calc(100dvh-150px)]">
+    <div id="map-item" style="height: 50%; width: 100%;" />
 
-    <nav class="flex justify-between items-center border-0 rounded-full px-2">
+    <nav style="height: 10%" class="flex justify-between items-center border-0 rounded-full px-2">
       <!-- Left navigation button -->
       <div class="w-3 z-[60] mr-2">
         <svg @click="templateSlidePrev" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
@@ -34,7 +34,7 @@
       </div>
     </nav>
 
-    <modals-real-estate-amenities :items="currentPlaces" class="mx-6 py-3 h-[300px] overflow-y-auto" />
+    <modals-real-estate-amenities style="height: 40%" :items="currentPlaces" />
   </div>
 </template>
 
@@ -47,7 +47,7 @@ import 'leaflet.markercluster/dist/MarkerCluster.Default.css';
 
 import debounce from 'lodash-es/debounce';
 
-import { getRomanianBounds } from '../utils'
+import { getRomanianBounds, calculateTravelTime } from '../utils'
 
 const props = defineProps({
   item: {
@@ -128,7 +128,6 @@ const typeOfAmenities = amenities.map(type => {
 });
 
 const amenityCache = ref({});
-
 const amenitiesMarkers = ref([]);
 const selectedAmenityType = ref(typeOfAmenities[0].type);
 
@@ -150,7 +149,7 @@ const initializeMap = async () => {
   // Create a new marker cluster group
   markersCluster = L.markerClusterGroup({
     showCoverageOnHover: false,
-    maxClusterRadius: 50,
+    maxClusterRadius: 20,
     iconCreateFunction: (cluster) => {
       return createClusterIcon(cluster.getChildCount())
     }
@@ -191,7 +190,7 @@ const loadAmenities = async () => {
     }
 
     // Fetch data if not cached
-    const { data: { value: places } } = await fetchNearestPlaces(lat, lng, selectedAmenityType.value);
+    const { data: { value: places } } = await fetchNearestPlaces(lat, lng, selectedAmenityType.value, 5000);
 
     // Cache the data
     amenityCache.value[cacheKey] = places;
@@ -210,20 +209,6 @@ const loadAmenities = async () => {
 const scaleIcon = (dist_meters) => {
   // Define scaling logic
   return Math.max(20, 40 - dist_meters / 100); // Icon size decreases as distance increases
-};
-
-const calculateTravelTime = (distanceMeters, mode = 'walking') => {
-  const speeds = {
-    walking: 5, // km/h
-    cycling: 15,
-    driving: 60,
-  };
-
-  const speed = speeds[mode];
-  const distanceKm = distanceMeters / 1000; // Convert meters to kilometers
-  const travelTimeHours = distanceKm / speed;
-
-  return Math.round(travelTimeHours * 60); // Convert to minutes and round off
 };
 
 const updateAmenitiesMarkers = (places) => {
