@@ -39,6 +39,9 @@
 import L from 'leaflet';
 import "leaflet/dist/leaflet.css";
 
+import 'leaflet.markercluster';
+import 'leaflet.markercluster/dist/MarkerCluster.Default.css';
+
 import { getRomanianBounds } from '../utils'
 
 const props = defineProps({
@@ -61,6 +64,7 @@ const templateSlidePrev = () => {
 };
 
 let map;
+let markersCluster;
 
 // Category mapping object
 const amenities = [
@@ -135,6 +139,22 @@ const initializeMap = async() => {
     minZoom: 8,
   }).setView(mapCenter.value, mapZoom.value);
 
+ 
+  // Create a new marker cluster group
+  markersCluster = L.markerClusterGroup({
+    showCoverageOnHover: false,
+    maxClusterRadius: 50,
+    iconCreateFunction: (cluster) => {
+      const count = cluster.getChildCount();
+      return L.divIcon({
+        html: `<div class="cluster-icon">${count}</div>`,
+        className: 'custom-cluster-icon',
+        iconSize: [40, 40]
+      });
+    }
+  });
+  map.addLayer(markersCluster);
+
   // Set max bounds to keep the map restricted within Romania
   map.setMaxBounds(romaniaBounds);
 
@@ -175,7 +195,9 @@ const loadAmenities = async () => {
 };
 
 const updateAmenitiesMarkers = (places) => {
-  // Clear existing markers
+  markersCluster.clearLayers();
+
+  // Clear existing markers and clusters
   amenitiesMarkers.value.forEach(marker => marker.remove());
   amenitiesMarkers.value = [];
 
@@ -187,17 +209,16 @@ const updateAmenitiesMarkers = (places) => {
     popupAnchor: [0, -32]
   });
 
-  // Add new markers for each place with the correct icon
+  // Add markers to the cluster group
   places.forEach(({ name, dist_meters, lat, long, type }) => {
-    // Find the matching amenity type to get the icon
     const amenity = typeOfAmenities.find(amenity => amenity.type === type);
-    const icon = amenity ? amenity.icon : defaultIcon; // Use defaultIcon if no match is found
+    const icon = amenity ? amenity.icon : defaultIcon;
 
     const marker = L.marker([lat, long], { icon })
-      .addTo(map)
       .bindPopup(`<strong>${name}</strong><br>Distance: ${dist_meters} meters`);
-
-    amenitiesMarkers.value.push(marker);
+    
+    markersCluster.addLayer(marker);
+    amenitiesMarkers.value.push(marker); // Store individual markers for future reference
   });
 };
 
@@ -221,5 +242,16 @@ watch(() => props.activeTab, (newTab) => {
 .swiper-slide-templates .swiper-slide-templates-slide {
   width: auto !important;
   display: inline-block;
+}
+
+.custom-cluster-icon {
+  background-color: rgba(57, 128, 228, 0.6);
+  border: 2px solid #fff;
+  border-radius: 50%;
+  text-align: center;
+  color: #fff;
+  font-size: 14px;
+  font-weight: bold;
+  line-height: 40px;
 }
 </style>
