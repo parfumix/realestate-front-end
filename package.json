@@ -16,6 +16,7 @@
     "date-fns": "^4.1.0",
     "leaflet": "^1.9.4",
     "leaflet.markercluster": "^1.5.3",
+    "lodash-es": "^4.17.21",
     "nuxt": "^3.13.0",
     "nuxt-swiper": "^1.2.2",
     "overlapping-marker-spiderfier-leaflet": "^0.2.7",

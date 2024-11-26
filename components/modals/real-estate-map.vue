@@ -45,6 +45,8 @@ import "leaflet/dist/leaflet.css";
 import 'leaflet.markercluster';
 import 'leaflet.markercluster/dist/MarkerCluster.Default.css';
 
+import debounce from 'lodash-es/debounce';
+
 import { getRomanianBounds } from '../utils'
 
 const props = defineProps({
@@ -130,6 +132,8 @@ const amenityCache = ref({});
 const amenitiesMarkers = ref([]);
 const selectedAmenityType = ref(typeOfAmenities[0].type);
 
+const isLoading = ref(false);
+
 import { fetchNearestPlaces } from '../../api/map.js'
 
 const initializeMap = async () => {
@@ -173,26 +177,39 @@ const initializeMap = async () => {
 }
 
 const loadAmenities = async () => {
-  const { lat, lng } = props.item.meta;
-  const cacheKey = `${lat},${lng},${selectedAmenityType.value}`;
+  isLoading.value = true;
 
-  // Check if the data is already in the cache
-  if (amenityCache.value[cacheKey]) {
-    currentPlaces.value = amenityCache.value[cacheKey]
-    updateAmenitiesMarkers(amenityCache.value[cacheKey]);
-    return;
+  try {
+    const { lat, lng } = props.item.meta;
+    const cacheKey = `${lat},${lng},${selectedAmenityType.value}`;
+
+    // Check if the data is already in the cache
+    if (amenityCache.value[cacheKey]) {
+      currentPlaces.value = amenityCache.value[cacheKey]
+      updateAmenitiesMarkers(amenityCache.value[cacheKey]);
+      return;
+    }
+
+    // Fetch data if not cached
+    const { data: { value: places } } = await fetchNearestPlaces(lat, lng, selectedAmenityType.value);
+
+    // Cache the data
+    amenityCache.value[cacheKey] = places;
+
+    currentPlaces.value = places
+
+    // Update markers on the map
+    updateAmenitiesMarkers(places);
+  } catch (error) {
+    console.error("Failed to load amenities:", error);
+  } finally {
+    isLoading.value = false;
   }
+};
 
-  // Fetch data if not cached
-  const { data: { value: places } } = await fetchNearestPlaces(lat, lng, selectedAmenityType.value);
-
-  // Cache the data
-  amenityCache.value[cacheKey] = places;
-
-  currentPlaces.value = places
-
-  // Update markers on the map
-  updateAmenitiesMarkers(places);
+const scaleIcon = (dist_meters) => {
+  // Define scaling logic
+  return Math.max(20, 40 - dist_meters / 100); // Icon size decreases as distance increases
 };
 
 const updateAmenitiesMarkers = (places) => {
@@ -217,11 +234,20 @@ const updateAmenitiesMarkers = (places) => {
   // Add markers with detailed data and popups
   places.forEach(({ name, dist_meters, lat, long, type }) => {
     const amenity = typeOfAmenities.find(amenity => amenity.type === type);
-    const icon = amenity ? amenity.icon : defaultIcon;
+    const iconSize = scaleIcon(dist_meters); // Dynamically calculate icon size
+
+    const icon = amenity
+      ? L.icon({
+          iconUrl: amenity.iconUrl,
+          iconSize: [iconSize, iconSize],
+          iconAnchor: [iconSize / 2, iconSize],
+          popupAnchor: [0, -iconSize / 2],
+        })
+      : defaultIcon;
 
     const marker = L.marker([lat, long], { icon, data: { name, dist_meters, type } })
       .bindPopup(`
-            <div class='bg-white text-gray-800 font-bold shadow-md'>
+            <div class='bg-white text-gray-800 font-bold shadow-md' aria-label="Information about ${name}">
               <strong>${name}</strong><br>
               Distance: ${(dist_meters / 1000).toFixed(2)} km distanţă
             </div>`);
@@ -239,11 +265,19 @@ const updateAmenitiesMarkers = (places) => {
   }
 };
 
+const debouncedLoadAmenities = debounce(loadAmenities, 300);
+
 const changeAmenityType = (type) => {
   selectedAmenityType.value = type;
-  loadAmenities();
+  debouncedLoadAmenities();
 }
 
+onUnmounted(() => {
+  if (map) {
+    map.off();
+    map.remove();
+  }
+});
 
 // Helper function to create a dynamic icon based on the cluster count
 function createClusterIcon(count) {
