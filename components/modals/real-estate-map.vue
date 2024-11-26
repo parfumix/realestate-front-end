@@ -16,9 +16,10 @@
       <slider :slidesPerView="'auto'" ref="templateRef" class="mx-6 swiper-slide-templates"
         :slideClass="'swiper-slide-templates-slide'" :items="typeOfAmenities" v-slot="{ item: tab }">
         <a :key="tab.type"
-          :class="[selectedAmenityType == tab.type ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:border-gray-200 hover:text-gray-700', 'flex whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium cursor-pointer']"
+          :class="[selectedAmenityType == tab.type ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:border-gray-200 hover:text-gray-700', 'flex whitespace-nowrap border-b-2 py-4 px-1 text-sm items-center font-medium cursor-pointer']"
           :aria-current="selectedAmenityType == tab.type ? 'page' : undefined"
           @click.prevent="changeAmenityType(tab.type)">
+          <utils-svg-render :svgUrl="tab?.iconUrl" class="mr-2" />
           {{ tab?.name }}
         </a>
       </slider>
@@ -114,6 +115,7 @@ const typeOfAmenities = amenities.map(type => {
   return {
     type,
     name: details.name,
+    iconUrl: details.iconUrl,
     icon: L.icon({
       iconUrl: details.iconUrl,
       iconSize: [32, 32],

@@ -1,5 +1,5 @@
 <template>
-  <div class="h-full sm:max-w-xl w-full bg-white shadow-xs rounded-lg flex flex-col">
+  <div class="sm:max-w-xl w-full bg-white shadow-xs rounded-lg flex flex-col">
     <!-- Header -->
     <slot name="header"></slot>
 
