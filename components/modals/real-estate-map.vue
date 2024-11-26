@@ -32,6 +32,8 @@
         </svg>
       </div>
     </nav>
+
+    <modals-real-estate-amenities :items="currentPlaces" class="mx-6 h-full no-scrollbar py-3" />
   </div>
 </template>
 
@@ -65,6 +67,7 @@ const templateSlidePrev = () => {
 
 let map;
 let markersCluster;
+let currentPlaces = ref([]);
 
 // Category mapping object
 const amenities = [
@@ -180,6 +183,7 @@ const loadAmenities = async () => {
 
   // Check if the data is already in the cache
   if (amenityCache.value[cacheKey]) {
+    currentPlaces.value = amenityCache.value[cacheKey]
     updateAmenitiesMarkers(amenityCache.value[cacheKey]);
     return;
   }
@@ -189,6 +193,8 @@ const loadAmenities = async () => {
 
   // Cache the data
   amenityCache.value[cacheKey] = places;
+
+  currentPlaces.value = places
 
   // Update markers on the map
   updateAmenitiesMarkers(places);
