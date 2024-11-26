@@ -1,6 +1,6 @@
 <template>
-  <div style="height: 400px; width: 100%">
-    <div id="map-item" style="height: 100%; width: 100%;" />
+  <div>
+    <div id="map-item" style="height: 350px; width: 100%;" />
 
     <nav class="flex justify-between items-center border-0 rounded-full px-2">
       <!-- Left navigation button -->
@@ -34,7 +34,7 @@
       </div>
     </nav>
 
-    <modals-real-estate-amenities :items="currentPlaces" class="mx-6 h-full no-scrollbar py-3" />
+    <modals-real-estate-amenities :items="currentPlaces" class="mx-6 py-3 h-[300px] overflow-y-auto" />
   </div>
 </template>
 
@@ -139,11 +139,9 @@ const initializeMap = async () => {
   const mapZoom = ref(13);
 
   map = L.map('map-item', {
-    scrollWheelZoom: false,
     maxZoom: 18,
     minZoom: 8,
   }).setView(mapCenter.value, mapZoom.value);
-
 
   // Create a new marker cluster group
   markersCluster = L.markerClusterGroup({
@@ -171,7 +169,7 @@ const initializeMap = async () => {
     fillOpacity: 0.1
   }).addTo(map);
 
-  map.fitBounds(circle.getBounds(), { padding: [20, 20] });
+  //map.fitBounds(circle.getBounds(), { padding: [20, 20] });
 }
 
 const loadAmenities = async () => {
@@ -212,6 +210,9 @@ const updateAmenitiesMarkers = (places) => {
     popupAnchor: [0, -32]
   });
 
+  // Create a bounds object to track marker positions
+  const bounds = L.latLngBounds();
+
   // Add markers to the cluster group
   // Add markers with detailed data and popups
   places.forEach(({ name, dist_meters, lat, long, type }) => {
@@ -225,9 +226,17 @@ const updateAmenitiesMarkers = (places) => {
               Distance: ${(dist_meters / 1000).toFixed(2)} km distanţă
             </div>`);
 
-    markersCluster.addLayer(marker);
-    amenitiesMarkers.value.push(marker); // Store individual markers for future reference
+    markersCluster.addLayer(marker)
+    amenitiesMarkers.value.push(marker)
+
+     // Extend the bounds to include this marker
+     bounds.extend([lat, long]);
   });
+
+   // Adjust the map to fit the bounds of the new markers
+   if (places.length > 0) {
+    map.fitBounds(bounds, { padding: [20, 20] });
+  }
 };
 
 const changeAmenityType = (type) => {
