@@ -56,7 +56,10 @@ const props = defineProps({
   },
   activeTab: {
     type: String,
-  }
+  },
+  amenity: {
+    type: String,
+  },
 });
 
 const templateRef = ref(null);
@@ -302,9 +305,17 @@ function createClusterIcon(count) {
   });
 }
 
+watch(() => props.amenity, (newAmenity) => {
+  nextTick(async () => {
+      changeAmenityType(newAmenity)
+    });
+});
+
 watch(() => props.activeTab, (newTab) => {
   if (newTab == 'map' && !map) {
     nextTick(async () => {
+      selectedAmenityType.value = props.amenity
+
       await initializeMap()
       await loadAmenities()
     });

@@ -108,7 +108,7 @@ const handleSendMessage = async(message) => {
         
         chatStore.handlePushMessage(props.item.id, { text: reply, sender: 'bot' })
 
-        emit('select', amenity ? 'map' : 'general')
+        emit('select', amenity ? 'map' : 'general', amenity)
 
         insertMessage(
             user.value?.id, props.item.id, props.item.id, trimmedMessage, 'user'

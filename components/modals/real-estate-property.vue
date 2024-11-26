@@ -1,6 +1,6 @@
 <template>
   <div class="w-2/6 pb-4 sm:pb-4 bg-white">
-    <ModalsRealEstateChat :item="item" @select="(tab) => activeTab = tab" />
+    <ModalsRealEstateChat :item="item" @select="handleSelectTab" />
   </div>
   <div class="w-4/6 bg-transparent pb-4 sm:pb-4">
     <div class="mt-3 text-center sm:mt-0 sm:text-left">
@@ -21,7 +21,7 @@
 
       <transition name="fade">
         <div v-show="activeTab == 'map'" key="map">
-          <ModalsRealEstateMap v-if="item.meta?.lng && item.meta?.lat" :activeTab="activeTab" :item="item" />  
+          <ModalsRealEstateMap v-if="item.meta?.lng && item.meta?.lat" :activeTab="activeTab" :item="item" :amenity="activeAmenity" />  
         </div>
       </transition>
     </div>
@@ -39,6 +39,12 @@ const tabs = ref([
 ])
 
 const activeTab = ref('general')
+const activeAmenity = ref(null)
+
+const handleSelectTab = (tab, amenity = null) => {
+      activeTab.value = tab
+      activeAmenity.value = amenity
+  }
 
 const propertyTitle = computed(() => {
   const { room_count, area, price, street } = item.value;
