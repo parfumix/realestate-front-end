@@ -212,6 +212,20 @@ const scaleIcon = (dist_meters) => {
   return Math.max(20, 40 - dist_meters / 100); // Icon size decreases as distance increases
 };
 
+const calculateTravelTime = (distanceMeters, mode = 'walking') => {
+  const speeds = {
+    walking: 5, // km/h
+    cycling: 15,
+    driving: 60,
+  };
+
+  const speed = speeds[mode];
+  const distanceKm = distanceMeters / 1000; // Convert meters to kilometers
+  const travelTimeHours = distanceKm / speed;
+
+  return Math.round(travelTimeHours * 60); // Convert to minutes and round off
+};
+
 const updateAmenitiesMarkers = (places) => {
   markersCluster.clearLayers();
 
@@ -235,6 +249,8 @@ const updateAmenitiesMarkers = (places) => {
   places.forEach(({ name, dist_meters, lat, long, type }) => {
     const amenity = typeOfAmenities.find(amenity => amenity.type === type);
     const iconSize = scaleIcon(dist_meters); // Dynamically calculate icon size
+    const travelTimeWalking = calculateTravelTime(dist_meters, 'walking');
+    const travelTimeDriving = calculateTravelTime(dist_meters, 'driving');
 
     const icon = amenity
       ? L.icon({
@@ -249,7 +265,9 @@ const updateAmenitiesMarkers = (places) => {
       .bindPopup(`
             <div class='bg-white text-gray-800 font-bold shadow-md' aria-label="Information about ${name}">
               <strong>${name}</strong><br>
-              Distance: ${(dist_meters / 1000).toFixed(2)} km distanţă
+              <span>Distance: ${(dist_meters / 1000).toFixed(2)} km distanţă</span>
+              <span>Walking: ${travelTimeWalking} minutes</span>
+              <span>Driving: ${travelTimeDriving} minutes</span>
             </div>`);
 
     markersCluster.addLayer(marker)
