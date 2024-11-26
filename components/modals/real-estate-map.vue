@@ -72,27 +72,27 @@ let currentPlaces = ref([]);
 
 // Category mapping object
 const amenities = [
-    // Education
-    "school",
-    "kindergarten",
-    "library",
-    
-    // Sustenance
-    "cafe",
-    "restaurant",
-    "supermarket",
-    
-    // Healthcare
-    "hospital",
-    "pharmacy",
-    
-    // Transportation
-    "bus_station",
-    "parking",
-    
-    // Recreation
-    "park",
-    "gym"
+  // Education
+  "school",
+  "kindergarten",
+  "library",
+
+  // Sustenance
+  "cafe",
+  "restaurant",
+  "supermarket",
+
+  // Healthcare
+  "hospital",
+  "pharmacy",
+
+  // Transportation
+  "bus_station",
+  "parking",
+
+  // Recreation
+  "park",
+  "gym"
 ];
 
 const amenityDetails = {
@@ -132,7 +132,7 @@ const selectedAmenityType = ref(typeOfAmenities[0].type);
 
 import { fetchNearestPlaces } from '../../api/map.js'
 
-const initializeMap = async() => {
+const initializeMap = async () => {
   const romaniaBounds = getRomanianBounds();
 
   const mapCenter = ref([props.item.meta?.lat || 47.21322, props.item.meta?.lng || -1.559482]);
@@ -144,18 +144,13 @@ const initializeMap = async() => {
     minZoom: 8,
   }).setView(mapCenter.value, mapZoom.value);
 
- 
+
   // Create a new marker cluster group
   markersCluster = L.markerClusterGroup({
     showCoverageOnHover: false,
     maxClusterRadius: 50,
     iconCreateFunction: (cluster) => {
-      const count = cluster.getChildCount();
-      return L.divIcon({
-        html: `<div class="cluster-icon">${count}</div>`,
-        className: 'custom-cluster-icon',
-        iconSize: [40, 40]
-      });
+      return createClusterIcon(cluster.getChildCount())
     }
   });
   map.addLayer(markersCluster);
@@ -218,13 +213,18 @@ const updateAmenitiesMarkers = (places) => {
   });
 
   // Add markers to the cluster group
+  // Add markers with detailed data and popups
   places.forEach(({ name, dist_meters, lat, long, type }) => {
     const amenity = typeOfAmenities.find(amenity => amenity.type === type);
     const icon = amenity ? amenity.icon : defaultIcon;
 
-    const marker = L.marker([lat, long], { icon })
-      .bindPopup(`<strong>${name}</strong><br>Distance: ${dist_meters} meters`);
-    
+    const marker = L.marker([lat, long], { icon, data: { name, dist_meters, type } })
+      .bindPopup(`
+            <div class='bg-white text-gray-800 font-bold shadow-md'>
+              <strong>${name}</strong><br>
+              Distance: ${(dist_meters / 1000).toFixed(2)} km distanţă
+            </div>`);
+
     markersCluster.addLayer(marker);
     amenitiesMarkers.value.push(marker); // Store individual markers for future reference
   });
@@ -235,9 +235,30 @@ const changeAmenityType = (type) => {
   loadAmenities();
 }
 
+
+// Helper function to create a dynamic icon based on the cluster count
+function createClusterIcon(count) {
+  const baseSize = 20;                // Base icon size for small clusters
+  const maxSize = 40;                 // Maximum icon size for large clusters
+  const scalingFactor = 5;            // Controls how quickly the icon grows
+
+  // Calculate icon size using a capped scaling based on the square root of the count
+  const iconSize = Math.min(baseSize + Math.sqrt(count) * scalingFactor, maxSize);
+
+  return L.divIcon({
+    className: '',  // No additional class is needed here since TailwindCSS will handle styling through inline HTML
+    html: `<div class="flex items-center justify-center rounded-full bg-white text-gray-800 font-bold shadow-md" 
+                style="width: ${iconSize}px; height: ${iconSize}px;">
+               ${count}
+             </div>`,
+    iconSize: [iconSize, iconSize],
+    iconAnchor: [iconSize / 2, iconSize / 2]
+  });
+}
+
 watch(() => props.activeTab, (newTab) => {
   if (newTab == 'map' && !map) {
-    nextTick(async() => {
+    nextTick(async () => {
       await initializeMap()
       await loadAmenities()
     });
@@ -250,16 +271,5 @@ watch(() => props.activeTab, (newTab) => {
 .swiper-slide-templates .swiper-slide-templates-slide {
   width: auto !important;
   display: inline-block;
-}
-
-.custom-cluster-icon {
-  background-color: rgba(57, 128, 228, 0.6);
-  border: 2px solid #fff;
-  border-radius: 50%;
-  text-align: center;
-  color: #fff;
-  font-size: 14px;
-  font-weight: bold;
-  line-height: 40px;
 }
 </style>
