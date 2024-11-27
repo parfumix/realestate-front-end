@@ -103,12 +103,12 @@ const handleSendMessage = async(message) => {
         // adding user message to stack
         chatStore.handlePushMessage(props.item.id, { text: message, sender: 'user' })
 
-        const { reply = null, item, intent, amenity } = await chatStore.handleRequestDetails(props.item.id, trimmedMessage, {})
+        const { reply = null, item, intent, amenities } = await chatStore.handleRequestDetails(props.item.id, trimmedMessage, {})
         if(! item) throw new Error('No results found for' + trimmedMessage)
         
         chatStore.handlePushMessage(props.item.id, { text: reply, sender: 'bot' })
 
-        emit('select', amenity ? 'map' : 'general', amenity)
+        emit('select', amenities ? 'map' : 'general', amenities)
 
         insertMessage(
             user.value?.id, props.item.id, props.item.id, trimmedMessage, 'user'

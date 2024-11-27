@@ -41,9 +41,9 @@ const tabs = ref([
 const activeTab = ref('general')
 const activeAmenity = ref(null)
 
-const handleSelectTab = (tab, amenity = null) => {
+const handleSelectTab = (tab, amenities = null) => {
       activeTab.value = tab
-      activeAmenity.value = amenity
+      activeAmenity.value = amenities.length ? amenities[0] : null
   }
 
 const propertyTitle = computed(() => {
