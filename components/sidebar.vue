@@ -9,7 +9,7 @@
 
       <div class="flex flex-col justify-between h-full">
         <div class="flex flex-col gap-y-2 py-4">
-          <div v-for="(item, index) in menuItems" :key="index" class="hs-tooltip [--placement:right] inline-block">
+          <div v-for="(item, index) in menuItems.filter(el => el.visible)" :key="index" class="hs-tooltip [--placement:right] inline-block">
             <button v-if="!item?.path" @click="item.handler" :class="linksCss" v-html="item.svg" />
             <RouterLink v-else :to="item.path" @click="item.handler" :class="linksCss">
               <span v-html="item.svg"></span>
@@ -61,6 +61,7 @@ const handleLogout = () => {
 const linksCss = 'hs-tooltip-toggle size-[38px] inline-flex justify-center items-center gap-x-2 text-sm font-semibold rounded-full border border-transparent text-gray-500 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 disabled:opacity-50 disabled:pointer-events-none dark:text-neutral-400 dark:hover:bg-blue-500 dark:focus:bg-blue-500'
 
 const menuItems = ref([{
+  visible: true,
   handler: () => {
     if( !isAuthenticated()) {
       openRegisterModal()
@@ -70,6 +71,7 @@ const menuItems = ref([{
   },
   svg: '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m3.75 9v6m3-3H9m1.5-12H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" /></svg>'
 },{
+  visible: true,
   handler: () => {
     if( !isAuthenticated()) {
       openRegisterModal()
@@ -79,6 +81,7 @@ const menuItems = ref([{
   },
   svg: '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6"><path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" /></svg>'
 },{
+  visible: false,
   handler: () => {
     if( !isAuthenticated()) {
       openRegisterModal()
