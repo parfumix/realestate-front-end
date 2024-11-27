@@ -132,7 +132,7 @@ const typeOfAmenities = amenities.map(type => {
 
 const amenityCache = ref({});
 const amenitiesMarkers = ref([]);
-const selectedAmenityType = ref(typeOfAmenities[0].type);
+const selectedAmenityType = ref(null);
 
 const isLoading = ref(false);
 
@@ -314,7 +314,7 @@ watch(() => props.amenity, (newAmenity) => {
 watch(() => props.activeTab, (newTab) => {
   if (newTab == 'map' && !map) {
     nextTick(async () => {
-      selectedAmenityType.value = props.amenity
+      selectedAmenityType.value = props.amenity ?? typeOfAmenities[0].type
 
       await initializeMap()
       await loadAmenities()
