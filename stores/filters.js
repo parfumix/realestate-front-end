@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
 import { getRomanianBounds } from '~/utils';
 
-export const useFilterStore = defineStore('filters', () => {
+export const useFilterStore = defineStore('filtersStore', () => {
   const open = ref(false);
 
   const sortOptions = ref([
