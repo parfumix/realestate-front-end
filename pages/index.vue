@@ -170,6 +170,10 @@ const handleSendMessage = async (message) => {
   }
 }
 
+onUnmounted(() => {
+  chatStore.handleResetItems()
+})
+
 watch(() => route.name, (currentPageName) => {
   currentPageType.value = currentPageName
   
