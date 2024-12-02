@@ -24,14 +24,16 @@
 import { useModalStore } from '@/stores/modals';
 import SignInModal from '@/components/auth-modals/sing-in.vue';
 
-const { user } = useAuthService()
 const modalStore = useModalStore();
 const chatStore = useChatStore();
 
 const router = useRouter()
+const route = useRoute();
 
 const { removeFavorite, addFavorite } = useFavoritesService()
-const { isAuthenticated } = useAuthService()
+const { user, isAuthenticated } = useAuthService()
+
+const currentPageType = route.name
 
 const props = defineProps({
     item: {
@@ -48,7 +50,7 @@ const openSignInModal = () => {
 }
 
 const handleSelect = () => {
-    router.push({ hash: `#property=${props.item.id}` })
+    router.push({ hash: `?property=${props.item.id}` })
     chatStore.handleSelectItem(props.item)
 }
 
@@ -60,10 +62,14 @@ const handleTogglFavorite = async() => {
 
     const isFavorited = props.item.is_favorited
 
-    // modify object locally
-    chatStore.handleUpdateItem(props.item.id, {
-        is_favorited: !isFavorited
-    })
+    if(currentPageType == 'saved') {
+        chatStore.handleTriggerRefreshMap(true)
+        chatStore.handleRemoveItem(props.item.id)
+    } else {
+        chatStore.handleUpdateItem(props.item.id, {
+            is_favorited: !isFavorited
+        })
+    }
 
     return isFavorited
         ? await removeFavorite(user.value.id, props.item.id)

@@ -19,7 +19,7 @@ import { getRomanianBounds } from '../utils'
 import { useThrottle } from '~/composables/useThrottle';
 
 const chatStore = useChatStore()
-const { mapItems } = storeToRefs(chatStore)
+const { mapItems, triggeredRefreshMap } = storeToRefs(chatStore)
 
 const { $currencyFormat } = useNuxtApp();
 
@@ -37,6 +37,9 @@ let markersCluster;
 
 let isFetching = false
 let isMovingMap = true
+
+const route = useRoute();
+const currentPageType = route.name
 
 let selectedItem = ref(null);
 const fetchClustersThrottled = useThrottle(fetchClusters, 700);
@@ -180,7 +183,10 @@ async function fetchClusters() {
 
   try {
     filterStore.setMapFilters(zoom, bbox)
-    emit('moveend', activeMessage.value, filterStore.activeFilters, { zoom: mapZoom.value, bbox: mapBbox.value })
+
+    currentPageType == 'saved'
+      ? emit('moveend', null, { only_saved: true }, { zoom: mapZoom.value, bbox: mapBbox.value })
+      : emit('moveend', activeMessage.value, filterStore.activeFilters, { zoom: mapZoom.value, bbox: mapBbox.value })
   } catch (error) {
     console.error("Error during fetchClusters:", error);
   } finally {
@@ -315,6 +321,13 @@ function createPriceIcon(price) {
     iconAnchor: [iconWidth / 2, 15]
   });
 }
+
+watch(() => triggeredRefreshMap.value, async(newVal) => {
+  if(newVal === true) {
+    await fetchClusters()
+    chatStore.handleTriggerRefreshMap(false)
+  }
+})
 
 watch(() => props.defaultView, (newView) => {
   if ([chatStore.TYPE_MAP_ITEMS, chatStore.TYPE_LIST_HYBRID].includes(newView) && !map) {

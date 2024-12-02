@@ -51,6 +51,11 @@ export const useChatStore = defineStore('chatStore', () => {
     const items = ref([]);
     const mapItems = ref([]);
 
+    const triggeredRefreshMap = ref(false)
+    const handleTriggerRefreshMap = (mode = true) => {
+        triggeredRefreshMap.value = mode
+    }
+
     const selectedItem = ref(null);
 
     const handlePushMessage = async(threadId, { text, sender }) => {
@@ -169,6 +174,9 @@ export const useChatStore = defineStore('chatStore', () => {
 
     // Return grouped by feature
     return {
+        triggeredRefreshMap, 
+        handleTriggerRefreshMap,
+
         // Prompts
         prompts,
         handleSetPromptsByThread,
