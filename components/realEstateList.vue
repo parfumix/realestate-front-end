@@ -1,9 +1,9 @@
 <template>
   <div class="h-full" >
-    <div v-if="items.length > 0" class="h-full">
-      <RealEstateListItems class="flex flex-col justify-between h-full" :defaultView="defaultView" v-if="items.length > 0" :items="items" />
+    <div v-show="items.length" class="h-full">
+      <RealEstateListItems class="flex flex-col justify-between h-full" :defaultView="defaultView" :items="items" />
     </div>
-      <EmptyResults v-else class="w-full h-full flex flex-col justify-center items-center" />
+    <EmptyResults v-show="!items.length" class="w-full h-full flex flex-col justify-center items-center" />
   </div>
 </template>
 

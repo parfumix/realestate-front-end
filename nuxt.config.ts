@@ -14,6 +14,16 @@ export default defineNuxtConfig({
     },
   },
   ssr: false,
+
+  hooks: {
+    'pages:extend'(pages) {
+      pages.push({
+        name: 'saved',
+        path: '/saved',
+        file: '~/pages/index.vue', 
+      });
+    },
+  },
   supabase: {
     // Options
     url: process.env.SUPABASE_URL,

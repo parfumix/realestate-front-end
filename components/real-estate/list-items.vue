@@ -38,22 +38,12 @@ const offset = ref(12)  // Track the offset for pagination
 const itemsPerPage = 12  // Define items per page or fetch it from the store if dynamic
 
 const route = useRoute();
-const currentPageType = ref(null)
+const currentPageType = route.name
 
 watch(() => activeFilters, () => {
     offset.value = 12
     noMoreValues.value = false
 }, { deep: true })
-
-const resetSwitchingPage = () => {
-  offset.value = 12
-  noMoreValues.value = false
-}
-
-watch(() => route.query, ({ type = null }) => {
-  currentPageType.value = type
-  resetSwitchingPage()
-}, { deep: true, immediate: true })
 
 // Function to handle scroll event
 const handleScroll = async() => {
@@ -69,7 +59,7 @@ const handleScroll = async() => {
     try {
       isLoading.value = true
 
-      const { items } = currentPageType.value == 'saved'
+      const { items } = currentPageType == 'saved'
           ? await chatStore.handleQuery(
               null, {only_saved: true}, { zoom: mapZoom.value, bbox: mapBbox.value }, offset.value
             )

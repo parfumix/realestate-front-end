@@ -170,12 +170,11 @@ const handleSendMessage = async (message) => {
   }
 }
 
-watch(() => route.query, ({ type = null }) => {
-  currentPageType.value = type
+watch(() => route.name, (currentPageName) => {
+  currentPageType.value = currentPageName
   
-  type == 'saved' 
+  currentPageName == 'saved' 
     ? handleFetchItems(null, { only_saved: true }, null)
     : handleFetchItems(activeMessage.value, filterStore.activeFilters, { zoom: 6, bbox: getRomanianBounds(true) })
-
-}, { deep: true, immediate: true })
+}, { immediate: true })
 </script>
