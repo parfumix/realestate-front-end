@@ -51,7 +51,6 @@ const resetSwitchingPage = () => {
 }
 
 watch(() => route.query, ({ type = null }) => {
-  console.log(123)
   currentPageType.value = type
   resetSwitchingPage()
 }, { deep: true, immediate: true })
