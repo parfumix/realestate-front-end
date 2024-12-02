@@ -99,6 +99,11 @@ export const useChatStore = defineStore('chatStore', () => {
         }
     };
 
+    const handleRemoveItem = (itemId) => {
+        const index = items.value.findIndex(el => el.id === itemId);
+        if (index !== -1) items.value.splice(index, 1);
+    };
+
     const handleResetItems = (type = null) => {
         if(! type) {
             items.value = [];
@@ -184,6 +189,7 @@ export const useChatStore = defineStore('chatStore', () => {
         mapItems,
         selectedItem,
         handleUpdateItem,
+        handleRemoveItem,
         handleSelectItem,
         handleResetItem,
         handleResetItems,
