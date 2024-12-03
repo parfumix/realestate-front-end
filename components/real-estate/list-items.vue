@@ -3,7 +3,7 @@
       <ul :class="[{'sm:grid-cols-3': defaultView==chatStore.TYPE_LIST_ITEMS && currentPageType!=='saved'}, 'sm:grid-cols-2 grid gap-x-4 gap-y-4 sm:gap-x-6 xl:gap-x-4 no-scrollbar overflow-y-auto pb-2']" ref="scrollable" @scroll="handleScroll">
           <RealEstateListItem v-for="item in items" :item="item" :key="item.id" class="relative" />
       </ul>
-      <div :class="[{'right-0 -mr-14': defaultView==chatStore.TYPE_LIST_ITEMS, 'left-0 -ml-14': defaultView==chatStore.TYPE_LIST_HYBRID}, 'bottom-el absolute bottom-0 mb-2 cursor-pointer']" v-if="!noMoreValues" @click="scrollToBottom">
+      <div :class="[{'right-0 -mr-14': defaultView==chatStore.TYPE_LIST_ITEMS, 'left-1/2 -ml-5 -mb-2': defaultView==chatStore.TYPE_LIST_HYBRID}, 'bottom-el absolute bottom-0 mb-2 cursor-pointer']" v-if="!noMoreValues" @click="scrollToBottom">
         <svg v-if="isScrollingDown" class="animate-spin text-black size-10" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
           <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
           <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
@@ -58,6 +58,7 @@ const handleScroll = async() => {
   if (scrollHeight - scrollPosition <= clientHeight + 1) {
     try {
       isLoading.value = true
+      isScrollingDown.value = true
 
       const { items } = currentPageType == 'saved'
           ? await chatStore.handleQuery(
