@@ -52,6 +52,8 @@ const chatStore = useChatStore()
 const modalStore = useModalStore();
 
 const route = useRoute();
+const router = useRouter()
+
 const currentPageType = ref(null)
 
 import { getRomanianBounds } from '../utils'
@@ -77,6 +79,7 @@ const { insertMessage } = useUserMessages()
 
 watch(() => selectedItem.value, newVal => {
   if(newVal?.id) openRealEstatePropertyModal()
+  if(! newVal?.id) router.push({ query: {} })
 })
 
 watch(() => isModalVisible.value, newval => {
