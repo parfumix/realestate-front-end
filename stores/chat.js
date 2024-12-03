@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
-import { query, requestDetails } from '../api/chat';
+import { query, requestDetails, fetchItemBySlug } from '../api/chat';
 import { removeEmptyValues } from '../utils'
 
 export const useChatStore = defineStore('chatStore', () => {
@@ -95,6 +95,15 @@ export const useChatStore = defineStore('chatStore', () => {
         hoveredItem.value = item;
     };
 
+    const findItemBySlug = async(slug) => {
+        let item = items.value.find(el => el.slug == slug)
+        if(! item) {
+            const { data } = await fetchItemBySlug(slug)
+            item = data.value.data
+        }
+
+        return item
+    }
 
     const handleResetItem = () => {
         selectedItem.value = null;
@@ -219,5 +228,7 @@ export const useChatStore = defineStore('chatStore', () => {
         // API interactions
         handleQuery,
         handleRequestDetails,
+
+        findItemBySlug
     };
 })
