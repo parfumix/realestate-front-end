@@ -1,5 +1,5 @@
 <template>
-    <li class="shadow rounded-md bg-white list-none">
+    <li @mouseover="() => handleHoverItem(item.internal_id)" @mouseleave="() => handleHoverItem(null)" class="shadow rounded-md bg-white list-none">
         <div @click="handleSelect" class="group aspect-h-6 aspect-w-10 block w-full overflow-hidden rounded-lg bg-gray-100 focus-within:ring-2 focus-within:ring-blue-500 focus-within:ring-offset-2 focus-within:ring-offset-gray-100">
             <img :src="item.meta.images?.[0]" :alt="item.meta.description" class="pointer-events-none object-cover group-hover:opacity-75" />
         </div>
@@ -52,6 +52,10 @@ const openSignInModal = () => {
 const handleSelect = () => {
     router.push({ hash: `?property=${props.item.id}` })
     chatStore.handleSelectItem(props.item)
+}
+
+const handleHoverItem = (item = null) => {
+    chatStore.handleHoverItem(item)
 }
 
 const handleTogglFavorite = async() => {

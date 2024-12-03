@@ -19,7 +19,7 @@ import { getRomanianBounds } from '../utils'
 import { useThrottle } from '~/composables/useThrottle';
 
 const chatStore = useChatStore()
-const { mapItems, triggeredRefreshMap } = storeToRefs(chatStore)
+const { mapItems, triggeredRefreshMap, hoveredItem } = storeToRefs(chatStore)
 
 const { $currencyFormat } = useNuxtApp();
 
@@ -308,19 +308,33 @@ function createClusterIcon(count) {
 }
 
 // Function to create a custom marker icon with price
-function createPriceIcon(price) {
+function createPriceIcon(price, divClassName = 'bg-white', textClassName = 'text-gray-800') {
   const formattedPrice = $currencyFormat(price);
   const baseWidth = 50;
   const extraWidthPerChar = 5;
   const iconWidth = baseWidth + (formattedPrice.length * extraWidthPerChar);
 
   return L.divIcon({
-    className: 'bg-white rounded-[15px] text-center px-2 py-1 font-bold text-sm text-gray-800 shadow-md',
-    html: `<div class="text-gray-800">${formattedPrice}</div>`,
+    className: `rounded-[15px] text-center px-2 py-1 font-bold text-sm shadow-md ${divClassName}`,
+    html: `<div class="${textClassName}">${formattedPrice}</div>`,
     iconSize: [iconWidth, 30],
     iconAnchor: [iconWidth / 2, 15]
   });
 }
+
+watch(() => hoveredItem.value, (internal_id) => {
+  if (!map || !internal_id) return;
+
+  markersCluster.eachLayer((marker) => {
+    if(! marker.options?.feature?.id) return
+
+    if (marker.options.feature.internal_id === internal_id) {
+      marker.setIcon(createPriceIcon(marker.options.feature.price, 'bg-black', 'text-gray-100'));
+    } else {
+      marker.setIcon(createPriceIcon(marker.options.feature.price));
+    }
+  });
+});
 
 watch(() => triggeredRefreshMap.value, async(newVal) => {
   if(newVal === true) {

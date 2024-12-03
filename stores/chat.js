@@ -57,6 +57,7 @@ export const useChatStore = defineStore('chatStore', () => {
     }
 
     const selectedItem = ref(null);
+    const hoveredItem = ref(null);
 
     const handlePushMessage = async(threadId, { text, sender }) => {
         if (!messages.value[threadId]) {
@@ -89,6 +90,11 @@ export const useChatStore = defineStore('chatStore', () => {
     const handleSelectItem = (item) => {
         selectedItem.value = item;
     };
+
+    const handleHoverItem = (item) => {
+        hoveredItem.value = item;
+    };
+
 
     const handleResetItem = () => {
         selectedItem.value = null;
@@ -196,9 +202,11 @@ export const useChatStore = defineStore('chatStore', () => {
         items,
         mapItems,
         selectedItem,
+        hoveredItem,
         handleUpdateItem,
         handleRemoveItem,
         handleSelectItem,
+        handleHoverItem,
         handleResetItem,
         handleResetItems,
         handlePushItem,

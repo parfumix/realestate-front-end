@@ -29,6 +29,9 @@ const modalStore = useModalStore();
 const { user } = useAuthService()
 const { removeFavorite, addFavorite } = useFavoritesService()
 
+const route = useRoute();
+const currentPageType = route.name
+
 const formattedDate = computed(() => {
     return format(new Date(item.value.created_at), "d MMMM yyyy", { locale: ro })
 })
@@ -45,13 +48,17 @@ const handleTogglFavorite = async() => {
 
     const isFavorited = item.value.is_favorited
 
-    // modify object locally
-    chatStore.handleUpdateItem(item.value.id, {
-        is_favorited: !isFavorited
-    })
+    if(currentPageType == 'saved') {
+        chatStore.handleTriggerRefreshMap(true)
+        chatStore.handleRemoveItem(item.value.id)
+    } else {
+        chatStore.handleUpdateItem(item.value.id, {
+            is_favorited: !isFavorited
+        })
+    }
 
     return isFavorited
-        ? await removeFavorite(user.value?.id, item.value.id)
-        : await addFavorite(user.value?.id, item.value.id);
+        ? await removeFavorite(user.value.id, item.value.id)
+        : await addFavorite(user.value.id, item.value.id);
 }
 </script>
