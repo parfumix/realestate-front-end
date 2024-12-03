@@ -1,6 +1,6 @@
 <template>
     <div class="relative">
-      <ul :class="[{'sm:grid-cols-3': defaultView==chatStore.TYPE_LIST_ITEMS}, 'sm:grid-cols-2 grid gap-x-4 gap-y-4 sm:gap-x-6 xl:gap-x-4 no-scrollbar overflow-y-auto pb-2']" ref="scrollable" @scroll="handleScroll">
+      <ul :class="[{'sm:grid-cols-3': defaultView==chatStore.TYPE_LIST_ITEMS && currentPageType!=='saved'}, 'sm:grid-cols-2 grid gap-x-4 gap-y-4 sm:gap-x-6 xl:gap-x-4 no-scrollbar overflow-y-auto pb-2']" ref="scrollable" @scroll="handleScroll">
           <RealEstateListItem v-for="item in items" :item="item" :key="item.id" class="relative" />
       </ul>
       <div :class="[{'right-0 -mr-14': defaultView==chatStore.TYPE_LIST_ITEMS, 'left-0 -ml-14': defaultView==chatStore.TYPE_LIST_HYBRID}, 'bottom-el absolute bottom-0 mb-2 cursor-pointer']" v-if="!noMoreValues" @click="scrollToBottom">

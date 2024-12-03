@@ -5,7 +5,8 @@
     <Heading v-if="currentPageType=='saved'" class="w-full " />
 
     <div class="flex max-w-7xl mx-auto w-full justify-center items-center px-4 sm:px-6 lg:px-8 mt-2 relative" style="height: calc(100vh - 120px);">
-      <RealEstateList :defaultView="defaultView" v-if="defaultView==chatStore.TYPE_LIST_HYBRID" class="sm:w-5/12" />
+      <RealEstateList :defaultView="defaultView" v-if="defaultView==chatStore.TYPE_LIST_HYBRID || currentPageType=='saved'" class="sm:w-5/12" />
+
       <Chat v-if="currentPageType!='saved'" :defaultView="defaultView" @submit="handleSendMessage" :isLoading="isQueryLoading" :messages="defaultThreadMessages" :class="{'sm:w-5/12': defaultView!=chatStore.TYPE_LIST_HYBRID, 'absolute h-6 z-[100] bottom-5': defaultView==chatStore.TYPE_LIST_HYBRID}">
         <template v-if="defaultView!=chatStore.TYPE_LIST_HYBRID" #header>
           <div class="bg-blue-500 text-white py-2 px-4 rounded-t-lg flex items-center">
@@ -31,8 +32,8 @@
         </div>
 
         <div class="w-full">
-          <RealEstateMap :defaultView="defaultView" v-show="defaultView==chatStore.TYPE_MAP_ITEMS || defaultView==chatStore.TYPE_LIST_HYBRID" @moveend="handleMapFetchItems" />
-          <RealEstateList :currentPageType="currentPageType" :defaultView="defaultView" v-show="(defaultView==chatStore.TYPE_LIST_ITEMS)" />
+          <RealEstateMap :defaultView="defaultView" v-show="defaultView==chatStore.TYPE_MAP_ITEMS || defaultView==chatStore.TYPE_LIST_HYBRID || currentPageType=='saved'" @moveend="handleMapFetchItems" />
+          <RealEstateList :currentPageType="currentPageType" :defaultView="defaultView" v-show="defaultView==chatStore.TYPE_LIST_ITEMS && currentPageType!='saved'" />
         </div>
       </div>
     </div>

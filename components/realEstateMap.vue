@@ -1,6 +1,6 @@
 <template>
   <div style="width: 100%; height: 100%;">
-    <div id="map" v-show="[chatStore.TYPE_MAP_ITEMS, chatStore.TYPE_LIST_HYBRID].includes(defaultView)" style="width: 100%; height: 100%;" />
+    <div id="map" v-show="[chatStore.TYPE_MAP_ITEMS, chatStore.TYPE_LIST_HYBRID].includes(defaultView) || currentPageType=='saved'" style="width: 100%; height: 100%;" />
     <Teleport v-if="selectedItem" :to="`.popup-content-${selectedItem.internal_id}`">
       <RealEstateListItem :item="selectedItem" :hideBookmark="true" />
     </Teleport>
@@ -39,7 +39,7 @@ let isFetching = false
 let isMovingMap = true
 
 const route = useRoute();
-const currentPageType = route.name
+const currentPageType = ref(route.name)
 
 let selectedItem = ref(null);
 const fetchClustersThrottled = useThrottle(fetchClusters, 700);
@@ -184,7 +184,7 @@ async function fetchClusters() {
   try {
     filterStore.setMapFilters(zoom, bbox)
 
-    currentPageType == 'saved'
+    currentPageType.value == 'saved'
       ? emit('moveend', null, { only_saved: true }, { zoom: mapZoom.value, bbox: mapBbox.value })
       : emit('moveend', activeMessage.value, filterStore.activeFilters, { zoom: mapZoom.value, bbox: mapBbox.value })
   } catch (error) {
@@ -330,7 +330,9 @@ watch(() => triggeredRefreshMap.value, async(newVal) => {
 })
 
 watch(() => props.defaultView, (newView) => {
-  if ([chatStore.TYPE_MAP_ITEMS, chatStore.TYPE_LIST_HYBRID].includes(newView) && !map) {
+  const isAllowedToInitilizeMap = [chatStore.TYPE_MAP_ITEMS, chatStore.TYPE_LIST_HYBRID].includes(newView) || currentPageType.value == 'saved'
+
+  if (isAllowedToInitilizeMap && !map) {
     nextTick(async() => {
       await initializeMap()
       updateMarkers(mapItems.value);
