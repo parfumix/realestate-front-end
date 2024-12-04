@@ -2,7 +2,7 @@
   <div style="width: 100%; height: 100%;">
     <div id="map" v-show="[chatStore.TYPE_MAP_ITEMS, chatStore.TYPE_LIST_HYBRID].includes(defaultView) || currentPageType=='saved'" style="width: 100%; height: 100%;" />
     <Teleport v-if="selectedItem" :to="`.popup-content-${selectedItem.internal_id}`">
-      <RealEstateListItem :item="selectedItem" :hideBookmark="true" />
+      <RealEstateListItem :renderedInMap="true" :item="selectedItem" :hideBookmark="true" />
     </Teleport>
   </div>
 </template>

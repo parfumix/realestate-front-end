@@ -42,8 +42,15 @@ const props = defineProps({
     hideBookmark: {
         type: Boolean,
         default: false
+    },
+    renderedInMap: {
+        type: Boolean,
+        default: false
     }
 })
+let defaultView = ref(
+  localStorage.getItem('defaultView') ?? 'list'
+)
 
 const openSignInModal = () => {
   modalStore.openModal(SignInModal);
@@ -54,6 +61,7 @@ const handleSelect = () => {
 }
 
 const handleHoverItem = (item = null) => {
+    if( props.renderedInMap || defaultView.value != chatStore.TYPE_LIST_HYBRID) return
     chatStore.handleHoverItem(item)
 }
 
