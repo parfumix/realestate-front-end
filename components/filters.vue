@@ -98,8 +98,10 @@
               <PopoverGroup class="-mx-4 flex items-center divide-x divide-gray-200">
                 <Popover v-for="(section, sectionIdx) in filterStore.filters" :key="sectionIdx"
                   class="relative inline-block px-4 text-left">
-                  <PopoverButton class="group inline-flex justify-center text-sm font-medium text-gray-700 hover:text-gray-900">
-                    <span>{{ activeFilters[section.id]?.length ? activeFilters[section.id].map(el => filterToUpperCase(el, section.id)).slice(0, sliceItems(section.id)).join(', ') : section.name }}</span>
+                  <PopoverButton class="group flex justify-center text-sm font-medium text-gray-700 hover:text-gray-900">
+                    <span v-if="! activeFilters[section.id]?.length">{{ section.name }}</span>
+                    <span v-else class="flex items-center" v-html="renderActiveFilters(activeFilters[section.id], section)" />
+
                     <XCircleIcon v-if="activeFilters?.[section.id]?.length" @click.stop="(e) => handleResetFilterGroup(section.id)" class="-mr-1 ml-1 h-5 w-5 flex-shrink-0 text-gray-400 group-hover:text-gray-500" aria-hidden="true" />
                     <ChevronDownIcon v-else class="-mr-1 ml-1 h-5 w-5 flex-shrink-0 text-gray-400 group-hover:text-gray-500" aria-hidden="true" />
                   </PopoverButton>
@@ -195,38 +197,51 @@ import { getRomanianBounds } from '~/utils';
 
 const emit = defineEmits(['applyFilters'])
 
-//TODO adding svg icons when selected
-// adding three dots when multiple items selected
-
 // Use the Pinia filter store
 const filterStore = useFilterStore()
 const { activeSorting, hasFiltersChanged, activeFilters } = storeToRefs(filterStore)
 
-const sliceItems = (sectionId) => {
-  if(sectionId == 'price') return 2
-  if(sectionId == 'location') return 2
-  return 3
-}
-
-const filterToUpperCase = (el, sectionId) => {
-  if(sectionId == 'price') {
-    const priceInterval = el.split('-')
-    return priceInterval.length > 1 ? formatPriceRange(el.split('-')) : el
+const renderActiveFilters = (menuFilters, section) => {
+  const sliceItems = (sectionId) => {
+    if(sectionId == 'price') return 2
+    if(sectionId == 'location') return 2
+    return 3
   }
 
-  return new String(el)[0].toUpperCase() + (el?.[1] ? el.slice(1) : '')
-}
+  const filterToUpperCase = (el, sectionId) => {
+    if(sectionId == 'price') {
+      const priceInterval = el.split('-')
+      return priceInterval.length > 1 ? formatPriceRange(el.split('-')) : el
+    }
 
-function formatPriceRange([min, max]) {
-  const formatPrice = (price) => {
-    if (price >= 1000) return `€${price / 1000}K`;
-    return `€${price}`;
-  };
-
-  if (max) {
-    return `${formatPrice(min)} - ${formatPrice(max)}`;
+    return new String(el)[0].toUpperCase() + (el?.[1] ? el.slice(1) : '')
   }
-  return `${formatPrice(min)}+`;
+
+  function formatPriceRange([min, max]) {
+    const formatPrice = (price) => {
+      if (price >= 1000) return `€${price / 1000}K`;
+      return `€${price}`;
+    };
+
+    if (max) {
+      return `${formatPrice(min)} - ${formatPrice(max)}`;
+    }
+
+    return `${formatPrice(min)}+`;
+  }
+
+  let icons = {
+    'room_count': '<svg xmlns="http://www.w3.org/2000/svg" class="mr-1" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-layout-dashboard"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>',
+    'area': '<svg xmlns="http://www.w3.org/2000/svg" class="mr-1" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-ruler"><path d="M21.3 15.3a2.4 2.4 0 0 1 0 3.4l-2.6 2.6a2.4 2.4 0 0 1-3.4 0L2.7 8.7a2.41 2.41 0 0 1 0-3.4l2.6-2.6a2.41 2.41 0 0 1 3.4 0Z"/><path d="m14.5 12.5 2-2"/><path d="m11.5 9.5 2-2"/><path d="m8.5 6.5 2-2"/><path d="m17.5 15.5 2-2"/></svg>',
+    'floor': '<svg xmlns="http://www.w3.org/2000/svg" class="mr-1" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-building"><rect width="16" height="20" x="4" y="2" rx="2" ry="2"/><path d="M9 22v-4h6v4"/><path d="M8 6h.01"/><path d="M16 6h.01"/><path d="M12 6h.01"/><path d="M12 10h.01"/><path d="M12 14h.01"/><path d="M16 10h.01"/><path d="M16 14h.01"/><path d="M8 10h.01"/><path d="M8 14h.01"/></svg>',
+  }
+
+  let suffix = ''
+  if(menuFilters.length > 2 && menuFilters.length < section.options.length) suffix = '..'
+
+  let filtersAsString = menuFilters.map(el => filterToUpperCase(el, section.id)).slice(0, sliceItems(section.id)).join(', ')
+
+  return `${icons?.[section.id] ?? ''} ${filtersAsString} ${suffix}`
 }
 
 const handleResetFilterGroup = filterGroupId => {
