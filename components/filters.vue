@@ -91,19 +91,17 @@
             </transition>
           </Menu>
 
-          <button type="button" class="inline-block text-sm font-medium text-gray-700 hover:text-gray-900 sm:hidden"
-            @click="filterStore.toggleOpen()">Filters</button>
+          <button type="button" class="inline-block text-sm font-medium text-gray-700 hover:text-gray-900 sm:hidden" @click="filterStore.toggleOpen()">Filters</button>
 
           <div class="hidden sm:block">
             <div class="flow-root">
               <PopoverGroup class="-mx-4 flex items-center divide-x divide-gray-200">
                 <Popover v-for="(section, sectionIdx) in filterStore.filters" :key="sectionIdx"
                   class="relative inline-block px-4 text-left">
-                  <PopoverButton
-                    class="group inline-flex justify-center text-sm font-medium text-gray-700 hover:text-gray-900">
+                  <PopoverButton class="group inline-flex justify-center text-sm font-medium text-gray-700 hover:text-gray-900">
                     <span>{{ activeFilters[section.id]?.length ? activeFilters[section.id].map(el => filterToUpperCase(el, section.id)).slice(0, sliceItems(section.id)).join(', ') : section.name }}</span>
-                    <ChevronDownIcon class="-mr-1 ml-1 h-5 w-5 flex-shrink-0 text-gray-400 group-hover:text-gray-500"
-                      aria-hidden="true" />
+                    <XCircleIcon v-if="activeFilters?.[section.id]?.length" @click.stop="(e) => handleResetFilterGroup(section.id)" class="-mr-1 ml-1 h-5 w-5 flex-shrink-0 text-gray-400 group-hover:text-gray-500" aria-hidden="true" />
+                    <ChevronDownIcon v-else class="-mr-1 ml-1 h-5 w-5 flex-shrink-0 text-gray-400 group-hover:text-gray-500" aria-hidden="true" />
                   </PopoverButton>
 
                   <transition enter-active-class="transition ease-out duration-100"
@@ -188,7 +186,7 @@ import {
   TransitionRoot,
 } from '@headlessui/vue';
 import { XMarkIcon } from '@heroicons/vue/24/outline';
-import { ChevronDownIcon } from '@heroicons/vue/20/solid';
+import { ChevronDownIcon, XCircleIcon } from '@heroicons/vue/20/solid';
 
 import { useFilterStore } from '@/stores/filters';
 import { storeToRefs } from 'pinia'
@@ -196,6 +194,9 @@ import { storeToRefs } from 'pinia'
 import { getRomanianBounds } from '~/utils';
 
 const emit = defineEmits(['applyFilters'])
+
+//TODO adding svg icons when selected
+// adding three dots when multiple items selected
 
 // Use the Pinia filter store
 const filterStore = useFilterStore()
@@ -212,9 +213,6 @@ const filterToUpperCase = (el, sectionId) => {
     const priceInterval = el.split('-')
     return priceInterval.length > 1 ? formatPriceRange(el.split('-')) : el
   }
-
-  let prefix = null
-  if(sectionId == 'floor') prefix = 'Etaj'
 
   return new String(el)[0].toUpperCase() + (el?.[1] ? el.slice(1) : '')
 }
