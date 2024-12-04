@@ -52,11 +52,12 @@ const chatStore = useChatStore()
 const modalStore = useModalStore();
 
 const route = useRoute();
-const router = useRouter()
+const router = useRouter();
 
 const currentPageType = ref(null)
+let dataLoaded = false
 
-import { getRomanianBounds } from '../utils'
+import { getRomanianBounds, setHead } from '../utils'
 
 const { user } = useAuthService()
 
@@ -69,18 +70,13 @@ const openRealEstatePropertyModal = () => {
 }
 
 const { 
-  items, selectedItem, isQueryLoading,
+  items, isQueryLoading, selectedItem
  } = storeToRefs(chatStore)
 
 const { isModalVisible } = storeToRefs(modalStore)
 const { activeMessage, mapZoom, mapBbox } = storeToRefs(filterStore)
 
 const { insertMessage } = useUserMessages()
-
-watch(() => selectedItem.value, newVal => {
-  if(newVal?.id) openRealEstatePropertyModal()
-  if(! newVal?.id) router.push({ query: {} })
-})
 
 watch(() => isModalVisible.value, newval => {
   if(! newval) chatStore.handleResetItem()
@@ -108,6 +104,8 @@ const handleMapFetchItems = async(trimmedMessage = null, appliedFilters = null, 
 }
 
 const handleFetchItems = async(trimmedMessage = null, appliedFilters = null, mapFilters = null) => {
+  console.log('fetcing items...')
+
   const filtersCopy = { ...appliedFilters }; 
   const mapFiltersCopy = { ...mapFilters }; 
 
@@ -178,11 +176,36 @@ onUnmounted(() => {
   chatStore.handleResetItems()
 })
 
-watch(() => route.name, (currentPageName) => {
-  currentPageType.value = currentPageName
+// emulate triggering handleCloseModal
+watch(() => selectedItem.value, newVal => {
+  if(! newVal?.id) {
+    router.replace('/')
+  }
+})
+
+watch(() => route.params.slug, async(newSlug) => {
+  if(! newSlug) {
+    setHead('Main page')
+    return
+  }
+
+  const foundItem = await chatStore.findItemBySlug(newSlug)
+  if(! foundItem) return
   
-  currentPageName == 'saved' 
-    ? handleFetchItems(null, { only_saved: true }, null)
-    : handleFetchItems(activeMessage.value, filterStore.activeFilters, { zoom: 6, bbox: getRomanianBounds(true) })
+  setHead(foundItem.title)
+  chatStore.handleSelectItem(foundItem)
+  openRealEstatePropertyModal()
+}, { immediate: true })
+
+watch(() => route.name, async(currentPageName) => {
+  currentPageType.value = currentPageName
+
+  if(currentPageName == 'saved') handleFetchItems(null, { only_saved: true }, null)
+
+  if(currentPageName == 'index') {
+    if(dataLoaded) return
+    await handleFetchItems(activeMessage.value, filterStore.activeFilters, { zoom: 6, bbox: getRomanianBounds(true) })
+    dataLoaded = true
+  }
 }, { immediate: true })
 </script>

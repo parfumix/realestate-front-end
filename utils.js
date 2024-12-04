@@ -32,3 +32,16 @@ export const calculateTravelTime = (distanceMeters, mode = 'walking') => {
 
   return Math.round(travelTimeHours * 60); // Convert to minutes and round off
 };
+
+export const setHead = (title = '', meta = []) => {
+  useHead({
+    title,
+    meta: [
+      ...meta,
+      {
+        name: 'description',
+        content: title,
+      },
+    ],
+  });
+};

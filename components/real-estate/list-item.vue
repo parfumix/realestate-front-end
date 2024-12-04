@@ -50,8 +50,7 @@ const openSignInModal = () => {
 }
 
 const handleSelect = () => {
-    router.push({ hash: `?property/${props.item.slug}` })
-    chatStore.handleSelectItem(props.item)
+    router.push({ name: 'property', params: { slug: props.item.slug  } })
 }
 
 const handleHoverItem = (item = null) => {

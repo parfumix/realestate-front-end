@@ -21,6 +21,21 @@ export default defineNuxtConfig({
         name: 'saved',
         path: '/saved',
         file: '~/pages/index.vue', 
+        meta: {key: 'saved'}
+      });
+
+      pages.push({
+        name: 'property',
+        path: '/property/:slug',
+        file: '~/pages/index.vue', 
+        meta: {key: 'index'}
+      });
+
+      pages.push({
+        name: 'index',
+        path: '/',
+        file: '~/pages/index.vue', 
+        meta: {key: 'index'}
       });
     },
   },
