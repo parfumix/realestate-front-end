@@ -2,9 +2,9 @@
   <div class="bg-gray-100 flex flex-col items-center " style="height: calc(100vh - 0px);">
 
     <Filters v-if="currentPageType!='saved'" class="w-full z-[60]" @applyFilters="handleApplyFilters" />
-    <Heading v-if="currentPageType=='saved'" class="w-full " />
+    <Heading v-if="currentPageType=='saved'" class="w-full h-[53px]" />
 
-    <div class="flex max-w-7xl mx-auto w-full justify-center items-center px-4 sm:px-6 lg:px-8 mt-2 relative" style="height: calc(100vh - 120px);">
+    <div class="flex max-w-7xl mx-auto w-full justify-center items-center px-4 sm:px-6 lg:px-8 mt-2 relative" style="height: calc(100vh - 67px);">
       <RealEstateList :defaultView="defaultView" v-if="defaultView==chatStore.TYPE_LIST_HYBRID || currentPageType=='saved'" class="sm:w-5/12" />
 
       <Chat v-if="currentPageType!='saved'" :defaultView="defaultView" @submit="handleSendMessage" :isLoading="isQueryLoading" :messages="defaultThreadMessages" :class="{'sm:w-5/12': defaultView!=chatStore.TYPE_LIST_HYBRID, 'absolute h-6 z-[100] bottom-5': defaultView==chatStore.TYPE_LIST_HYBRID}">
