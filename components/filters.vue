@@ -101,7 +101,7 @@
                   class="relative inline-block px-4 text-left">
                   <PopoverButton
                     class="group inline-flex justify-center text-sm font-medium text-gray-700 hover:text-gray-900">
-                    <span>{{ section.name }}</span>
+                    <span>{{ activeFilters[section.id]?.length ? activeFilters[section.id].map(filterToUpperCase).slice(0, 3).join(', ') : section.name }}</span>
                     <ChevronDownIcon class="-mr-1 ml-1 h-5 w-5 flex-shrink-0 text-gray-400 group-hover:text-gray-500"
                       aria-hidden="true" />
                   </PopoverButton>
@@ -119,10 +119,9 @@
                             :value="option.value" @click="toggleFilter(section.id, option.value)" type="checkbox"
                             :checked="filterStore.activeFilters?.[section.id]?.includes(option.value)"
                             class="h-4 w-4 rounded border-gray-300 text-grat-600" />
-                          <label :for="`filter-${section.id}-${optionIdx}`"
-                            class="ml-3 whitespace-nowrap pr-6 text-sm font-medium text-gray-900">{{ option?.label
-                            }}</label>
+                          <label :for="`filter-${section.id}-${optionIdx}`" class="ml-3 whitespace-nowrap pr-6 text-sm font-medium text-gray-900">{{ option?.label }}</label>
                         </div>
+                        <button @click="() => handleResetFilterGroup(section.id)" type="button" class="w-full rounded bg-white px-2 py-1 text-xs font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">Reset</button>
                       </form>
                     </PopoverPanel>
                   </transition>
@@ -198,7 +197,16 @@ const emit = defineEmits(['applyFilters'])
 
 // Use the Pinia filter store
 const filterStore = useFilterStore()
-const { filters, activeSorting, hasFiltersChanged } = storeToRefs(filterStore)
+const { activeSorting, hasFiltersChanged, activeFilters } = storeToRefs(filterStore)
+
+const filterToUpperCase = el => {
+  return new String(el)[0].toUpperCase() + (el?.[1] ? el.slice(1) : '')
+}
+
+const handleResetFilterGroup = filterGroupId => {
+  hasFiltersChanged.value = true
+  filterStore.setActiveFilter(filterGroupId, null)
+}
 
 const handleSort = sort => {
   filterStore.handleSortOption(sort)

@@ -128,7 +128,11 @@ export const useFilterStore = defineStore('filtersStore', () => {
   })
 
   const setActiveFilter = (filterName, value) => {
-    activeFilters[filterName] = value;
+    if(! value) {
+      delete activeFilters[filterName]
+    } else {
+      activeFilters[filterName] = value;
+    }
   }
 
   const setMapFilters = (zoom = 6, bbox = null) => {
