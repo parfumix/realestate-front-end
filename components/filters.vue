@@ -101,7 +101,7 @@
                   class="relative inline-block px-4 text-left">
                   <PopoverButton
                     class="group inline-flex justify-center text-sm font-medium text-gray-700 hover:text-gray-900">
-                    <span>{{ activeFilters[section.id]?.length ? activeFilters[section.id].map(el => filterToUpperCase(el, section.id)).slice(0, 3).join(', ') : section.name }}</span>
+                    <span>{{ activeFilters[section.id]?.length ? activeFilters[section.id].map(el => filterToUpperCase(el, section.id)).slice(0, sliceItems(section.id)).join(', ') : section.name }}</span>
                     <ChevronDownIcon class="-mr-1 ml-1 h-5 w-5 flex-shrink-0 text-gray-400 group-hover:text-gray-500"
                       aria-hidden="true" />
                   </PopoverButton>
@@ -201,11 +201,21 @@ const emit = defineEmits(['applyFilters'])
 const filterStore = useFilterStore()
 const { activeSorting, hasFiltersChanged, activeFilters } = storeToRefs(filterStore)
 
+const sliceItems = (sectionId) => {
+  if(sectionId == 'price') return 2
+  if(sectionId == 'location') return 2
+  return 3
+}
+
 const filterToUpperCase = (el, sectionId) => {
   if(sectionId == 'price') {
     const priceInterval = el.split('-')
     return priceInterval.length > 1 ? formatPriceRange(el.split('-')) : el
   }
+
+  let prefix = null
+  if(sectionId == 'floor') prefix = 'Etaj'
+
   return new String(el)[0].toUpperCase() + (el?.[1] ? el.slice(1) : '')
 }
 
