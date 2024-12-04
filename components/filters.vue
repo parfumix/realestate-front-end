@@ -101,7 +101,7 @@
                   class="relative inline-block px-4 text-left">
                   <PopoverButton
                     class="group inline-flex justify-center text-sm font-medium text-gray-700 hover:text-gray-900">
-                    <span>{{ activeFilters[section.id]?.length ? activeFilters[section.id].map(filterToUpperCase).slice(0, 3).join(', ') : section.name }}</span>
+                    <span>{{ activeFilters[section.id]?.length ? activeFilters[section.id].map(el => filterToUpperCase(el, section.id)).slice(0, 3).join(', ') : section.name }}</span>
                     <ChevronDownIcon class="-mr-1 ml-1 h-5 w-5 flex-shrink-0 text-gray-400 group-hover:text-gray-500"
                       aria-hidden="true" />
                   </PopoverButton>
@@ -193,19 +193,41 @@ import { ChevronDownIcon } from '@heroicons/vue/20/solid';
 import { useFilterStore } from '@/stores/filters';
 import { storeToRefs } from 'pinia'
 
+import { getRomanianBounds } from '~/utils';
+
 const emit = defineEmits(['applyFilters'])
 
 // Use the Pinia filter store
 const filterStore = useFilterStore()
 const { activeSorting, hasFiltersChanged, activeFilters } = storeToRefs(filterStore)
 
-const filterToUpperCase = el => {
+const filterToUpperCase = (el, sectionId) => {
+  if(sectionId == 'price') {
+    const priceInterval = el.split('-')
+    return priceInterval.length > 1 ? formatPriceRange(el.split('-')) : el
+  }
   return new String(el)[0].toUpperCase() + (el?.[1] ? el.slice(1) : '')
 }
 
+function formatPriceRange([min, max]) {
+  const formatPrice = (price) => {
+    if (price >= 1000) return `€${price / 1000}K`;
+    return `€${price}`;
+  };
+
+  if (max) {
+    return `${formatPrice(min)} - ${formatPrice(max)}`;
+  }
+  return `${formatPrice(min)}+`;
+}
+
 const handleResetFilterGroup = filterGroupId => {
-  hasFiltersChanged.value = true
   filterStore.setActiveFilter(filterGroupId, null)
+
+  hasFiltersChanged.value = true
+  if(filterGroupId == 'location') {
+    filterStore.setMapFilters(6, getRomanianBounds(true))
+  }
 }
 
 const handleSort = sort => {

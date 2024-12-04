@@ -45,6 +45,7 @@ export const useChatStore = defineStore('chatStore', () => {
 
      // Loading state
      const isQueryLoading = ref(false);
+     const isItemsLoaded = ref(false);
      const isQueryLoadingProperty = ref(false);
  
     // Items management
@@ -170,6 +171,7 @@ export const useChatStore = defineStore('chatStore', () => {
             throw err;
         } finally {
             isQueryLoading.value = false;
+            isItemsLoaded.value = true;
         }
     };
 
@@ -223,6 +225,7 @@ export const useChatStore = defineStore('chatStore', () => {
 
         // Loading state
         isQueryLoading,
+        isItemsLoaded,
         isQueryLoadingProperty,
 
         // API interactions

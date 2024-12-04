@@ -28,20 +28,22 @@ const props = defineProps({
 const filterStore = useFilterStore()
 const { activeMessage, mapZoom, mapBbox, activeFilters } = storeToRefs(filterStore)
 
+const ITEMS_PER_PAGE = 12
+
 const chatStore = useChatStore()
 const scrollable = ref(null)
 const isLoading = ref(false)
 const isScrollingDown = ref(false)
-const noMoreValues = ref(false)
+const noMoreValues = ref(props.items.length < ITEMS_PER_PAGE)
 
-const offset = ref(12)  // Track the offset for pagination
-const itemsPerPage = 12  // Define items per page or fetch it from the store if dynamic
+const offset = ref(ITEMS_PER_PAGE)  // Track the offset for pagination
+const itemsPerPage = ITEMS_PER_PAGE  // Define items per page or fetch it from the store if dynamic
 
 const route = useRoute();
 const currentPageType = route.name
 
 watch(() => activeFilters, () => {
-    offset.value = 12
+    offset.value = ITEMS_PER_PAGE
     noMoreValues.value = false
 }, { deep: true })
 
