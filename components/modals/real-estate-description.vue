@@ -3,7 +3,7 @@
         <h2 class="text-lg text-gray-700 font-bold">Descriere</h2>
         <p class="text-sm text-gray-500">
             <!-- Display a truncated version if showMore is false, else show full text -->
-            {{ showMore ? item?.meta?.description : truncatedDescription }}
+            {{ showMore ? item?.description : truncatedDescription }}
             <button 
                 v-if="shouldTruncate" 
                 @click="toggleReadMore" 
@@ -30,13 +30,13 @@ const maxLength = 300;
 
 // Compute the truncated description
 const truncatedDescription = computed(() => {
-    return props.item?.meta?.description?.length > maxLength
-        ? props.item.meta.description.slice(0, maxLength) + '...'
-        : props.item.meta.description;
+    return props.item?.description?.length > maxLength
+        ? props.item.description.slice(0, maxLength) + '...'
+        : props.item.description;
 });
 
 // Check if description needs truncation
-const shouldTruncate = computed(() => props.item?.meta?.description?.length > maxLength);
+const shouldTruncate = computed(() => props.item?.description?.length > maxLength);
 
 // Toggle function to show more or less
 const toggleReadMore = () => {
