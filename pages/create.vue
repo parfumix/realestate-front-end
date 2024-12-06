@@ -1,114 +1,129 @@
 <template>
-    <div>
-        <div class="max-w-4xl mx-auto p-6 bg-white rounded-lg shadow-md">
-            <h1 class="text-2xl font-bold mb-4">Modifică oferta</h1>
-            <p class="text-gray-600 mb-6">Urmează paşii, e mai simplu ca niciodată</p>
+    <main class="flex flex-row space-x-2 ml-20 p-6">
+        <div class="w-1/2">
+            <form class="overflow-auto h-screen">
+                <div class="space-y-12">
+                    <div class="border-b border-gray-900/10 pb-12">
+                        <h2 class="text-base font-semibold text-gray-900">Modifică oferta</h2>
+                        <p class="mt-1 text-sm text-gray-600">Urmează paşii, e mai simplu ca niciodată.</p>
 
-            <!-- Property Type -->
-            <div class="mb-4">
-                <label class="block text-sm font-medium text-gray-700 mb-2">Tip proprietate</label>
-                <div class="flex gap-4">
-                    <button class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300">Apartament</button>
-                    <button class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300">Casă</button>
-                    <button class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300">Teren</button>
-                    <button class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300">Comercial</button>
-                </div>
-            </div>
+                        <!-- Property Type -->
+                        <div class="mt-10">
+                            <label class="block text-sm font-medium text-gray-900">Tip proprietate</label>
+                            <div class="mt-2 flex gap-4">
+                                <button type="button"
+                                    class="px-4 py-2 bg-white rounded-md shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:outline focus:ring-2 focus:ring-indigo-600">Apartament</button>
+                                <button type="button"
+                                    class="px-4 py-2 bg-white rounded-md shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:outline focus:ring-2 focus:ring-indigo-600">Casă</button>
+                                <button type="button"
+                                    class="px-4 py-2 bg-white rounded-md shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:outline focus:ring-2 focus:ring-indigo-600">Teren</button>
+                                <button type="button"
+                                    class="px-4 py-2 bg-white rounded-md shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:outline focus:ring-2 focus:ring-indigo-600">Comercial</button>
+                            </div>
+                        </div>
 
+                        <!-- Transaction Type -->
+                        <div class="mt-10">
+                            <label class="block text-sm font-medium text-gray-900">Tip tranzacție</label>
+                            <div class="mt-2 flex gap-4">
+                                <button type="button"
+                                    class="px-4 py-2 bg-white rounded-md shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:outline focus:ring-2 focus:ring-indigo-600">De
+                                    vânzare</button>
+                                <button type="button"
+                                    class="px-4 py-2 bg-white rounded-md shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:outline focus:ring-2 focus:ring-indigo-600">De
+                                    închiriat</button>
+                            </div>
+                        </div>
 
-            <AdMap />
+                        <!-- Title -->
+                        <div class="mt-10">
+                            <label for="title" class="block text-sm font-medium text-gray-900">Titlu anunț</label>
+                            <div class="mt-2">
+                                <input type="text" id="title"
+                                    class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 focus:outline focus:ring-2 focus:ring-indigo-600"
+                                    placeholder="Apartament de vânzare 2 camere acum" />
+                            </div>
+                            <p class="mt-2 text-sm text-gray-500">46 caractere rămase.</p>
+                        </div>
 
-            <!-- Transaction Type -->
-            <div class="mb-4">
-                <label class="block text-sm font-medium text-gray-700 mb-2">Tip tranzacție</label>
-                <div class="flex gap-4">
-                    <button class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300">De vânzare</button>
-                    <button class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300">De închiriat</button>
-                </div>
-            </div>
+                        <!-- Image Upload -->
+                        <div class="mt-10">
+                            <label for="images" class="block text-sm font-medium text-gray-900">Imagini</label>
+                            <div
+                                class="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10">
+                                <div class="text-center">
+                                    <p class="text-sm text-gray-600">Trage imaginea aici sau încarcă una de pe
+                                        dispozitivul
+                                        tău.</p>
+                                    <input id="images" name="images" type="file" class="sr-only" />
+                                    <p class="text-xs text-gray-500">PNG, JPG, GIF până la 10MB</p>
+                                </div>
+                            </div>
+                        </div>
 
-            <!-- Title -->
-            <div class="mb-4">
-                <label class="block text-sm font-medium text-gray-700">Titlu anunț</label>
-                <input type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
-                    placeholder="apartament de vizare 2 camere acum">
-                <p class="text-sm text-gray-500">46 car.</p>
-            </div>
+                        <!-- Rooms and Details -->
+                        <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-2">
+                            <div>
+                                <label for="rooms" class="block text-sm font-medium text-gray-900">Nr.
+                                    camere</label>
+                                <select id="rooms"
+                                    class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 focus:outline focus:ring-2 focus:ring-indigo-600">
+                                    <option>1</option>
+                                    <option>2</option>
+                                    <option>3</option>
+                                    <option>4</option>
+                                    <option>5+</option>
+                                </select>
+                            </div>
 
-            <!-- Image Upload -->
-            <div class="mb-4">
-                <label class="block text-sm font-medium text-gray-700">Imagini</label>
-                <input type="file" class="mt-1 block w-full text-gray-600">
-                <p class="text-sm text-gray-500 mt-2">Trage imaginea în poziţia dorită pentru a schimba ordinea</p>
-                <div class="mt-4">
-                    <img src="" alt="Property"
-                        class="w-32 h-32 object-cover rounded">
-                    <button class="mt-2 text-red-500 text-sm">Remove</button>
-                    <button class="mt-2 ml-4 text-blue-500 text-sm">Edit</button>
-                </div>
-            </div>
+                            <div>
+                                <label for="compartimentare"
+                                    class="block text-sm font-medium text-gray-900">Compartimentare</label>
+                                <select id="compartimentare"
+                                    class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 focus:outline focus:ring-2 focus:ring-indigo-600">
+                                    <option>Alege</option>
+                                </select>
+                            </div>
 
-            <!-- Rooms and Other Details -->
-            <div class="mb-4 grid grid-cols-2 gap-4">
-                <div>
-                    <label class="block text-sm font-medium text-gray-700">Nr. camere</label>
-                    <select class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
-                        <option>1</option>
-                        <option>2</option>
-                        <option>3</option>
-                        <option>4</option>
-                        <option>5+</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700">Compartimentare</label>
-                    <select class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
-                        <option>Alege</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700">Etaj</label>
-                    <input type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
-                        placeholder="Etaj 7">
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700">Suprafață utilă</label>
-                    <input type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" placeholder="mp">
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700">Preț</label>
-                    <input type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
-                        placeholder="22222 €">
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700">Comision cumpărator</label>
-                    <div class="flex items-center gap-4 mt-1">
-                        <button class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300">Nu</button>
-                        <button class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300">Da</button>
+                            <div>
+                                <label for="floor" class="block text-sm font-medium text-gray-900">Etaj</label>
+                                <input id="floor" type="text"
+                                    class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 focus:outline focus:ring-2 focus:ring-indigo-600"
+                                    placeholder="Etaj 7" />
+                            </div>
+
+                            <div>
+                                <label for="surface" class="block text-sm font-medium text-gray-900">Suprafață
+                                    utilă</label>
+                                <input id="surface" type="text"
+                                    class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 focus:outline focus:ring-2 focus:ring-indigo-600"
+                                    placeholder="mp" />
+                            </div>
+                        </div>
+
+                        <!-- Contact Details -->
+                        <div class="mt-10">
+                            <label for="contact" class="block text-sm font-medium text-gray-900">Persoana de
+                                contact</label>
+                            <div class="mt-2 grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4">
+                                <input id="email" type="email" placeholder="Email"
+                                    class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 focus:outline focus:ring-2 focus:ring-indigo-600" />
+                                <input id="phone" type="text" placeholder="Telefon"
+                                    class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 focus:outline focus:ring-2 focus:ring-indigo-600" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-6 flex justify-end gap-4">
+                        <button type="button" class="text-sm font-medium text-gray-900">Anulează</button>
+                        <button type="submit" class="rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-500 focus:outline focus:ring-2 focus:ring-indigo-600">Salvează</button>
                     </div>
                 </div>
-            </div>
-
-            <!-- Contact Details -->
-            <div class="mb-4">
-                <label class="block text-sm font-medium text-gray-700">Localizare</label>
-                <input type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
-                    placeholder="Bulevardul Unirii, 8, Unirii, Sector 3">
-                <p class="text-sm text-gray-500">Auto-localizare lipsă</p>
-            </div>
-
-            <div class="mb-4">
-                <label class="block text-sm font-medium text-gray-700">Persoana de contact</label>
-                <div class="grid grid-cols-2 gap-4">
-                    <input type="email" class="block w-full rounded-md border-gray-300 shadow-sm" placeholder="Email">
-                    <input type="text" class="block w-full rounded-md border-gray-300 shadow-sm" placeholder="Telefon">
-                </div>
-            </div>
-
-            <!-- Submit Button -->
-            <button
-                class="w-full py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700">Continuă</button>
+            </form>
         </div>
 
-    </div>
+        <div class="w-1/2">
+            <AdMap class="w-full h-full" />
+        </div>
+    </main>
 </template>
