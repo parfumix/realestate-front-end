@@ -1,11 +1,9 @@
 <template>
-    <div>
+    <div class="flex flex-col h-full relative">
         <!-- Address Input -->
-        <div class="flex flex-col items-center p-4">
-            <label for="address" class="text-sm font-medium text-gray-700">Enter Address</label>
-            <div class="w-full relative mt-2 rounded-md shadow-sm">
-                <input id="address" v-model="address" @input="debouncedSearchAddress" class="border rounded w-full p-2"
-                    placeholder="Enter address to sell your property" />
+        <div class="flex flex-col items-center p-4 absolute top-0 inset-0 z-[9999] h-[50px]">
+            <div class="w-full relative rounded-md shadow-sm">
+                <input id="address" v-model="address" @input="debouncedSearchAddress" class="border rounded w-full p-2 pr-[40px]" placeholder="Enter address to sell your property" />
                 <div v-if="isLoading" class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
                     <svg class="animate-spin -ml-1 h-5 w-5 text-black" xmlns="http://www.w3.org/2000/svg" fill="none"
                         viewBox="0 0 24 24">
@@ -26,7 +24,7 @@
         </div>
 
         <!-- Map -->
-        <div id="map-item" style="height: 100%; width: 100%;" />
+        <div id="map-item" class="relative" style="height: 100%; width: 100%;" />
     </div>
 </template>
 
@@ -42,7 +40,7 @@ const suggestions = ref([]);
 
 const userLocation = JSON.parse(localStorage.getItem('userLocation') ?? '{}')
 
-const selectedLocation = ref({ lat: userLocation?.lat ?? 44.4268, lng: userLocation?.lng ??26.1025 });
+const selectedLocation = ref({ lat: userLocation?.lat ?? 44.4268, lng: userLocation?.lng ?? 26.1025 });
 const address = ref(userLocation?.street);
 
 const isLoadingLocation = ref(false);
@@ -56,6 +54,7 @@ const initializeMap = async () => {
     map = L.map('map-item', {
         maxZoom: 18,
         minZoom: 6,
+        zoomControl: false, // Disable default zoom control
     }).setView([selectedLocation.value.lat, selectedLocation.value.lng], 13);
 
     // Set max bounds to keep the map restricted within Romania
@@ -64,6 +63,9 @@ const initializeMap = async () => {
     // Optionally, you can set options to disable dragging outside bounds
     map.options.maxBoundsViscosity = 1;
 
+    // Add a zoom control to the bottom-right corner
+    L.control.zoom({ position: 'bottomright' }).addTo(map);
+
     // Add OpenStreetMap tiles
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
@@ -71,7 +73,6 @@ const initializeMap = async () => {
 
     // Add a marker to the map
     marker = L.marker([selectedLocation.value.lat, selectedLocation.value.lng], { draggable: true }).addTo(map);
-
 
     // Load and add the world GeoJSON to the map with a light fill
     await fetch('/world.geo.json')
@@ -171,7 +172,7 @@ watch(() => selectedLocation.value, (newVal) => {
 
 const detectUserLocation = async () => {
     isLoadingLocation.value = true;
-    if (! navigator.geolocation) {
+    if (!navigator.geolocation) {
         console.error('Geolocation is not supported by this browser.');
         isLoadingLocation.value = false;
         return;
@@ -199,7 +200,7 @@ const detectUserLocation = async () => {
 const debouncedSearchAddress = debounce(searchAddress, 300);
 
 onMounted(async () => {
-    if(! userLocation?.lat && !userLocation?.lng) {
+    if (!userLocation?.lat && !userLocation?.lng) {
         detectUserLocation();
     }
     await initializeMap();
