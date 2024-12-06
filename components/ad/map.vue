@@ -76,8 +76,8 @@ const searchAddress = async () => {
 
 const selectSuggestion = (suggestion) => {
   // Update selected location and map
-  const { lat, lon, address, display_name } = suggestion;
-  selectedLocation.value = { lat: parseFloat(lat), lng: parseFloat(lon), county: address?.county, street: display_name  };
+  const { lat, lon, address: suggestedAddress, display_name } = suggestion;
+  selectedLocation.value = { lat: parseFloat(lat), lng: parseFloat(lon), county: suggestedAddress?.county, street: display_name  };
 
   // Move marker and map to the selected location
   map.setView([lat, lon], 13);
@@ -95,8 +95,8 @@ const reverseGeocode = async (lat, lng) => {
     );
     const data = await response.json();
 
-    const { address, display_name } = data;
-    selectedLocation.value = { lat: parseFloat(lat), lng: parseFloat(lng), county: address?.county, street: display_name  };
+    const { address: suggestedAddress, display_name } = data;
+    selectedLocation.value = { lat: parseFloat(lat), lng: parseFloat(lng), county: suggestedAddress?.county, street: display_name  };
 
     address.value = data.display_name;
   } catch (error) {
