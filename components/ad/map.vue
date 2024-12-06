@@ -40,8 +40,11 @@ import { getRomanianBounds } from '../utils'
 const isLoading = ref(false);
 const address = ref('');
 const suggestions = ref([]);
-const selectedLocation = ref({ lat: 44.4268, lng: 26.1025 }); // Default coordinates
-const isLoadingLocation = ref(false); // Tracks location detection state
+
+const userLocation = JSON.parse(localStorage.getItem('userLocation') ?? '{}')
+const selectedLocation = ref({ lat: userLocation?.lat ?? 44.4268, lng: userLocation?.lng ??26.1025 });
+
+const isLoadingLocation = ref(false);
 let map;
 let marker;
 
@@ -161,9 +164,13 @@ const reverseGeocode = async (lat, lng) => {
     }
 };
 
+watch(() => selectedLocation.value, (newVal) => {
+    localStorage.setItem('userLocation', JSON.stringify({ lat: newVal?.lat, lng: newVal?.lng }))
+})
+
 const detectUserLocation = async () => {
     isLoadingLocation.value = true;
-    if (!navigator.geolocation) {
+    if (! navigator.geolocation) {
         console.error('Geolocation is not supported by this browser.');
         isLoadingLocation.value = false;
         return;
@@ -172,7 +179,6 @@ const detectUserLocation = async () => {
     navigator.geolocation.getCurrentPosition(
         async (position) => {
             const { latitude, longitude } = position.coords;
-
             await reverseGeocode(latitude, longitude);
 
             if (map) {
@@ -192,7 +198,9 @@ const detectUserLocation = async () => {
 const debouncedSearchAddress = debounce(searchAddress, 300);
 
 onMounted(async () => {
-    detectUserLocation();
+    if(! userLocation?.lat && !userLocation?.lng) {
+        detectUserLocation();
+    }
     await initializeMap();
 });
 
