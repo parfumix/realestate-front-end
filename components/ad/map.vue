@@ -38,11 +38,12 @@ import "leaflet/dist/leaflet.css";
 import { getRomanianBounds } from '../utils'
 
 const isLoading = ref(false);
-const address = ref('');
 const suggestions = ref([]);
 
 const userLocation = JSON.parse(localStorage.getItem('userLocation') ?? '{}')
+
 const selectedLocation = ref({ lat: userLocation?.lat ?? 44.4268, lng: userLocation?.lng ??26.1025 });
+const address = ref(userLocation?.street);
 
 const isLoadingLocation = ref(false);
 let map;
@@ -165,7 +166,7 @@ const reverseGeocode = async (lat, lng) => {
 };
 
 watch(() => selectedLocation.value, (newVal) => {
-    localStorage.setItem('userLocation', JSON.stringify({ lat: newVal?.lat, lng: newVal?.lng }))
+    localStorage.setItem('userLocation', JSON.stringify(newVal))
 })
 
 const detectUserLocation = async () => {
