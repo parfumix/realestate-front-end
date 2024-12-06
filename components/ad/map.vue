@@ -1,5 +1,5 @@
 <template>
-    <div class="h-[calc(100dvh-150px)]">
+    <div>
         <!-- Address Input -->
         <div class="flex flex-col items-center p-4">
             <label for="address" class="text-sm font-medium text-gray-700">Enter Address</label>
@@ -26,7 +26,7 @@
         </div>
 
         <!-- Map -->
-        <div id="map-item" style="height: 50%; width: 100%;" />
+        <div id="map-item" style="height: 100%; width: 100%;" />
     </div>
 </template>
 
