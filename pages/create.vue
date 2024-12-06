@@ -1,8 +1,8 @@
 <template>
-  <main class="flex flex-row space-x-2 ml-20 p-6">
+  <main class="flex flex-row space-x-2 ml-20">
     <div class="w-1/2">
-      <form @submit.prevent="onSubmit" class="overflow-auto h-screen">
-        <div class="space-y-12">
+      <form @submit.prevent="onSubmit" class="no-scrollbar overflow-auto h-[calc(100vh-50px)]">
+        <div class="space-y-12 p-6">
           <div class="border-b border-gray-900/10 pb-12">
             <h2 class="text-base font-semibold text-gray-900">Modifică oferta</h2>
             <p class="mt-1 text-sm text-gray-600">Urmează paşii, e mai simplu ca niciodată.</p>
@@ -107,18 +107,15 @@
               </div>
             </div>
           </div>
+        </div>
+      </form>
 
-          <div class="mt-6 flex justify-end gap-4">
+      <div class="h-[40px] my-[5px] flex justify-end gap-4">
             <button type="button" class="text-sm font-medium text-gray-900">Anulează</button>
-            <button
-              type="submit"
-              class="rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-500 focus:outline focus:ring-2 focus:ring-indigo-600"
-            >
+            <button type="submit" class="rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-500 focus:outline focus:ring-2 focus:ring-indigo-600">
               Salvează
             </button>
           </div>
-        </div>
-      </form>
     </div>
 
     <div class="w-1/2">
