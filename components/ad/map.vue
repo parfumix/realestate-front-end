@@ -1,119 +1,205 @@
 <template>
     <div class="h-[calc(100dvh-150px)]">
-      <!-- Address Input -->
-      <div class="flex flex-col items-center p-4">
-        <label for="address" class="text-sm font-medium text-gray-700">Enter Address</label>
-        <input
-          id="address"
-          v-model="address"
-          @input="debouncedSearchAddress"
-          class="border rounded w-full p-2"
-          placeholder="Enter address to sell your property"
-        />
-        <ul v-if="suggestions.length" class="border bg-white w-full mt-2 rounded shadow">
-          <li
-            v-for="(suggestion, index) in suggestions"
-            :key="index"
-            @click="selectSuggestion(suggestion)"
-            class="p-2 cursor-pointer hover:bg-gray-200"
-          >
-            {{ suggestion.display_name }}
-          </li>
-        </ul>
-      </div>
-  
-      <!-- Map -->
-      <div id="map-item" style="height: 50%; width: 100%;" />
+        <!-- Address Input -->
+        <div class="flex flex-col items-center p-4">
+            <label for="address" class="text-sm font-medium text-gray-700">Enter Address</label>
+            <div class="w-full relative mt-2 rounded-md shadow-sm">
+                <input id="address" v-model="address" @input="debouncedSearchAddress" class="border rounded w-full p-2"
+                    placeholder="Enter address to sell your property" />
+                <div v-if="isLoading" class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
+                    <svg class="animate-spin -ml-1 h-5 w-5 text-black" xmlns="http://www.w3.org/2000/svg" fill="none"
+                        viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4">
+                        </circle>
+                        <path class="opacity-75" fill="currentColor"
+                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                        </path>
+                    </svg>
+                </div>
+            </div>
+            <ul v-if="suggestions.length" class="border bg-white w-full mt-2 rounded shadow">
+                <li v-for="(suggestion, index) in suggestions" :key="index" @click="selectSuggestion(suggestion)"
+                    class="p-2 cursor-pointer hover:bg-gray-200">
+                    {{ suggestion.display_name }}
+                </li>
+            </ul>
+        </div>
+
+        <!-- Map -->
+        <div id="map-item" style="height: 50%; width: 100%;" />
     </div>
-  </template>
+</template>
 
 <script setup>
 import L from 'leaflet';
 import debounce from 'lodash-es/debounce';
 import "leaflet/dist/leaflet.css";
 
+import { getRomanianBounds } from '../utils'
+
+const isLoading = ref(false);
 const address = ref('');
 const suggestions = ref([]);
-const selectedLocation = ref({ lat: 47.21322, lng: -1.559482 }); // Default coordinates
+const selectedLocation = ref({ lat: 44.4268, lng: 26.1025 }); // Default coordinates
+const isLoadingLocation = ref(false); // Tracks location detection state
 let map;
 let marker;
 
-const initializeMap = () => {
-  // Initialize Leaflet map
-  map = L.map('map-item').setView([selectedLocation.value.lat, selectedLocation.value.lng], 13);
+const initializeMap = async () => {
+    const romaniaBounds = getRomanianBounds();
 
-  // Add OpenStreetMap tiles
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-  }).addTo(map);
+    // Initialize Leaflet map
+    map = L.map('map-item', {
+        maxZoom: 18,
+        minZoom: 6,
+    }).setView([selectedLocation.value.lat, selectedLocation.value.lng], 13);
 
-  // Add a marker to the map
-  marker = L.marker([selectedLocation.value.lat, selectedLocation.value.lng], { draggable: true }).addTo(map);
+    // Set max bounds to keep the map restricted within Romania
+    map.setMaxBounds(romaniaBounds);
 
-  // Update coordinates and address when the marker is dragged
-  marker.on('dragend', async (e) => {
-    const { lat, lng } = e.target.getLatLng();
-    await reverseGeocode(lat, lng);
-  });
+    // Optionally, you can set options to disable dragging outside bounds
+    map.options.maxBoundsViscosity = 1;
+
+    // Add OpenStreetMap tiles
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+    }).addTo(map);
+
+    // Add a marker to the map
+    marker = L.marker([selectedLocation.value.lat, selectedLocation.value.lng], { draggable: true }).addTo(map);
+
+
+    // Load and add the world GeoJSON to the map with a light fill
+    await fetch('/world.geo.json')
+        .then(response => response.json())
+        .then(worldData => {
+            L.geoJSON(worldData, {
+                style: {
+                    color: '#ccc',        // Border color for the world
+                    fillColor: '#ccc',    // Fill color for the world
+                    weight: 1,            // Border width
+                    opacity: 0.2,         // Border opacity for the world
+                    fillOpacity: 0.3     // Fill opacity to make it lighter
+                }
+            }).addTo(map);            // Add the layer to the map
+        })
+        .catch(error => console.error('Error loading world GeoJSON:', error));
+
+    // Load and add Romania’s GeoJSON with only the border displayed
+    await fetch('/ro.geo.json')
+        .then(response => response.json())
+        .then(countryData => {
+            L.geoJSON(countryData, {
+                style: {
+                    color: '#808080',     // Border color for Romania
+                    weight: 2,            // Slightly thicker border
+                    opacity: 1,           // Full opacity for the border
+                    fillOpacity: 0        // No fill color (transparent)
+                }
+            }).addTo(map);            // Add the layer to the map
+        })
+        .catch(error => console.error('Error loading Romania GeoJSON:', error));
+
+    // Update coordinates and address when the marker is dragged
+    marker.on('dragend', async (e) => {
+        const { lat, lng } = e.target.getLatLng();
+        await reverseGeocode(lat, lng);
+    });
 };
 
 const searchAddress = async () => {
-  if (!address.value) {
-    suggestions.value = [];
-    return;
-  }
+    if (!address.value) {
+        suggestions.value = [];
+        return;
+    }
 
-  try {
-    const response = await fetch(
-      `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(address.value)}&countrycodes=RO&format=json&addressdetails=1&limit=5`
-    );
-    const data = await response.json();
-    suggestions.value = data;
-  } catch (error) {
-    console.error('Error fetching address suggestions:', error);
-  }
+    try {
+        isLoading.value = true;
+
+        const response = await fetch(
+            `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(address.value)}&countrycodes=RO&format=json&addressdetails=1&limit=5`
+        );
+        const data = await response.json();
+        suggestions.value = data;
+    } catch (error) {
+        console.error('Error fetching address suggestions:', error);
+    } finally {
+        isLoading.value = false;
+    }
 };
 
 const selectSuggestion = (suggestion) => {
-  // Update selected location and map
-  const { lat, lon, address: suggestedAddress, display_name } = suggestion;
-  selectedLocation.value = { lat: parseFloat(lat), lng: parseFloat(lon), county: suggestedAddress?.county, street: display_name  };
+    // Update selected location and map
+    const { lat, lon, address: suggestedAddress, display_name } = suggestion;
+    selectedLocation.value = { lat: parseFloat(lat), lng: parseFloat(lon), county: suggestedAddress?.county, street: display_name };
 
-  // Move marker and map to the selected location
-  map.setView([lat, lon], 13);
-  marker.setLatLng([lat, lon]);
+    // Move marker and map to the selected location
+    map.setView([lat, lon], 13);
+    marker.setLatLng([lat, lon]);
 
-  // Clear suggestions
-  address.value = suggestion.display_name;
-  suggestions.value = [];
+    // Clear suggestions
+    address.value = suggestion.display_name;
+    suggestions.value = [];
 };
 
 const reverseGeocode = async (lat, lng) => {
-  try {
-    const response = await fetch(
-      `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json&addressdetails=1`
+    try {
+        isLoading.value = true
+        const response = await fetch(
+            `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json&addressdetails=1`
+        );
+        const data = await response.json();
+
+        const { address: suggestedAddress, display_name } = data;
+        selectedLocation.value = { lat: parseFloat(lat), lng: parseFloat(lng), county: suggestedAddress?.county, street: display_name };
+
+        address.value = data.display_name;
+    } catch (error) {
+        console.error('Error fetching reverse geocoding data:', error);
+    } finally {
+        isLoading.value = false
+    }
+};
+
+const detectUserLocation = async () => {
+    isLoadingLocation.value = true;
+    if (!navigator.geolocation) {
+        console.error('Geolocation is not supported by this browser.');
+        isLoadingLocation.value = false;
+        return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+        async (position) => {
+            const { latitude, longitude } = position.coords;
+
+            await reverseGeocode(latitude, longitude);
+
+            if (map) {
+                map.setView([latitude, longitude], 13);
+                marker.setLatLng([latitude, longitude]);
+            }
+
+            isLoadingLocation.value = false;
+        },
+        (error) => {
+            console.error('Error detecting user location:', error);
+            isLoadingLocation.value = false;
+        }
     );
-    const data = await response.json();
-
-    const { address: suggestedAddress, display_name } = data;
-    selectedLocation.value = { lat: parseFloat(lat), lng: parseFloat(lng), county: suggestedAddress?.county, street: display_name  };
-
-    address.value = data.display_name;
-  } catch (error) {
-    console.error('Error fetching reverse geocoding data:', error);
-  }
 };
 
 const debouncedSearchAddress = debounce(searchAddress, 300);
 
-onMounted(() => {
-  initializeMap();
+onMounted(async () => {
+    detectUserLocation();
+    await initializeMap();
 });
 
 onUnmounted(() => {
-  if (map) {
-    map.off();
-    map.remove();
-  }
+    if (map) {
+        map.off();
+        map.remove();
+    }
 });
 </script>
