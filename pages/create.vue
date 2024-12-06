@@ -15,6 +15,9 @@
                 </div>
             </div>
 
+
+            <AdMap />
+
             <!-- Transaction Type -->
             <div class="mb-4">
                 <label class="block text-sm font-medium text-gray-700 mb-2">Tip tranzacție</label>
