@@ -66,7 +66,7 @@
   import { ref } from 'vue'
   
   // Props
-  defineProps({
+  const props = defineProps({
     id: {
       type: String,
       default: 'dropzone-file',
@@ -90,7 +90,7 @@
   })
   
   // Emits
-  defineEmits(['files-selected'])
+  const emit = defineEmits(['files-selected'])
   
   // Reactive state for previews
   const previewImages = ref([])
@@ -101,7 +101,7 @@
     const validFiles = []
   
     for (const file of files) {
-      if (file.size > maxFileSize) {
+      if (file.size > props.maxFileSize) {
         alert(`${file.name} exceeds the maximum file size of ${maxFileSize / 1024 / 1024} MB.`)
         continue
       }

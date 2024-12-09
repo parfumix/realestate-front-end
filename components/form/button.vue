@@ -44,7 +44,7 @@ defineProps({
 })
 
 // Emits click event
-defineEmits(['click'])
+const emit = defineEmits(['click'])
 
 // Method to handle click
 function handleClick(event) {

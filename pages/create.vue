@@ -2,7 +2,7 @@
     <main class="flex flex-row space-x-2 ml-20">
         <div class="w-1/2">
             <div class="p-6 h-[20px]">
-                <h1 class="text-xl font-semibold text-gray-900">Adaugă acum anunțul tău</h1>
+                <h1 class="text-xl font-semibold text-gray-900">Vindeți o proprietate?</h1>
                 <p class="mt-1 text-sm text-gray-600">Urmează paşii, e mai simplu ca niciodată.</p>
             </div>
 
@@ -12,7 +12,7 @@
 
                         <!-- Property Type -->
                         <div class="mt-10">
-                            <FormRadioGroup legend="Tipul de proprietate" description="" name="property-type" :items="[
+                            <FormRadioGroup legend="Tipul de proprietate" name="property-type" :items="[
                                 { id: 'apartment', title: 'Apartament' },
                                 { id: 'casa', title: 'Casă' },
                                 { id: 'comercial', title: 'Comercial' }
@@ -21,8 +21,10 @@
 
                         <!-- Transaction Type -->
                         <div class="mt-10">
-                            <FormButton text="De vânzare" @click="setTransactionType('vanzare')" />
-                            <FormButton text="De închiriat" @click="setTransactionType('inchiriere')" />
+                            <FormRadioGroup legend="Tipul de proprietate" name="property-type" :items="[
+                                { id: 'vanzare', title: 'De vânzare' },
+                                { id: 'inchiriere', title: 'De închiriat' },
+                            ]" v-model:value="transactionType" />
                         </div>
 
                         <!-- Title -->
@@ -34,8 +36,8 @@
 
                         <!-- Description -->
                         <div class="mt-10">
-                            <FormTextArea id="description" name="description" label="Descriere"
-                                placeholder="Scrie câteva propoziții despre proprietate." rows="3"
+                            <FormTextarea id="description" name="description" label="Descriere"
+                                placeholder="Scrie câteva propoziții despre proprietate." :rows=3
                                 v-model:value="description" :error="errors.description" />
                         </div>
 
@@ -81,7 +83,6 @@ import * as yup from 'yup';
 
 const propertyType = ref('');
 const transactionType = ref('');
-const setTransactionType = (type) => (transactionType.value = type);
 
 const handleFiles = (files) => {
   console.log('Selected files:', files);
