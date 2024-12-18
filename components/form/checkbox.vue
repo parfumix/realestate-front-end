@@ -1,7 +1,7 @@
 <template>
   <fieldset>
-    <legend v-if="legend" class="sr-only">{{ legend }}</legend>
-    <div class="space-y-5">
+    <p v-if="legend" @click="handleCollapsible" class="mb-2 text-gray-500">{{ legend }}</p>
+    <div v-show="!isCollapsed" class="space-y-5">
       <div
         v-for="(option, index) in options"
         :key="index"
@@ -43,6 +43,10 @@ defineProps({
     type: String,
     default: null,
   },
+  collapsible: {
+    type: Boolean,
+    default: false,
+  },
   options: {
     type: Array,
     required: true,
@@ -57,6 +61,11 @@ defineProps({
 // Emit event to update values
 defineEmits(['update:values']);
 
+const isCollapsed = ref(false)
+const handleCollapsible = () => {
+  isCollapsed.value = !isCollapsed.value
+}
+
 // Function to toggle values
 function toggleValue(name) {
   const newValues = [...values];
@@ -68,34 +77,3 @@ function toggleValue(name) {
   }
 }
 </script>
-
-<!-- 
-<CheckboxGroup
-    legend="Notifications"
-    :options="checkboxOptions"
-    v-model:values="selectedValues"
-/>
-
-const checkboxOptions = [
-  {
-    id: 'comments',
-    name: 'comments',
-    label: 'New comments',
-    description: "so you always know what's happening.",
-    checked: false,
-  },
-  {
-    id: 'candidates',
-    name: 'candidates',
-    label: 'New candidates',
-    description: 'who apply for any open postings.',
-    checked: false,
-  },
-  {
-    id: 'offers',
-    name: 'offers',
-    label: 'Offers',
-    description: 'when they are accepted or rejected by candidates.',
-    checked: false,
-  },
-] -->
