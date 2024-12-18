@@ -41,6 +41,10 @@
 </template>
 
 <script setup>
+
+//TODO https://flowbite.com/docs/components/skeleton/
+//TODO adding translation
+
 import RealEstatePropertyModal from '@/components/modals/real-estate-property.vue';
 
 import { useChatStore } from '@/stores/chat';

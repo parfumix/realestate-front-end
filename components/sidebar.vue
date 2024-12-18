@@ -28,6 +28,8 @@
 </template>
 
 <script setup>
+
+//https://preline.co//docs/sidebar.html
 import { useNotificationsStore } from '@/stores/notifications';
 import { useModalStore } from '@/stores/modals';
 
