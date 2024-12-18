@@ -26,7 +26,7 @@
 
                         <!-- Description -->
                         <div class="mt-4">
-                            <FormTextarea id="description" name="description" v-model="computedDescription" label="Adăugați o descriere" placeholder="Acest apartament modern cu 3 camere oferă finisaje de calitate superioară, spații luminoase și este situat într-o zonă centrală, aproape de toate facilitățile..." :rows=3 :error="errors.description">
+                            <FormTextarea :maxLength="500" id="description" name="description" :rows="6" v-model="computedDescription" label="Adăugați o descriere" placeholder="Acest apartament modern cu 3 camere oferă finisaje de calitate superioară, spații luminoase și este situat într-o zonă centrală, aproape de toate facilitățile..." :error="errors.description">
                                 <div class="flex flex-row my-2 justify-between">
                                     <FormDropdown
                                         @click="handleSelectTone"
@@ -47,9 +47,9 @@
                                         </p>
                                       </div>
 
-                                      <FormButton :disabled="(isAiDescriptionGenerating || aiGeneratedDescription?.length) ? true : false" @onClick="handleAutoGenerate" v-if="description?.length > 7" class="flex items-center" :backgroundColor="description?.length < 7 ? 'bg-gray-200' : 'bg-blue-600'">
+                                      <FormButton :disabled="(isAiDescriptionGenerating) ? true : false" @onClick="handleAutoGenerate" v-if="description?.length > 7" class="flex items-center" :backgroundColor="description?.length < 7 ? 'bg-gray-200' : 'bg-blue-600'">
                                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" :class="[{'animate-spin': isAiDescriptionGenerating}, 'mr-1 lucide lucide-rotate-ccw size-3']"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
-                                        Completează cu AI
+                                        {{ aiGeneratedDescription?.length ? 'Mai incearca' : 'Completează cu AI'}}
                                       </FormButton>
                                    </div>
                                 </div>
@@ -79,10 +79,8 @@
 
                         <!-- Rooms and Details -->
                         <div class="mt-4 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-2">
-                            <FormInput id="floor" name="floor" label="Etaj" placeholder="Etaj 7" v-model="floor"
-                                :error="errors.floor" />
-                            <FormInput id="surface" name="surface" label="Suprafață utilă" placeholder="mp"
-                                v-model="surface" :error="errors.surface" />
+                            <FormInput id="floor" name="floor" label="Etaj" placeholder="Etaj 7" v-model="floor" :error="errors.floor" />
+                            <FormInput id="surface" name="surface" label="Suprafață utilă" placeholder="mp" v-model="surface" :error="errors.surface" />
                         </div>
 
                         <!-- Contact Details -->
@@ -252,7 +250,6 @@ const isAiDescriptionGenerating = ref(false)
 const aiGeneratedDescription = ref(null)
 const handleAutoGenerate = async() => {
   try {
-    if(aiGeneratedDescription.value?.length) return
     isAiDescriptionGenerating.value = true
 
     const { data } = await generateDescription({
@@ -263,8 +260,7 @@ const handleAutoGenerate = async() => {
   } catch(err) {
     // show erro message
   } finally {
-    setTimeout(() => isAiDescriptionGenerating.value = false, 300)
-    
+    isAiDescriptionGenerating.value = false
   }
 }
 </script>
