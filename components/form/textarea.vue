@@ -19,8 +19,12 @@
           focusColor
         ]"
         :value="model"
+        :maxlength="maxLength"
         @input="e => handleInput(e.target.value)"
       />
+      <div class="mt-1 text-sm text-gray-500">
+        {{ characterCount }} / {{ maxLength }}
+      </div>
       <div>
         <slot />
       </div>
@@ -63,9 +67,15 @@ defineProps({
     type: String,
     default: 'focus:ring-indigo-600',
   },
+  maxLength: {
+    type: Number,
+    default: 200, // Default character limit
+  },
 })
 
 const model = defineModel()
+const characterCount = computed(() => model.value?.length || 0)
+
 const handleInput = value => {
   model.value = value
 }

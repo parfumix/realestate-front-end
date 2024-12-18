@@ -74,9 +74,7 @@
 
                         <!-- Image Upload -->
                         <div class="mt-4">
-                            <FormFileUpload id="upload" :accept="'image/png, image/jpeg'" :multiple="true"
-                                :maxFileSize="5 * 1024 * 1024" acceptText="PNG or JPG, smaller than 5MB"
-                                @files-selected="handleFiles" />
+                            <FormFileUpload id="upload" :accept="'image/png, image/jpeg'" :multiple="true" :maxFileSize="5 * 1024 * 1024" acceptText="PNG or JPG, smaller than 5MB" @files-selected="handleFiles" />
                         </div>
 
                         <!-- Rooms and Details -->
