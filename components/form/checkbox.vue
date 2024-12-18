@@ -1,6 +1,6 @@
 <template>
   <fieldset>
-    <p v-if="legend" @click="handleCollapsible" class="mb-2 text-gray-500">{{ legend }}</p>
+    <p v-if="legend" @click="collapsible && handleCollapsible" class="mb-2 text-gray-500">{{ legend }}</p>
     <div v-show="!isCollapsed" class="space-y-5">
       <div
         v-for="(option, index) in options"
@@ -10,12 +10,12 @@
         <div class="flex h-6 items-center">
           <input
             :id="option.id"
-            :name="option.name"
+            :name="option.id"
             type="checkbox"
             class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
             :aria-describedby="`${option.id}-description`"
-            :checked="option.checked"
-            @change="$emit('update:values', toggleValue(option.name))"
+            :checked="modelValue.includes(option.id)"
+            @change="toggleValue(option.id)"
           />
         </div>
         <div class="ml-3 text-sm leading-6">
@@ -37,7 +37,6 @@
 </template>
 
 <script setup>
-// Props
 defineProps({
   legend: {
     type: String,
@@ -52,28 +51,24 @@ defineProps({
     required: true,
     default: () => [],
   },
-  values: {
-    type: Array,
-    default: () => [],
-  },
 });
 
-// Emit event to update values
-defineEmits(['update:values']);
+const modelValue = defineModel({
+  required: true,
+  default: []
+});
 
-const isCollapsed = ref(false)
+const isCollapsed = ref(false);
+
 const handleCollapsible = () => {
-  isCollapsed.value = !isCollapsed.value
-}
+  isCollapsed.value = !isCollapsed.value;
+};
 
-// Function to toggle values
 function toggleValue(name) {
-  const newValues = [...values];
-  if (newValues.includes(name)) {
-    return newValues.filter((v) => v !== name);
+    if (modelValue.value.includes(name)) {
+    modelValue.value = modelValue.value.filter((v) => v !== name);
   } else {
-    newValues.push(name);
-    return newValues;
+    modelValue.value = [...modelValue.value, ...[name]]
   }
 }
 </script>

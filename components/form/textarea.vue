@@ -6,7 +6,7 @@
     >
       {{ label }}
     </label>
-    <div class="mt-2">
+    <div class="mt-2 flex flex-col">
       <textarea
         :id="id"
         :name="name"
@@ -18,9 +18,12 @@
           textColor,
           focusColor
         ]"
-        :value="value"
-        @input="$emit('update:value', $event.target.value)"
+        :value="model"
+        @input="e => handleInput(e.target.value)"
       />
+      <div>
+        <slot />
+      </div>
     </div>
   </div>
 </template>
@@ -48,10 +51,6 @@ defineProps({
     type: String,
     default: 'Type here...',
   },
-  value: {
-    type: String,
-    default: '',
-  },
   borderColor: {
     type: String,
     default: 'ring-gray-300',
@@ -66,15 +65,8 @@ defineProps({
   },
 })
 
-// Emits value update
-defineEmits(['update:value'])
+const model = defineModel()
+const handleInput = value => {
+  model.value = value
+}
 </script>
-
-<!-- <TextArea
-  id="comment"
-  name="comment"
-  label="Add your comment"
-  rows="5"
-  placeholder="Write your comment here..."
-  v-model:value="comment"
-/> -->

@@ -1,6 +1,7 @@
 <template>
   <button
     :type="type"
+    :disabled="disabled"
     :class="[
       'rounded px-2 py-1 text-xs font-semibold shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2',
       backgroundColor,
@@ -10,7 +11,9 @@
     ]"
     @click="handleClick"
   >
+  <slot>
     {{ text }}
+  </slot>
   </button>
 </template>
 
@@ -24,6 +27,10 @@ defineProps({
   type: {
     type: String,
     default: 'button',
+  },
+  disabled: {
+    type: Boolean,
+    default: false,
   },
   backgroundColor: {
     type: String,
@@ -44,12 +51,11 @@ defineProps({
 })
 
 // Emits click event
-const emit = defineEmits(['click'])
+const emit = defineEmits(['onClick'])
 
 // Method to handle click
-function handleClick(event) {
-  // Emit click event to parent
-  emit('click', event)
+function handleClick() {
+  emit('onClick')
 }
 </script>
 

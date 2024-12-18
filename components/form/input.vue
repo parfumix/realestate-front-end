@@ -13,10 +13,10 @@
           error ? 'text-red-900 ring-1 ring-inset ring-red-300 placeholder:text-red-300 focus:ring-2 focus:ring-inset focus:ring-red-500' : 'text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-500'
         ]"
         :placeholder="placeholder"
-        :value="value"
+        :value="model"
         :aria-invalid="!!error"
         :aria-describedby="error ? `${name}-error` : null"
-        @input="$emit('update:value', $event.target.value)"
+        @input="e => handleInput(e.target.value)"
       />
       <div v-if="error" class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
         <ExclamationCircleIcon class="h-5 w-5 text-red-500" aria-hidden="true" />
@@ -49,26 +49,15 @@ defineProps({
     type: String,
     default: ''
   },
-  value: {
-    type: String,
-    default: ''
-  },
   error: {
     type: String,
     default: ''
   }
 })
 
-// Emit event
-defineEmits(['update:value'])
-</script>
+const model = defineModel()
+const handleInput = value => {
+  model.value = value
+}
 
-<!-- 
-<FormInput
-  label="Email"
-  type="email"
-  name="email"
-  placeholder="you@example.com"
-  v-model:value="email"
-  :error="emailError"
-/> -->
+</script>

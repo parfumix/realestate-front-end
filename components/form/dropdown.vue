@@ -18,23 +18,20 @@
       leave-to-class="transform opacity-0 scale-95"
     >
       <MenuItems
-        class="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
+        class="absolute left-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
       >
         <div class="py-1">
           <MenuItem
             v-for="(item, index) in menuItems"
             :key="index"
-            v-slot="{ active }"
           >
             <component
-              :is="item.type === 'link' ? 'a' : 'button'"
-              :href="item.type === 'link' ? item.href : null"
-              :type="item.type === 'button' ? 'submit' : null"
-              @click="item.action"
+              :is="'button'"
+              :type="'button'"
+              @click="() => handleClick(item)"
               :class="[
-                active ? 'bg-gray-100 text-gray-900' : 'text-gray-700',
-                'block px-4 py-2 text-sm',
-                item.type === 'button' ? 'text-left w-full' : ''
+                item.value == defaultItem ? 'bg-gray-100 text-gray-900' : 'text-gray-700',
+                'block px-4 py-2 text-sm text-left w-full',
               ]"
             >
               {{ item.label }}
@@ -56,38 +53,21 @@ defineProps({
     type: String,
     default: 'Options',
   },
+  defaultItem: {
+    type: String, 
+    default: null
+  },
   menuItems: {
     type: Array,
     required: true,
     default: () => [],
   },
 })
-</script>
-<!-- 
-<DropdownMenu
-  buttonLabel="Options"
-  :menuItems="dropdownItems"
-/>
 
-const dropdownItems = [
-  {
-    type: 'link', // 'link' or 'button'
-    label: 'Account settings',
-    href: '#', // Only for links
-  },
-  {
-    type: 'link',
-    label: 'Support',
-    href: '#',
-  },
-  {
-    type: 'link',
-    label: 'License',
-    href: '#',
-  },
-  {
-    type: 'button',
-    label: 'Sign out',
-    action: () => alert('Signed out'), // Only for buttons
-  },
-] -->
+
+const emit = defineEmits(['click'])
+
+const handleClick = (item) => {
+  emit('click', item)
+}
+</script>
