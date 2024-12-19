@@ -9,21 +9,21 @@
       >
         <div class="flex h-6 items-center">
           <input
-            :id="option.id"
-            :name="option.id"
+            :id="option.value"
+            :name="option.value"
             type="checkbox"
             class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
-            :aria-describedby="`${option.id}-description`"
-            :checked="modelValue.includes(option.id)"
-            @change="toggleValue(option.id)"
+            :aria-describedby="`${option.value}-description`"
+            :checked="modelValue.includes(option.value)"
+            @change="toggleValue(option.value)"
           />
         </div>
         <div class="ml-3 text-sm leading-6">
-          <label :for="option.id" class="font-medium text-gray-900">
+          <label :for="option.value" class="font-medium text-gray-900">
             {{ option.label }}
           </label>
           <span
-            :id="`${option.id}-description`"
+            :id="`${option.value}-description`"
             v-if="option.description"
             class="text-gray-500"
           >
