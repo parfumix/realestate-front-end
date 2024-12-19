@@ -216,7 +216,6 @@ const schema = yup.object({
   floor: yup.number().typeError('Trebuie să fie un număr').required(),
   surface: yup.number().typeError('Trebuie să fie un număr').required(),
 
-
   images: yup.array()
     .of(
       yup.mixed().test('fileType', 'Only PNG and JPEG files are allowed', (value) => {
@@ -237,6 +236,7 @@ const { handleSubmit, errors } = useForm({ validationSchema: schema, initialValu
   propertyType: 'apartment',
   transactionType: 'sell',
 } });
+
 const onSubmit = handleSubmit((values) => {
   console.log('Submitted:', values);
 });
@@ -252,6 +252,13 @@ const { value: surface } = useField('surface');
 
 const { value: email } = useField('email');
 const { value: phone } = useField('phone');
+
+/**
+ * Helpers
+ */
+
+const isAiDescriptionGenerating = ref(false)
+const aiGeneratedDescription = ref(null)
 
 const handleSelectTone = ({ value }) => {
   defaultTone.value = value
@@ -278,8 +285,6 @@ const computedDescription = computed(({
   }
 }))
 
-const isAiDescriptionGenerating = ref(false)
-const aiGeneratedDescription = ref(null)
 const handleAutoGenerate = async() => {
   try {
     isAiDescriptionGenerating.value = true
