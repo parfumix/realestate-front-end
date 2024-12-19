@@ -37,27 +37,20 @@
     <!-- Preview Images -->
     <div v-if="previewImages.length" class="w-full grid gap-1 mb-4">
       <div
-        v-for="(image, index) in previewImages"
-        :key="index"
-        class="flex items-center justify-between gap-2"
+        v-for="(image, index) in previewImages" :key="image.id" class="flex items-center justify-between gap-2"
       >
         <div class="flex items-center gap-2">
           <img
-            :src="image"
+            :src="image.src"
             alt="Preview"
-            class="w-10 h-10 object-cover rounded-md"
+            class="w-14 h-14 object-cover rounded-md"
           />
           <div class="grid gap-1">
-            <h4 class="text-gray-900 text-sm font-normal">Image {{ index + 1 }}</h4>
+            <h4 class="text-gray-900 text-sm font-normal">{{ image.name }}</h4>
             <h5 class="text-gray-400 text-xs font-normal">Upload complete</h5>
           </div>
         </div>
-        <button
-          @click="removeImage(index)"
-          class="bg-red-500 text-white rounded-full p-2 text-xs"
-        >
-          ✕
-        </button>
+        <svg  @click="removeImage(image.id)" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-trash size-4 cursor-pointer"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
       </div>
     </div>
   </template>
@@ -89,6 +82,9 @@
     },
   })
   
+  // Generate a unique ID
+  const generateUniqueId = () => `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
+
   // Emits
   const emit = defineEmits(['files-selected'])
   
@@ -106,10 +102,16 @@
         continue
       }
   
+      const uniqueId = generateUniqueId() // Generate a unique ID
+
       if (file.type.startsWith('image/')) {
         const reader = new FileReader()
         reader.onload = (e) => {
-          previewImages.value.push(e.target.result)
+          previewImages.value.push({
+            id: uniqueId,
+            name: file.name,
+            src: e.target.result
+          })
         }
         reader.readAsDataURL(file)
       }
@@ -125,16 +127,3 @@
     previewImages.value.splice(index, 1)
   }
   </script>
-
-<!-- <FileUpload
-    id="upload"
-    :accept="'image/png, image/jpeg'"
-    :multiple="true"
-    :maxFileSize="5 * 1024 * 1024" // 5MB
-    acceptText="PNG or JPG, smaller than 5MB"
-    @files-selected="handleFiles"
-/>
-
-const handleFiles = (files) => {
-  console.log('Selected files:', files)
-} -->
