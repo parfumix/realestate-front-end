@@ -81,7 +81,15 @@
 
                         <!-- Image Upload -->
                         <div class="mt-4">
-                            <FormFileUpload id="upload" :accept="'image/png, image/jpeg'" :multiple="true" :maxFileSize="5 * 1024 * 1024" acceptText="PNG or JPG, smaller than 5MB" @files-selected="handleUploadFile" />
+                          <FormFileUpload
+                            id="upload"
+                            :accept="'image/png, image/jpeg'"
+                            :multiple="true"
+                            :maxFileSize="5 * 1024 * 1024"
+                            acceptText="PNG or JPG, smaller than 5MB"
+                            v-model="images"
+                            :error="errors.images"
+                          />
                         </div>
 
                         <!-- Rooms and Details -->
@@ -208,6 +216,18 @@ const schema = yup.object({
   floor: yup.number().typeError('Trebuie să fie un număr').required(),
   surface: yup.number().typeError('Trebuie să fie un număr').required(),
 
+
+  images: yup.array()
+    .of(
+      yup.mixed().test('fileType', 'Only PNG and JPEG files are allowed', (value) => {
+        return value && ['image/png', 'image/jpeg'].includes(value.type);
+      })
+      .test('fileSize', 'File size must be less than 5MB', (value) => {
+        return value && value.size <= 5 * 1024 * 1024; // 5MB
+      })
+    )
+    .required('At least one image is required'),
+
   // contat section
   email: yup.string().email().required(),
   phone: yup.string().matches(/^\d{10}$/).required(),
@@ -225,6 +245,7 @@ const { value: propertyType } = useField('propertyType');
 const { value: transactionType } = useField('transactionType');
 const { value: selectedFacilities } = useField('selectedFacilities');
 
+const { value: images } = useField('images');
 const { value: description, setValue: setDescription } = useField('description');
 const { value: floor } = useField('floor');
 const { value: surface } = useField('surface');
@@ -235,12 +256,6 @@ const { value: phone } = useField('phone');
 const handleSelectTone = ({ value }) => {
   defaultTone.value = value
 } 
-
-const files = ref([])
-const handleUploadFile = (file) => {
-  files.value = [...files.value, ...file]
-}
-
 const handleDiscard = () => {
   aiGeneratedDescription.value = null
 }
