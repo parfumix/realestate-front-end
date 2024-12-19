@@ -14,14 +14,21 @@
                             <FormRadioGroupImage
                                 title="Tipul de proprietate"
                                 name="property-type"
-                                :options="propertyTypeOptions"
                                 v-model="propertyType"
+                                :options="propertyTypeOptions"
+                                :error="errors.propertyType" 
                             />
                         </div>
 
                         <!-- Transaction Type -->
                         <div class="mt-4">
-                            <FormRadioGroup legend="Tipul de tranzactie" name="transaction-type" :items="transactionTypeOptions" v-model="transactionType" />
+                            <FormRadioGroup 
+                              legend="Tipul de tranzactie" 
+                              name="transaction-type" 
+                              :items="transactionTypeOptions" 
+                              v-model="transactionType" 
+                              :error="errors.transactionType"  
+                            />
                         </div>
 
                         <!-- Description -->
@@ -63,7 +70,7 @@
                           <svg v-else xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-down size-4"><path d="m6 9 6 6 6-6"/></svg>
                         </p>
                         <div v-if="! isFacilitiesCollpased" class="mt-4 flex justify-start">
-                          <div class="" v-for="items in chunkArray(facilities, 5)">
+                          <div v-for="items in chunkArray(facilities, 5)">
                             <FormCheckbox
                                 :collapsible="true"
                                 :options="items"
@@ -74,12 +81,12 @@
 
                         <!-- Image Upload -->
                         <div class="mt-4">
-                            <FormFileUpload id="upload" :accept="'image/png, image/jpeg'" :multiple="true" :maxFileSize="5 * 1024 * 1024" acceptText="PNG or JPG, smaller than 5MB" @files-selected="handleFiles" />
+                            <FormFileUpload id="upload" :accept="'image/png, image/jpeg'" :multiple="true" :maxFileSize="5 * 1024 * 1024" acceptText="PNG or JPG, smaller than 5MB" @files-selected="handleUploadFile" />
                         </div>
 
                         <!-- Rooms and Details -->
                         <div class="mt-4 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-2">
-                            <FormInput id="floor" name="floor" label="Etaj" placeholder="Etaj 7" v-model="floor" :error="errors.floor" />
+                            <FormSelect id="floor" name="floor" label="Etaj" placeholder="Etaj 7" v-model="floor" :error="errors.floor" />
                             <FormInput id="surface" name="surface" label="Suprafață utilă" placeholder="mp" v-model="surface" :error="errors.surface" />
                         </div>
 
@@ -104,7 +111,6 @@
 </template>
 
 <script setup>
-//TODO adding autogenerate usingAI for description - https://ctrl.vi/i/YFMPc7vVA
 //TODO adding moderation - https://chatgpt.com/share/6756fcb7-6464-8006-9453-d5f41b730e1e
 //TODO https://preline.co//docs/confetti.html
 
@@ -129,7 +135,7 @@ const propertyTypeOptions = [
   {
     title: "Casă",
     description: "For families",
-    value: "casa",
+    value: "home",
     svg: `
       <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
@@ -188,41 +194,52 @@ const toneItems = [
   { value: 'friendly', label: 'Ton Prietenos', description: 'Ton cald și accesibil.' },
   { value: 'luxury', label: 'Ton Lux', description: 'Elegant și exclusivist.' }
 ]
-
-const propertyType = ref('apartment');
-const transactionType = ref('sell');
 const defaultTone = ref('professional')
-
-const selectedFacilities = ref([]);
 const isFacilitiesCollpased = ref(true)
 
 const schema = yup.object({
+  // transaction type
+  propertyType: yup.mixed().oneOf(['apartment', 'home', 'comercial']),
+  transactionType: yup.mixed().oneOf(['sell', 'rent']),
+  selectedFacilities: yup.string().optional(),
+
+  // characteristics
   description: yup.string().required('Descrierea este obligatorie').max(500),
   floor: yup.number().typeError('Trebuie să fie un număr').required(),
   surface: yup.number().typeError('Trebuie să fie un număr').required(),
+
+  // contat section
   email: yup.string().email().required(),
   phone: yup.string().matches(/^\d{10}$/).required(),
 });
 
-const { handleSubmit, errors } = useForm({ validationSchema: schema });
+const { handleSubmit, errors } = useForm({ validationSchema: schema, initialValues: {
+  propertyType: 'apartment',
+  transactionType: 'sell',
+} });
 const onSubmit = handleSubmit((values) => {
   console.log('Submitted:', values);
 });
 
+const { value: propertyType } = useField('propertyType');
+const { value: transactionType } = useField('transactionType');
+const { value: selectedFacilities } = useField('selectedFacilities');
+
 const { value: description, setValue: setDescription } = useField('description');
 const { value: floor } = useField('floor');
 const { value: surface } = useField('surface');
+
 const { value: email } = useField('email');
 const { value: phone } = useField('phone');
-
 
 const handleSelectTone = ({ value }) => {
   defaultTone.value = value
 } 
 
-const handleFiles = (files) => {
-  console.log('Selected files:', files);
-};
+const files = ref([])
+const handleUploadFile = (file) => {
+  files.value = [...files.value, ...file]
+}
 
 const handleDiscard = () => {
   aiGeneratedDescription.value = null
@@ -234,7 +251,7 @@ const handleApply = () => {
 }
 
 const computedDescription = computed(({
-  get(pervious) {
+  get() {
     return aiGeneratedDescription.value?.length ? aiGeneratedDescription.value : description.value
   },
   set(newValue) {
