@@ -14,6 +14,10 @@
                 </label>
             </li>
         </ul>
+
+        <p v-if="error" :id="`${name}-error`" class="mt-2 text-sm text-red-600">
+            {{ error }}
+        </p>
     </div>
 </template>
 
@@ -30,6 +34,10 @@ const props = defineProps({
     options: {
         type: Array,
         required: true
+    },
+    error: {
+        type: String,
+        default: ''
     }
 })
 

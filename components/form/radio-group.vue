@@ -30,6 +30,10 @@
         </label>
       </div>
     </div>
+
+    <p v-if="error" :id="`${name}-error`" class="mt-2 text-sm text-red-600">
+        {{ error }}
+    </p>
   </fieldset>
 </template>
 
@@ -52,6 +56,10 @@ defineProps({
     type: String,
     default: '',
   },
+  error: {
+      type: String,
+      default: ''
+  }
 })
 
 const model = defineModel()
