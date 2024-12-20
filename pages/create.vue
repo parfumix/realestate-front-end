@@ -25,7 +25,7 @@
                             <FormRadioGroup 
                               legend="Tipul de tranzactie" 
                               name="transaction-type" 
-                              :items="transactionTypeOptions" 
+                              :options="transactionTypeOptions" 
                               v-model="transactionType" 
                               :error="errors.transactionType"  
                             />
@@ -108,7 +108,7 @@
             </form>
 
             <div class="h-[40px] my-[5px] flex justify-end gap-4">
-                <FormButton text="Salvează" @onClick="onSubmit" />
+                <FormButton :disabled="isSubmitting" text="Salvează" @onClick="onSubmit" />
             </div>
         </div>
 
@@ -232,7 +232,7 @@ const schema = yup.object({
   phone: yup.string().matches(/^\d{10}$/).required(),
 });
 
-const { handleSubmit, errors } = useForm({ validationSchema: schema, initialValues: {
+const { handleSubmit, errors, isSubmitting } = useForm({ validationSchema: schema, initialValues: {
   propertyType: 'apartment',
   transactionType: 'sell',
 } });
@@ -241,11 +241,18 @@ const onSubmit = handleSubmit((values) => {
   console.log('Submitted:', values);
 });
 
+
+// // Fetch data on mounted
+// onMounted(async () => {
+//   const data = await fetchData();
+//   resetForm({ values: data });
+// });
+
 const { value: propertyType } = useField('propertyType');
 const { value: transactionType } = useField('transactionType');
 const { value: selectedFacilities } = useField('selectedFacilities');
 
-const { value: images } = useField('images');
+const { value: images } = useField('images', []);
 const { value: description, setValue: setDescription } = useField('description');
 const { value: floor } = useField('floor');
 const { value: surface } = useField('surface');
