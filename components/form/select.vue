@@ -10,6 +10,11 @@ const props = defineProps({
     type: String,
     required: true,
   },
+  required: {
+    type: Boolean,
+    required: false,
+    default: false
+  },
   name: {
     type: String,
     required: true,
@@ -26,7 +31,9 @@ const modelValue = defineModel()
 
 <template>
   <div>
-    <label :for="id" class="block text-sm font-medium leading-6 text-gray-900">{{ label }}</label>
+    <label :for="id" class="block text-sm font-medium leading-6 text-gray-900">
+      <span v-if="required" class="text-red-600">*</span> {{ label }}
+    </label>
     <select
       :id="id"
       :name="name"

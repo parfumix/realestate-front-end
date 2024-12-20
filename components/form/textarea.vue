@@ -4,7 +4,7 @@
       :for="id"
       class="block text-sm font-medium leading-6 text-gray-900"
     >
-      {{ label }}
+    <span v-if="required" class="text-red-600">*</span> {{ label }}
     </label>
     <div class="mt-2 flex flex-col">
       <textarea
@@ -43,6 +43,11 @@ defineProps({
   id: {
     type: String,
     required: true,
+  },
+  required: {
+    type: Boolean,
+    required: false,
+    default: false
   },
   name: {
     type: String,

@@ -25,7 +25,7 @@
 
               <!-- Description -->
               <div class="mt-4">
-                <FormTextarea :maxLength="500" id="description" name="description" :rows="6"
+                <FormTextarea :required="isFieldRequired('images')" :maxLength="500" id="description" name="description" :rows="6"
                   v-model="computedDescription" :label="fieldLabels['description'].long"
                   placeholder="Acest apartament modern cu 3 camere oferă finisaje de calitate superioară, spații luminoase și este situat într-o zonă centrală, aproape de toate facilitățile..."
                   :error="errors.description">
@@ -96,43 +96,40 @@
 
               <!-- Image Upload -->
               <div class="mt-4">
-                <FormFileUpload id="images" :accept="'image/png, image/jpeg'" :multiple="true"
+                <FormFileUpload :required="isFieldRequired('images')" id="images" :accept="'image/png, image/jpeg'" :multiple="true"
                   :maxFileSize="5 * 1024 * 1024" acceptText="PNG or JPG, smaller than 5MB" v-model="images"
                   :error="errors.images" />
               </div>
 
               <!-- Rooms and Details -->
               <div class="mt-4 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-2">
-                <FormSelect id="roomCount" name="roomCount" :options="roomCountOptions" :label="fieldLabels['roomCount'].long"
+                <FormSelect id="roomCount" :required="isFieldRequired('roomCount')" name="roomCount" :options="roomCountOptions" :label="fieldLabels['roomCount'].long"
                   placeholder="Select" v-model="roomCount" :error="errors.roomCount" />
 
-                <FormInput id="totalArea" name="totalArea" :label="fieldLabels['totalArea'].long" placeholder="mp" v-model="totalArea"
+                <FormInput id="totalArea" :required="isFieldRequired('totalArea')" name="totalArea" :label="fieldLabels['totalArea'].long" placeholder="mp" v-model="totalArea"
                   :error="errors.totalArea" />
 
-                <FormInput id="surface" name="surface" :label="fieldLabels['surface'].long" placeholder="mp" v-model="surface"
+                <FormInput id="surface" :required="isFieldRequired('surface')" name="surface" :label="fieldLabels['surface'].long" placeholder="mp" v-model="surface"
                   :error="errors.surface" />
 
-                <FormSelect id="floor" name="floor" :options="floorOptions" :label="fieldLabels['floor'].long" placeholder="Select"
+                <FormSelect id="floor" :required="isFieldRequired('floor')" name="floor" :options="floorOptions" :label="fieldLabels['floor'].long" placeholder="Select"
                   v-model="floor" :error="errors.floor" />
 
-                <FormSelect id="balcony" name="balcony" :options="balconyOptions" :label="fieldLabels['balcony'].long"
+                <FormSelect id="balcony" :required="isFieldRequired('balcony')" name="balcony" :options="balconyOptions" :label="fieldLabels['balcony'].long"
                   placeholder="Select" v-model="balcony" :error="errors.balcony" />
 
-                <FormSelect id="parking" name="parking" :options="parkingOptions" :label="fieldLabels['parking'].long"
+                <FormSelect id="parking" :required="isFieldRequired('parking')"  name="parking" :options="parkingOptions" :label="fieldLabels['parking'].long"
                   placeholder="Select" v-model="parking" :error="errors.parking" />
 
                 <FormSelect id="apartmentCondition" name="apartmentCondition" :options="apartmentConditionOptions"
                   :label="fieldLabels['apartmentCondition'].long" placeholder="Select" v-model="apartmentCondition" :error="errors.apartmentCondition" />
-
-                <FormInput id="livingArea" name="livingArea" :label="fieldLabels['livingArea'].long" placeholder="mp"
-                  v-model="livingArea" :error="errors.livingArea" />
               </div>
 
               <!-- Contact Details -->
               <div class="mt-4">
-                <FormInput id="email" name="email" :label="fieldLabels['email'].long" placeholder="Email" type="email" v-model="email"
+                <FormInput id="email" :required="isFieldRequired('email')" name="email" :label="fieldLabels['email'].long" placeholder="Email" type="email" v-model="email"
                   :error="errors.email" />
-                <FormInput id="phone" name="phone" :label="fieldLabels['phone'].long" placeholder="Telefon" v-model="phone"
+                <FormInput id="phone" :required="isFieldRequired('phone')" name="phone" :label="fieldLabels['phone'].long" placeholder="Telefon" v-model="phone"
                   :error="errors.phone" />
               </div>
             </div>
@@ -158,6 +155,10 @@
 <script setup>
 //TODO adding moderation - https://chatgpt.com/share/6756fcb7-6464-8006-9453-d5f41b730e1e
 //TODO https://preline.co//docs/confetti.html
+// save & edit item
+// fix textarea
+// adding location field
+// review all fields
 
 import { useForm, useField } from 'vee-validate';
 import * as yup from 'yup';
@@ -347,10 +348,6 @@ const fieldLabels = {
     short: "Stare ap.",
     long: "Starea apartamentului",
   },
-  livingArea: {
-    short: "Sup. loc.",
-    long: "Suprafață locativă",
-  },
   email: {
     short: "Email",
     long: "Email",
@@ -392,7 +389,6 @@ const schema = yup.object({
     .required('Numărul de camere este obligatoriu'),
   
   totalArea: yup.number().typeError('Trebuie să fie un număr').required('Suprafața totală este obligatorie'),
-  livingArea: yup.number().typeError('Trebuie să fie un număr').optional(),
   floor: yup.number().typeError('Trebuie să fie un număr').required('Etajul este obligatoriu'),
   surface: yup.number().typeError('Trebuie să fie un număr').required('Suprafața utilă este obligatorie'),
   
@@ -445,7 +441,6 @@ const { handleSubmit, errors, isSubmitting, values } = useForm({
     balcony: '',
     parking: '',
     apartmentCondition: '',
-    livingArea: '',
     email: user.value.email,
     phone: '',
   }
@@ -477,7 +472,6 @@ const { value: floor } = useField('floor');
 const { value: balcony } = useField('balcony');
 const { value: parking } = useField('parking');
 const { value: apartmentCondition } = useField('apartmentCondition');
-const { value: livingArea } = useField('livingArea');
 
 // contat section
 const { value: email } = useField('email');
@@ -501,10 +495,14 @@ const getFieldStatus = (fieldName) => {
   return 'empty';
 };
 
+const isFieldRequired = fieldName => {
+  return ! schema.describe().fields[fieldName]?.optional || false
+}
+
 // Utility function to get all fields and statuses
 const getAllFieldStatuses = () => {
   return Object.keys(values).filter(fieldName => {
-    return ! schema.describe().fields[fieldName]?.optional || false
+    return isFieldRequired(fieldName)
   }).map((field) => {
     return {
       id: field,
