@@ -64,7 +64,6 @@ defineProps({
   },
 })
 
-
 const emit = defineEmits(['click'])
 
 const handleClick = (item) => {

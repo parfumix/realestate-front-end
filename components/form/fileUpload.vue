@@ -52,6 +52,10 @@
         </div>
         <svg  @click="removeImage(image.id)" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-trash size-4 cursor-pointer"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
       </div>
+
+      <p v-if="error" :id="`${name}-error`" class="mt-2 text-sm text-red-600">
+        {{ error }}
+      </p>
     </div>
   </template>
   
@@ -80,21 +84,23 @@
       type: String,
       default: 'PNG, JPG or PDF, smaller than 15MB',
     },
+    error: {
+      type: String,
+      default: ''
+    }
   })
   
   // Generate a unique ID
   const generateUniqueId = () => `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
 
-  // Emits
-  const emit = defineEmits(['files-selected'])
-  
   // Reactive state for previews
   const previewImages = ref([])
+
+  const images = defineModel({ type: Array, default: [] })
   
   // Handle file input change
   const handleFileChange = (event) => {
     const files = event.target.files
-    const validFiles = []
   
     for (const file of files) {
       if (file.size > props.maxFileSize) {
@@ -115,15 +121,16 @@
         }
         reader.readAsDataURL(file)
       }
-      validFiles.push(file)
+
+      images.value = [...images.value, ...[
+        {...{file}, ...{id: uniqueId}}
+      ]]
     }
-  
-    // Emit the selected files to the parent
-    emit('files-selected', validFiles)
   }
   
   // Remove image from preview
-  const removeImage = (index) => {
-    previewImages.value.splice(index, 1)
+  const removeImage = (id) => {
+    previewImages.value.splice(id, 1)
+    images.value = images.value.filter(el => el.id != id)
   }
   </script>

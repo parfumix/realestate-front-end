@@ -8,25 +8,25 @@
     </p>
     <div class="mt-2 space-y-6 sm:flex sm:items-center sm:space-x-10 sm:space-y-0">
       <div
-        v-for="item in items"
-        :key="item.value"
+        v-for="option in options"
+        :key="option.value"
         class="flex items-center"
       >
         <input
-          :id="item.value"
+          :id="option.value"
           :name="name"
           type="radio"
-          :checked="model === item.value"
+          :checked="model === option.value"
           :class="[
             'h-4 w-4 border-gray-300 text-blue-600 focus:ring-blue-600',
           ]"
-          @change="() => handleChange(item.value)"
+          @change="() => handleChange(option.value)"
         />
         <label
-          :for="item.value"
+          :for="option.value"
           class="ml-3 block text-sm font-medium leading-6 text-gray-900"
         >
-          {{ item.title }}
+          {{ option.title }}
         </label>
       </div>
     </div>
@@ -39,7 +39,7 @@
 
 <script setup>
 defineProps({
-  items: {
+  options: {
     type: Array,
     required: true,
     default: () => [],
