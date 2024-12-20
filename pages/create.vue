@@ -107,6 +107,7 @@
                 </div>
             </form>
 
+            {{ values }}
             <div class="h-[40px] my-[5px] flex justify-end gap-4">
                 <FormButton :disabled="isSubmitting" text="Salvează" @onClick="onSubmit" />
             </div>
@@ -219,10 +220,10 @@ const schema = yup.object({
   images: yup.array()
     .of(
       yup.mixed().test('fileType', 'Only PNG and JPEG files are allowed', (value) => {
-        return value && ['image/png', 'image/jpeg'].includes(value.type);
+        return value.file && ['image/png', 'image/jpeg'].includes(value.file.type);
       })
       .test('fileSize', 'File size must be less than 5MB', (value) => {
-        return value && value.size <= 5 * 1024 * 1024; // 5MB
+        return value.file && value.file.size <= 5 * 1024 * 1024; // 5MB
       })
     )
     .required('At least one image is required'),
@@ -232,7 +233,7 @@ const schema = yup.object({
   phone: yup.string().matches(/^\d{10}$/).required(),
 });
 
-const { handleSubmit, errors, isSubmitting } = useForm({ validationSchema: schema, initialValues: {
+const { handleSubmit, errors, isSubmitting, values } = useForm({ validationSchema: schema, initialValues: {
   propertyType: 'apartment',
   transactionType: 'sell',
 } });

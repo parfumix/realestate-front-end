@@ -37,7 +37,7 @@
     <!-- Preview Images -->
     <div v-if="previewImages.length" class="w-full grid gap-1 mb-4">
       <div
-        v-for="(image, index) in previewImages" :key="image.id" class="flex items-center justify-between gap-2"
+        v-for="image in previewImages" :key="image.id" class="flex items-center justify-between gap-2"
       >
         <div class="flex items-center gap-2">
           <img
@@ -46,14 +46,14 @@
             class="w-14 h-14 object-cover rounded-md"
           />
           <div class="grid gap-1">
-            <h4 class="text-gray-900 text-sm font-normal">{{ image.name }}</h4>
+            <h4 class="text-gray-900 text-sm font-normal">{{ image?.name }}</h4>
             <h5 class="text-gray-400 text-xs font-normal">Upload complete</h5>
           </div>
         </div>
         <svg  @click="removeImage(image.id)" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-trash size-4 cursor-pointer"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
       </div>
 
-      <p v-if="error" :id="`${name}-error`" class="mt-2 text-sm text-red-600">
+      <p v-if="error" :id="`${id}-error`" class="mt-2 text-sm text-red-600">
         {{ error }}
       </p>
     </div>
@@ -113,6 +113,7 @@
       if (file.type.startsWith('image/')) {
         const reader = new FileReader()
         reader.onload = (e) => {
+
           previewImages.value.push({
             id: uniqueId,
             name: file.name,
@@ -130,7 +131,14 @@
   
   // Remove image from preview
   const removeImage = (id) => {
-    previewImages.value.splice(id, 1)
-    images.value = images.value.filter(el => el.id != id)
+    const previewIndex = previewImages.value.findIndex(image => image.id === id);
+    if (previewIndex !== -1) {
+      previewImages.value.splice(previewIndex, 1);
+    }
+
+    const imagesIndex = images.value.findIndex(image => image.id === id);
+    if (imagesIndex !== -1) {
+      images.value.splice(imagesIndex, 1);
+    }
   }
   </script>
