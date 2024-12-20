@@ -165,6 +165,8 @@ import * as yup from 'yup';
 import { chunkArray } from '../utils';
 import { generateDescription } from '../api/create'
 
+const { user } = useAuthService()
+
 const propertyTypeOptions = [
   {
     title: "Apartament",
@@ -381,7 +383,7 @@ const schema = yup.object({
   transactionType: yup.mixed().oneOf(['sell', 'rent']),
   selectedFacilities: yup.string().optional(),
 
-  description: yup.string().required('Descrierea este obligatorie').max(500),
+  description: yup.string().required('Descrierea este obligatorie').min(100, 'cel putin 100 caractere').max(500, 'maximum 500 caractere'),
   images: yup
     .array()
     .of(
@@ -435,7 +437,10 @@ const schema = yup.object({
   email: yup.string().email('Emailul este invalid').required('Emailul este obligatoriu'),
   phone: yup
     .string()
-    .matches(/^\d{10}$/, 'Numărul de telefon trebuie să aibă 10 cifre')
+    .matches(
+      /^(07\d{8}|02\d{7}|03\d{7})$/,
+      'Numărul de telefon trebuie să fie valid și să aibă 10 cifre'
+    )
     .required('Numărul de telefon este obligatoriu'),
 });
 
@@ -454,7 +459,7 @@ const { handleSubmit, errors, isSubmitting, values } = useForm({
     parking: '',
     apartmentCondition: '',
     livingArea: '',
-    email: '',
+    email: user.value.email,
     phone: '',
   }
 });

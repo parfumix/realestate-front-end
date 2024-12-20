@@ -2,8 +2,8 @@
     <div class="overflow-hidden">
         <ol class=" h-full space-y-3">
             <li v-for="(field, index) in fields" :key="field.label" class="relative flex-1" :class="{
-                'after:content-[\'\'] after:w-0.5 after:h-full after:inline-block after:absolute after:-bottom-12 after:left-[11px]':
-                    index !== fields.length - 1,
+                'after:content-[\'\'] after:w-0.5 after:h-full after:inline-block after:absolute after:-bottom-6 after:left-[11px]':
+                index !== fields.length - 1,
                 'after:bg-green-600': field.status === 'filled',
                 'after:bg-gray-200': field.status !== 'filled',
             }">
@@ -45,24 +45,33 @@ defineProps({
 })
 
 const scrollToElement = (target, marginTop = 30) => {
-    console.log(target)
     const element = document.getElementById(target);
     if (element) {
-        // Scroll the element into view smoothly
-        element.scrollIntoView({ behavior: "smooth" });
+        const elementRect = element.getBoundingClientRect();
 
-        // Add a slight delay to adjust for the margin
-        setTimeout(() => {
-            // Adjust the scroll position for the top margin
-            const elementPosition = element.getBoundingClientRect().top + window.scrollY;
-            window.scrollTo({
-                top: elementPosition - marginTop,
-                behavior: "smooth",
-            });
+        // Check if the element is already in the viewport
+        const isInViewport = 
+            elementRect.top >= marginTop && 
+            elementRect.bottom <= window.innerHeight;
 
-            // Focus the element
+        if (isInViewport) {
             element.focus();
-        }, 300); // Delay allows the initial smooth scroll to complete
+        } else {
+            // Scroll the element into view smoothly
+            element.scrollIntoView({ behavior: "smooth" });
+
+            // Adjust for margin after scrolling
+            setTimeout(() => {
+                const elementPosition = element.getBoundingClientRect().top + window.scrollY;
+                window.scrollTo({
+                    top: elementPosition - marginTop,
+                    behavior: "smooth",
+                });
+
+                // Focus the element
+                element.focus();
+            }, 0);
+        }
     }
-}
+};
 </script>
