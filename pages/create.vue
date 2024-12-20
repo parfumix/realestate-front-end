@@ -94,8 +94,82 @@
 
                         <!-- Rooms and Details -->
                         <div class="mt-4 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-2">
-                            <FormSelect id="floor" name="floor" label="Etaj" placeholder="Etaj 7" v-model="floor" :error="errors.floor" />
-                            <FormInput id="surface" name="surface" label="Suprafață utilă" placeholder="mp" v-model="surface" :error="errors.surface" />
+                          <FormSelect
+                            id="roomCount"
+                            name="roomCount"
+                            :options="roomCountOptions"
+                            label="Număr de camere"
+                            placeholder="Select"
+                            v-model="roomCount"
+                            :error="errors.roomCount"
+                          />
+
+                          <FormInput
+                            id="totalArea"
+                            name="totalArea"
+                            label="Suprafață totală"
+                            placeholder="mp"
+                            v-model="totalArea"
+                            :error="errors.totalArea"
+                          />
+
+                          <FormInput 
+                            id="surface" 
+                            name="surface" 
+                            label="Suprafață utilă" 
+                            placeholder="mp" 
+                            v-model="surface" 
+                            :error="errors.surface" 
+                          />
+
+                          <FormSelect
+                            id="floor"
+                            name="floor"
+                            :options="floorOptions"
+                            label="Etaj"
+                            placeholder="Select"
+                            v-model="floor"
+                            :error="errors.floor"
+                          />
+
+                          <FormSelect
+                            id="balcony"
+                            name="balcony"
+                            :options="balconyOptions"
+                            label="Balcon/ lojie"
+                            placeholder="Select"
+                            v-model="balcony"
+                            :error="errors.balcony"
+                          />
+
+                          <FormSelect
+                            id="parking"
+                            name="parking"
+                            :options="parkingOptions"
+                            label="Loc de parcare"
+                            placeholder="Select"
+                            v-model="parking"
+                            :error="errors.parking"
+                          />
+
+                          <FormSelect
+                            id="apartmentCondition"
+                            name="apartmentCondition"
+                            :options="apartmentConditionOptions"
+                            label="Starea apartamentului"
+                            placeholder="Select"
+                            v-model="apartmentCondition"
+                            :error="errors.apartmentCondition"
+                          />
+
+                          <FormInput
+                            id="livingArea"
+                            name="livingArea"
+                            label="Suprafață locativă"
+                            placeholder="mp"
+                            v-model="livingArea"
+                            :error="errors.livingArea"
+                          />
                         </div>
 
                         <!-- Contact Details -->
@@ -164,7 +238,7 @@ const propertyTypeOptions = [
       </svg>
     `,
   },
-];
+]
 
 const transactionTypeOptions = [
   { value: 'sell', title: 'De vânzare' },
@@ -196,13 +270,83 @@ const facilities = [
   { value: 'video_surveillance', label: 'Supraveghere video' },
   { value: 'elevator', label: 'Ascensor' },
   { value: 'playground', label: 'Teren de joacă' },
-];
+]
 
 const toneItems = [
   { value: 'professional', label: 'Ton Profesional', description: 'Descriere clară și bine structurată.' },
   { value: 'friendly', label: 'Ton Prietenos', description: 'Ton cald și accesibil.' },
   { value: 'luxury', label: 'Ton Lux', description: 'Elegant și exclusivist.' }
 ]
+
+const floorOptions = [
+  { "value": "-2", "label": "Subsol" },
+  { "value": "-1", "label": "Demisol" },
+  { "value": "1", "label": "1" },
+  { "value": "2", "label": "2" },
+  { "value": "3", "label": "3" },
+  { "value": "4", "label": "4" },
+  { "value": "5", "label": "5" },
+  { "value": "6", "label": "6" },
+  { "value": "7", "label": "7" },
+  { "value": "8", "label": "8" },
+  { "value": "9", "label": "9" },
+  { "value": "10", "label": "10" },
+  { "value": "11", "label": "11" },
+  { "value": "12", "label": "12" },
+  { "value": "13", "label": "13" },
+  { "value": "14", "label": "14" },
+  { "value": "15", "label": "15" },
+  { "value": "16", "label": "16" },
+  { "value": "17", "label": "17" },
+  { "value": "18", "label": "18" },
+  { "value": "19", "label": "19" },
+  { "value": "20", "label": "20" },
+  { "value": "21", "label": "21" },
+  { "value": "22", "label": "22" },
+  { "value": "23", "label": "23" },
+  { "value": "24", "label": "24" },
+  { "value": "25", "label": "25" },
+  { "value": "penthouse", "label": "Penthouse" },
+  { "value": "attic", "label": "Mansardă" }
+]
+
+const roomCountOptions = [
+  { "value": "1", "label": "O cameră" },
+  { "value": "1", "label": "Apartament cu 1 cameră" },
+  { "value": "2", "label": "Apartament cu 2 camere" },
+  { "value": "3", "label": "Apartament cu 3 camere" },
+  { "value": "4", "label": "Apartament cu 4 camere" },
+  { "value": "5", "label": "Apartament cu 5 camere sau mai multe" }
+]
+
+const parkingOptions = [
+  { "value": "open", "label": "Deschis" },
+  { "value": "garage", "label": "Garaj" },
+  { "value": "covered", "label": "Sub acoperiș" },
+  { "value": "underground", "label": "Subterană" }
+]
+
+const balconyOptions = [
+  { "value": "0", "label": "Nu" },
+  { "value": "1", "label": "1" },
+  { "value": "2", "label": "2" },
+  { "value": "3", "label": "3" },
+  { "value": "4", "label": "4 și mai multe" }
+]
+
+const apartmentConditionOptions = [
+  { "value": "demolition-house", "label": "Casă de demolat" },
+  { "value": "custom-design", "label": "Design individual" },
+  { "value": "no-renovation", "label": "Fără reparație" },
+  { "value": "in-use", "label": "Dat în exploatare" },
+  { "value": "unfinished-construction", "label": "Construcție nefinisată" },
+  { "value": "needs-repair", "label": "Are nevoie de reparație" },
+  { "value": "gray-finish", "label": "Variantă sură" },
+  { "value": "white-finish", "label": "Variantă albă" },
+  { "value": "cosmetic-renovation", "label": "Reparație cosmetică" },
+  { "value": "euro-renovation", "label": "Euroreparație" }
+]
+
 const defaultTone = ref('professional')
 const isFacilitiesCollpased = ref(true)
 
@@ -212,25 +356,60 @@ const schema = yup.object({
   transactionType: yup.mixed().oneOf(['sell', 'rent']),
   selectedFacilities: yup.string().optional(),
 
-  // characteristics
   description: yup.string().required('Descrierea este obligatorie').max(500),
-  floor: yup.number().typeError('Trebuie să fie un număr').required(),
-  surface: yup.number().typeError('Trebuie să fie un număr').required(),
-
-  images: yup.array()
+  images: yup
+    .array()
     .of(
-      yup.mixed().test('fileType', 'Only PNG and JPEG files are allowed', (value) => {
-        return value.file && ['image/png', 'image/jpeg'].includes(value.file.type);
-      })
-      .test('fileSize', 'File size must be less than 5MB', (value) => {
-        return value.file && value.file.size <= 5 * 1024 * 1024; // 5MB
-      })
+      yup
+        .mixed()
+        .test('fileType', 'Only PNG and JPEG files are allowed', (value) => {
+          return value.file && ['image/png', 'image/jpeg'].includes(value.file.type);
+        })
+        .test('fileSize', 'File size must be less than 5MB', (value) => {
+          return value.file && value.file.size <= 5 * 1024 * 1024; // 5MB
+        })
     )
     .required('At least one image is required'),
 
-  // contat section
-  email: yup.string().email().required(),
-  phone: yup.string().matches(/^\d{10}$/).required(),
+  // characteristics
+  floor: yup.number().typeError('Trebuie să fie un număr').required('Etajul este obligatoriu'),
+  surface: yup.number().typeError('Trebuie să fie un număr').required('Suprafața utilă este obligatorie'),
+  totalArea: yup.number().typeError('Trebuie să fie un număr').required('Suprafața totală este obligatorie'),
+  livingArea: yup.number().typeError('Trebuie să fie un număr').optional(),
+  roomCount: yup
+    .number()
+    .typeError('Numărul de camere trebuie să fie un număr')
+    .required('Numărul de camere este obligatoriu'),
+  balcony: yup
+    .number()
+    .typeError('Numărul de balcoane trebuie să fie un număr')
+    .optional(),
+  parking: yup
+    .mixed()
+    .oneOf(['open', 'garage', 'covered', 'underground'])
+    .optional(),
+  apartmentCondition: yup
+    .mixed()
+    .oneOf([
+      'demolition-house',
+      'custom-design',
+      'no-renovation',
+      'in-use',
+      'unfinished-construction',
+      'needs-repair',
+      'gray-finish',
+      'white-finish',
+      'cosmetic-renovation',
+      'euro-renovation',
+    ])
+    .optional(),
+
+  // contact section
+  email: yup.string().email('Emailul este invalid').required('Emailul este obligatoriu'),
+  phone: yup
+    .string()
+    .matches(/^\d{10}$/, 'Numărul de telefon trebuie să aibă 10 cifre')
+    .required('Numărul de telefon este obligatoriu'),
 });
 
 const { handleSubmit, errors, isSubmitting, values } = useForm({ validationSchema: schema, initialValues: {
@@ -242,22 +421,31 @@ const onSubmit = handleSubmit((values) => {
   console.log('Submitted:', values);
 });
 
-
 // // Fetch data on mounted
 // onMounted(async () => {
 //   const data = await fetchData();
 //   resetForm({ values: data });
 // });
 
+// transaction type
 const { value: propertyType } = useField('propertyType');
 const { value: transactionType } = useField('transactionType');
 const { value: selectedFacilities } = useField('selectedFacilities');
 
-const { value: images } = useField('images', []);
 const { value: description, setValue: setDescription } = useField('description');
-const { value: floor } = useField('floor');
-const { value: surface } = useField('surface');
+const { value: images } = useField('images', []);
 
+// characteristics
+const { value: roomCount } = useField('roomCount');
+const { value: totalArea } = useField('totalArea');
+const { value: surface } = useField('surface');
+const { value: floor } = useField('floor');
+const { value: balcony } = useField('balcony');
+const { value: parking } = useField('parking');
+const { value: apartmentCondition } = useField('apartmentCondition');
+const { value: livingArea } = useField('livingArea');
+
+// contat section
 const { value: email } = useField('email');
 const { value: phone } = useField('phone');
 

@@ -24,7 +24,7 @@
         @input="e => handleInput(e.target.value)"
       />
 
-      <p v-if="error" :id="`${name}-error`" class="mt-2 text-sm text-red-600">
+      <p v-if="error" :id="`${id}-error`" class="mt-2 text-sm text-red-600">
         {{ error }}
       </p>
       <div class="mt-1 text-sm text-gray-500">
