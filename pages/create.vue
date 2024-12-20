@@ -180,8 +180,6 @@
                     </div>
                 </div>
             </form>
-
-            {{ values }}
             <div class="h-[40px] my-[5px] flex justify-end gap-4">
                 <FormButton :disabled="isSubmitting" text="Salvează" @onClick="onSubmit" />
             </div>
@@ -412,7 +410,7 @@ const schema = yup.object({
     .required('Numărul de telefon este obligatoriu'),
 });
 
-const { handleSubmit, errors, isSubmitting, values } = useForm({ validationSchema: schema, initialValues: {
+const { handleSubmit, errors, isSubmitting } = useForm({ validationSchema: schema, initialValues: {
   propertyType: 'apartment',
   transactionType: 'sell',
 } });
