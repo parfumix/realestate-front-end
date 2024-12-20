@@ -14,7 +14,7 @@
         :placeholder="placeholder"
         :class="[
           'block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset placeholder:text-gray-400 focus:ring-2 focus:ring-inset sm:text-sm sm:leading-6',
-          error ? 'text-red-900 ring-1 ring-inset ring-red-300 placeholder:text-red-300 focus:ring-2 focus:ring-inset focus:ring-red-500' : 'text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-500',
+          error ? 'text-red-900 ring-1 ring-inset ring-red-300 placeholder:text-red-300 focus:ring-2 focus:ring-inset focus:ring-red-500' : 'text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-blue-500',
           borderColor,
           textColor,
           focusColor
@@ -70,7 +70,7 @@ defineProps({
   },
   focusColor: {
     type: String,
-    default: 'focus:ring-indigo-600',
+    default: 'focus:ring-blue-600',
   },
   maxLength: {
     type: Number,

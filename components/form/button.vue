@@ -34,7 +34,7 @@ defineProps({
   },
   backgroundColor: {
     type: String,
-    default: 'bg-indigo-600',
+    default: 'bg-blue-600',
   },
   textColor: {
     type: String,
@@ -42,11 +42,11 @@ defineProps({
   },
   hoverColor: {
     type: String,
-    default: 'hover:bg-indigo-500',
+    default: 'hover:bg-blue-500',
   },
   focusColor: {
     type: String,
-    default: 'focus-visible:outline-indigo-600',
+    default: 'focus-visible:outline-blue-600',
   },
 })
 
