@@ -1,7 +1,7 @@
 <template>
-    <div class="w-full mb-5">
+    <div :id="id" class="w-full mb-5">
       <label
-        :for="id"
+        :for="`input-${id}`"
         class="flex flex-col items-center justify-center py-9 w-full border border-gray-300 border-dashed rounded-2xl cursor-pointer bg-gray-50"
       >
         <div class="mb-3 flex items-center justify-center">
@@ -24,7 +24,7 @@
           Drag and Drop your file here or
         </h4>
         <input
-          :id="id"
+          :id="`input-${id}`"
           type="file"
           class="hidden"
           :accept="accept"

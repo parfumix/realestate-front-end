@@ -96,7 +96,7 @@
 
               <!-- Image Upload -->
               <div class="mt-4">
-                <FormFileUpload id="upload" :accept="'image/png, image/jpeg'" :multiple="true"
+                <FormFileUpload id="images" :accept="'image/png, image/jpeg'" :multiple="true"
                   :maxFileSize="5 * 1024 * 1024" acceptText="PNG or JPG, smaller than 5MB" v-model="images"
                   :error="errors.images" />
               </div>
@@ -397,14 +397,16 @@ const schema = yup.object({
     .required('At least one image is required'),
 
   // characteristics
-  floor: yup.number().typeError('Trebuie să fie un număr').required('Etajul este obligatoriu'),
-  surface: yup.number().typeError('Trebuie să fie un număr').required('Suprafața utilă este obligatorie'),
-  totalArea: yup.number().typeError('Trebuie să fie un număr').required('Suprafața totală este obligatorie'),
-  livingArea: yup.number().typeError('Trebuie să fie un număr').optional(),
   roomCount: yup
     .number()
     .typeError('Numărul de camere trebuie să fie un număr')
     .required('Numărul de camere este obligatoriu'),
+  
+  totalArea: yup.number().typeError('Trebuie să fie un număr').required('Suprafața totală este obligatorie'),
+  livingArea: yup.number().typeError('Trebuie să fie un număr').optional(),
+  floor: yup.number().typeError('Trebuie să fie un număr').required('Etajul este obligatoriu'),
+  surface: yup.number().typeError('Trebuie să fie un număr').required('Suprafața utilă este obligatorie'),
+  
   balcony: yup
     .number()
     .typeError('Numărul de balcoane trebuie să fie un număr')
@@ -437,7 +439,7 @@ const schema = yup.object({
     .required('Numărul de telefon este obligatoriu'),
 });
 
-const { handleSubmit, errors, isSubmitting, values, meta } = useForm({
+const { handleSubmit, errors, isSubmitting, values } = useForm({
   validationSchema: schema, initialValues: {
     propertyType: 'apartment',
     transactionType: 'sell',
@@ -509,8 +511,11 @@ const getFieldStatus = (fieldName) => {
 
 // Utility function to get all fields and statuses
 const getAllFieldStatuses = () => {
-  return Object.keys(values).map((field) => {
+  return Object.keys(values).filter(fieldName => {
+    return ! schema.describe().fields[fieldName]?.optional || false
+  }).map((field) => {
     return {
+      id: field,
       label: fieldLabels?.[field]?.['short'] || field,
       fullLabel: fieldLabels?.[field]?.['long'] || field,
       status: getFieldStatus(field),

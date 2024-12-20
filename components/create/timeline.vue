@@ -5,21 +5,21 @@
                 'after:content-[\'\'] after:w-0.5 after:h-full after:inline-block after:absolute after:-bottom-12 after:left-[11px]':
                     index !== fields.length - 1,
                 'after:bg-green-600': field.status === 'filled',
-                'after:bg-green-300': field.status !== 'filled',
+                'after:bg-gray-200': field.status !== 'filled',
             }">
                 <a class="flex items-center font-medium w-full">
                     <span :title="field.status === 'errored' ? field.error : null" :class="{
-                        'w-6 h-6 flex justify-center items-center mr-3 text-sm rounded-full border-2': true,
+                        'w-6 h-6 flex justify-center items-center mr-3 text-sm rounded-full border': true,
                         'bg-green-600 text-white border-transparent': field.status === 'filled',
-                        'bg-green-50 text-green-600 border-green-600': field.status === 'empty',
+                        'bg-gray-50 text-gray-500 border-gray-300': field.status === 'empty',
                         'bg-red-50 text-red-600 border-red-600': field.status === 'errored',
                     }">
                         <Check :size="14" v-if="field.status === 'filled'" />
-                        <span v-else>{{ index + 1 }}</span>
+                        <span class="text-xs" v-else>{{ index + 1 }}</span>
                     </span>
                     <div class="block">
-                        <h4 :title="field.fullLabel" :class="{
-                            'text-xs': true,
+                        <h4 @click="() => scrollToElement(field.id)" :title="field.fullLabel" :class="{
+                            'text-xs cursor-pointer hover:underline': true,
                             'text-green-600': field.status === 'filled',
                             'text-red-600': field.status === 'errored',
                             'text-gray-800': field.status === 'empty',
@@ -42,5 +42,27 @@ defineProps({
         required: true,
         default: () => [],
     },
-});
+})
+
+const scrollToElement = (target, marginTop = 30) => {
+    console.log(target)
+    const element = document.getElementById(target);
+    if (element) {
+        // Scroll the element into view smoothly
+        element.scrollIntoView({ behavior: "smooth" });
+
+        // Add a slight delay to adjust for the margin
+        setTimeout(() => {
+            // Adjust the scroll position for the top margin
+            const elementPosition = element.getBoundingClientRect().top + window.scrollY;
+            window.scrollTo({
+                top: elementPosition - marginTop,
+                behavior: "smooth",
+            });
+
+            // Focus the element
+            element.focus();
+        }, 300); // Delay allows the initial smooth scroll to complete
+    }
+}
 </script>
