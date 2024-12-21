@@ -1,5 +1,5 @@
 <template>
-  <div class="scroll-my-12" :id="id">
+  <div class="scroll-my-12">
     <label
       :for="id"
       class="block text-sm font-medium leading-6 text-gray-900"

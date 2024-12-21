@@ -152,7 +152,6 @@
 // adding location field
 // review all fields
 // when click image open modal
-// adding sections
 // allow to select text and apply AI changes
 // adding back-end API CRUD operations
 

@@ -1,5 +1,5 @@
 <template>
-    <div :id="id" class="w-full mb-5">
+    <div :id="id" class="w-full mb-5 scroll-my-12">
       <label
         :for="`input-${id}`"
         class="flex flex-col items-center justify-center py-9 w-full border border-gray-300 border-dashed rounded-2xl cursor-pointer bg-gray-50"
