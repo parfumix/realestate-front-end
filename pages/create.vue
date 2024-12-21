@@ -9,8 +9,8 @@
         </div>
 
         <form @submit.prevent="onSubmit" class="no-scrollbar overflow-auto h-[calc(100vh-130px)] mt-[30px]">
-          <div class="space-y-12 px-6 pb-6">
-            <div class="border-b border-gray-900/10 pb-12">
+          <div class="space-y-12 px-6 pb-4">
+            <div class="border-b border-gray-900/10 pb-6">
               <!-- Property Type -->
               <div class="mt-4">
                 <FormRadioGroupImage :title="fieldLabels['propertyType'].long" name="property-type" v-model="propertyType"
@@ -24,7 +24,7 @@
               </div>
 
               <div class="mt-4">
-                <FormAlert message="Titlul anunțului este generat automat." />
+                <FormAlert message="Titlul anunțului se generează automat pe baza informațiilor furnizate." />
               </div>
 
               <!-- Description -->
@@ -115,12 +115,20 @@
                 <FormInput id="phone" :required="isFieldRequired('phone')" name="phone" :label="fieldLabels['phone'].long" placeholder="Telefon" v-model="phone"
                   :error="errors.phone" />
               </Collapsible>
+
+              <div class="mt-4">
+                <FormAlert message='Nu găsiți informațiile dorite? Scrieți-ne la <a class="text-blue underline" href="mailto:contact@imai.ro?subject=Solicitare%20specificații">contact@imai.ro</a>, iar echipa noastră va adăuga specificațiile necesare pe site.' />
+              </div>
+
+              <div class="mt-4 flex justify-center">
+                <FormCheckbox :collapsible="true" :options="[{value: 1, label: 'Am citit și sunt de acord cu termenii și condițiile imai.ro'}]" v-model="selectedFacilities" />
+              </div>
             </div>
           </div>
         </form>
 
-        <div class="h-[40px] my-[5px] flex justify-end gap-4">
-          <FormButton :disabled="isSubmitting" text="Salvează" @onClick="onSubmit" />
+        <div class="h-[40px] px-6 my-[5px] flex justify-end gap-4">
+          <FormButton defaultClass="w-full bg-blue-800 hover:bg-blue-700 text-lg font-semibold text-white" :disabled="isSubmitting" text="Publică" @onClick="onSubmit" />
         </div>
       </div>
 
@@ -141,11 +149,15 @@
 
 // save & edit item
 // fix textarea
-// adding location field
 // review all fields
 // allow to select text and apply AI changes
 // adding back-end API CRUD operations
 // when scroll to visible element shake it
+// adding opt phone number verification https://chatgpt.com/share/6767432b-3a48-8006-a091-4544d72527cd
+// adding price & location fields
+// adding label for fileUpload image
+// adding scrolling buttons
+// 
 
 import { useForm, useField } from 'vee-validate';
 import * as yup from 'yup';
