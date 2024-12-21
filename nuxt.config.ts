@@ -1,6 +1,7 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   modules: [
+    'floating-vue/nuxt',
     '@nuxtjs/tailwindcss',
     'nuxt-headlessui',
     '@pinia/nuxt',
