@@ -23,6 +23,10 @@
                   v-model="transactionType" :error="errors.transactionType" />
               </div>
 
+              <div class="mt-4">
+                <FormAlert message="Titlul anunțului este generat automat." />
+              </div>
+
               <!-- Description -->
               <div class="mt-4">
                 <FormTextareaActions
@@ -65,7 +69,7 @@
               <!-- Image Upload -->
               <div class="mt-4">
                 <FormFileUpload :required="isFieldRequired('images')" id="images" :accept="'image/png, image/jpeg'" :multiple="true"
-                  :maxFileSize="5 * 1024 * 1024" acceptText="PNG, JPG sau PDF, mai mic de 15 MB" v-model="images"
+                  :maxFileSize="5 * 1024 * 1024" acceptText="Sunt permise doar fișierele PNG și JPEG" v-model="images"
                   :error="errors.images" />
               </div>
 

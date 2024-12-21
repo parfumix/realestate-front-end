@@ -9,7 +9,7 @@
         {{ acceptText }}
       </h2>
       <h4 class="text-center text-gray-900 text-sm font-medium leading-snug">
-        Trageți și plasați fișierul aici sau
+        Trageți și plasați fișierul aici
       </h4>
       <input :id="`input-${id}`" type="file" class="hidden" :accept="accept" :multiple="multiple"
         @change="handleFileChange" />
@@ -28,7 +28,7 @@
           <h5 class="text-gray-400 text-xs font-normal">Încărcare completă</h5>
         </div>
       </div>
-      <CircleMinus class="cursor-pointer" size="16" @click="removeImage(image.id)" />
+      <CircleMinus class="cursor-pointer text-red-500 hover:text-red-600" size="16" @click="removeImage(image.id)" />
     </div>
 
     <p v-if="error" :id="`${id}-error`" class="mt-2 text-sm text-red-600">

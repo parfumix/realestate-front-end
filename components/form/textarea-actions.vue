@@ -1,7 +1,7 @@
 <template>
     <div class="flex-1 scroll-my-12 relative">
         <div class="overflow-hidden rounded-lg shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-1 focus-within:ring-gray-300">
-            <label :for="id" class="sr-only">
+            <label :for="id">
                 <span v-if="required" class="text-red-600">*</span> {{ label }}
             </label>
 
