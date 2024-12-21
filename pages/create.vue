@@ -468,8 +468,17 @@ const { handleSubmit, errors, isSubmitting, values } = useForm({
   }
 });
 
+const launchConfetti = () => {
+  useNuxtApp().$confetti({
+    particleCount: 400,
+    spread: 260,
+    origin: { x: 0.5, y: 0.5 },
+  });
+};
+
 const onSubmit = handleSubmit((values) => {
   console.log('Submitted:', values);
+  launchConfetti()
 });
 
 // // Fetch data on mounted
