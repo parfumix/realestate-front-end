@@ -7,7 +7,7 @@
                 <ChevronUp :size="14" v-else />
             </span>
         </button>
-        <div v-show="isOpen" class="px-4 py-2 bg-white">
+        <div v-show="isOpen" class="px-2 py-2 bg-white">
             <slot></slot>
         </div>
     </div>

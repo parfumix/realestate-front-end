@@ -8,7 +8,7 @@
                 'after:bg-gray-300': field.status !== 'filled',
             }">
                 <a class="flex items-center font-medium w-full">
-                    <span :title="field.status === 'errored' ? field.error : null" :class="{
+                    <span v-tooltip="field.status === 'errored' ? field.error : null" :title="field.status === 'errored' ? field.error : null" :class="{
                         'w-6 h-6 flex justify-center items-center mr-3 text-sm rounded-full border': true,
                         'bg-green-600 text-white border-transparent': field.status === 'filled',
                         'bg-gray-50 text-gray-500 border-gray-300': field.status === 'empty',
@@ -18,7 +18,7 @@
                         <span class="text-xs" v-else>{{ index + 1 }}</span>
                     </span>
                     <div class="block">
-                        <h4 @click="() => scrollToElement(field.id)" :title="field.fullLabel" :class="{
+                        <h4 @click="() => scrollToElement(field.id)" v-tooltip="{ content: field.description, delay: { show: 750, hide: 0 } }" :title="field.description" :class="{
                             'text-xs cursor-pointer hover:underline': true,
                             'text-green-600': field.status === 'filled',
                             'text-red-600': field.status === 'errored',

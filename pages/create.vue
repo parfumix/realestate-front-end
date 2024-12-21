@@ -25,32 +25,41 @@
 
               <!-- Description -->
               <div class="mt-4">
-                <FormTextarea :required="isFieldRequired('images')" :maxLength="500" id="description" name="description" :rows="6"
-                  v-model="computedDescription" :label="fieldLabels['description'].long"
+                <FormTextareaActions
+                  id="description" 
+                  :required="isFieldRequired('images')" 
+                  :maxLength="500"
+                  :rows="6"
+                  v-model="computedDescription" 
+                  :label="fieldLabels['description'].long"
                   placeholder="Acest apartament modern cu 3 camere oferă finisaje de calitate superioară, spații luminoase și este situat într-o zonă centrală, aproape de toate facilitățile..."
-                  :error="errors.description">
-                  <div class="flex flex-row my-2 justify-between">
-                    <FormDropdown @click="handleSelectTone" :defaultItem="defaultTone" :buttonLabel="defaultTone ? (toneItems.find(el => el.value == defaultTone)?.label ?? 'Alege tonul') : 'Alege tonul'" :menuItems="toneItems" />
-
+                  :error="errors.description"
+                >
+                  <template #left-actions>
+                    <div class="flex flex-row my-2 justify-between">
+                        <FormDropdown @click="handleSelectTone" :defaultItem="defaultTone" :buttonLabel="defaultTone ? (toneItems.find(el => el.value == defaultTone)?.label ?? 'Alege tonul') : 'Alege tonul'" :menuItems="toneItems" />
+                      </div>
+                  </template>
+                  <template #right-actions>
                     <div class="flex items-center">
                       <div class="mr-4 flex items-center space-x-2">
                         <p @click="handleDiscard" v-if="aiGeneratedDescription?.length && !isAiDescriptionGenerating" class="flex items-center cursor-pointer">
                           <Trash size="14" class="mr-1" />
-                          Discard
+                          Renunță
                         </p>
                         <p @click="handleApply" v-if="aiGeneratedDescription?.length && !isAiDescriptionGenerating" class="flex items-center cursor-pointer">
                           <Check size="14" class="mr-1" />
-                          Apply
+                          Aplică
                         </p>
                       </div>
 
-                      <FormButton :disabled="(isAiDescriptionGenerating) ? true : false" @onClick="handleAutoGenerate" v-if="description?.length > 7" class="flex items-center" :backgroundColor="description?.length < 7 ? 'bg-gray-200' : 'bg-blue-600'">
+                      <FormButton :disabled="(isAiDescriptionGenerating || description?.length < 7) ? true : false" @onClick="handleAutoGenerate" :class="[{'bg-gray-300 hover:bg-gray-350': description?.length < 7 || isAiDescriptionGenerating, 'bg-blue-700 hover:bg-blue-700': description?.length >= 7 && !isAiDescriptionGenerating}, 'flex items-center text-white']">
                         <RefreshCcw size="14" :class="[{ 'animate-spin': isAiDescriptionGenerating }, 'mr-1 lucide lucide-rotate-ccw']" />
-                        {{ aiGeneratedDescription?.length ? 'Încercați din nou' : 'Generează cu AI' }}
+                        {{ isAiDescriptionGenerating ? 'Se generează' : (aiGeneratedDescription?.length ? 'Încercați din nou' : 'Generează cu AI') }}
                       </FormButton>
                     </div>
-                  </div>
-                </FormTextarea>
+                  </template>
+                </FormTextareaActions>
               </div>
 
               <!-- Image Upload -->
@@ -62,11 +71,11 @@
 
               <!-- Facilities -->
               <Collapsible title="Facilitiati" class="mt-4 collapsible">
-                <div class="flex justify-start">
-                  <div v-for="items in chunkArray(facilities, 5)">
-                    <FormCheckbox :collapsible="true" :options="items" v-model="selectedFacilities" />
+                  <div class="flex flex-row justify-between items-center">
+                    <div class="flex flex-col" v-for="items in distributeArray(facilities, 3)">
+                        <FormCheckbox :collapsible="true" :options="items" v-model="selectedFacilities" />
+                    </div>
                   </div>
-                </div>
               </Collapsible>
 
               <!-- Rooms and Details -->
@@ -96,7 +105,7 @@
               </Collapsible>
               
               <!-- Contact Details -->
-              <Collapsible :isOpened="true" title="Contact" class="mt-4 collapsible">
+              <Collapsible :isOpened="true" title="Persoana de contact" class="mt-4 collapsible">
                 <FormInput id="email" :required="isFieldRequired('email')" name="email" :label="fieldLabels['email'].long" placeholder="Email" type="email" v-model="email"
                   :error="errors.email" />
                 <FormInput id="phone" :required="isFieldRequired('phone')" name="phone" :label="fieldLabels['phone'].long" placeholder="Telefon" v-model="phone"
@@ -137,7 +146,7 @@
 import { useForm, useField } from 'vee-validate';
 import * as yup from 'yup';
 
-import { chunkArray } from '../utils';
+import { distributeArray } from '../utils';
 import { generateDescription } from '../api/create'
 
 import { Trash, Check, RefreshCcw } from 'lucide-vue-next'
@@ -282,62 +291,77 @@ const apartmentConditionOptions = [
   { "value": "euro-renovation", "label": "Euroreparație" }
 ]
 
+// Field labels for real estate ads with short, long, and descriptive text
 const fieldLabels = {
   propertyType: {
     short: "Tip propr.",
     long: "Tipul de proprietate",
+    description: "Categoria de proprietate, cum ar fi apartament, casă, teren, sau altceva.",
   },
   transactionType: {
     short: "Tip tranz.",
     long: "Tipul de tranzacție",
+    description: "Tipul de tranzacție dorită, cum ar fi vânzare, închiriere sau schimb.",
   },
   description: {
     short: "Descr.",
     long: "Descriere",
+    description: "Un text detaliat care evidențiază caracteristicile și avantajele proprietății.",
   },
   selectedFacilities: {
     short: "Facilități",
     long: "Facilități",
+    description: "Lista facilităților disponibile, cum ar fi lift, piscină, parcare subterană.",
   },
   images: {
     short: "Img.",
     long: "Imagini",
+    description: "Fotografii sau imagini ale proprietății pentru o prezentare vizuală mai clară.",
   },
   roomCount: {
     short: "Nr. camere",
     long: "Număr de camere",
+    description: "Numărul total de camere disponibile în proprietate.",
   },
   totalArea: {
     short: "Sup. totală",
     long: "Suprafață totală",
+    description: "Suprafața totală a proprietății, incluzând toate anexele, cum ar fi balcoane.",
   },
   surface: {
     short: "Sup. utilă",
     long: "Suprafață utilă",
+    description: "Suprafața utilizabilă efectivă a spațiului, excluzând anexele.",
   },
   floor: {
     short: "Etaj",
     long: "Etaj",
+    description: "Nivelul etajului unde se află proprietatea (ex: parter, etaj 1, mansardă).",
   },
   balcony: {
     short: "Balcon",
     long: "Balcon/lojie",
+    description: "Detalii despre balcoane sau lojiile incluse, cum ar fi dimensiunea sau numărul acestora.",
   },
   parking: {
     short: "Parcare",
     long: "Loc de parcare",
+    description: "Informații despre disponibilitatea și tipul locului de parcare.",
   },
   apartmentCondition: {
     short: "Stare ap.",
     long: "Starea apartamentului",
+    description: "Starea actuală a apartamentului, cum ar fi renovat, mobilat, semifinisat.",
   },
   email: {
     short: "Email",
     long: "Email",
+    description: "Adresa de email utilizată pentru a fi contactat.",
   },
   phone: {
     short: "Tel.",
     long: "Telefon",
+    description: "Numărul de telefon pentru contact direct.",
   },
 };
 
@@ -489,7 +513,7 @@ const getAllFieldStatuses = () => {
     return {
       id: field,
       label: fieldLabels?.[field]?.['short'] || field,
-      fullLabel: fieldLabels?.[field]?.['long'] || field,
+      description: fieldLabels?.[field]?.['description'] || field,
       status: getFieldStatus(field),
       error: errors.value?.[field]
     };
@@ -527,6 +551,8 @@ const computedDescription = computed(({
 
 const handleAutoGenerate = async () => {
   try {
+    if(! description.value?.length || description.value?.length < 7) return
+
     isAiDescriptionGenerating.value = true
 
     const { data } = await generateDescription({

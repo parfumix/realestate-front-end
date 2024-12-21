@@ -64,5 +64,22 @@ export const chunkArray = (array, size) => {
   for (let i = 0; i < array.length; i += size) {
       chunks.push(array.slice(i, i + size));
   }
+
   return chunks;
 }
+
+
+export const distributeArray = (array, groups) => {
+  if (groups <= 0) {
+    throw new Error("Number of groups must be greater than 0");
+  }
+
+  const result = [];
+  const groupSize = Math.ceil(array.length / groups);
+
+  for (let i = 0; i < array.length; i += groupSize) {
+    result.push(array.slice(i, i + groupSize));
+  }
+
+  return result;
+};

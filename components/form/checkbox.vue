@@ -12,13 +12,13 @@
             :id="option.value"
             :name="option.value"
             type="checkbox"
-            class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-600"
+            class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-400"
             :aria-describedby="`${option.value}-description`"
             :checked="modelValue.includes(option.value)"
             @change="toggleValue(option.value)"
           />
         </div>
-        <div class="ml-3 text-sm leading-6">
+        <div class="ml-2 text-sm leading-6">
           <label :for="option.value" class="font-medium text-gray-900">
             {{ option.label }}
           </label>

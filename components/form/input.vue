@@ -10,7 +10,7 @@
         :id="id"
         :class="[
           'scroll-my-12 block w-full rounded-md border-0 py-1.5 pr-10 sm:text-sm sm:leading-6',
-          error ? 'text-red-900 ring-1 ring-inset ring-red-300 placeholder:text-red-300 focus:ring-2 focus:ring-inset focus:ring-red-500' : 'text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-blue-500'
+          error ? 'text-red-900 ring-1 ring-inset ring-red-300 placeholder:text-red-300 focus:ring-2 focus:ring-inset focus:ring-red-500' : 'text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-inset focus:ring-gray-400'
         ]"
         :placeholder="placeholder"
         :value="model"
