@@ -77,7 +77,7 @@
               <!-- Image Upload -->
               <div class="mt-4">
                 <FormFileUpload :required="isFieldRequired('images')" id="images" :accept="'image/png, image/jpeg'" :multiple="true"
-                  :maxFileSize="5 * 1024 * 1024" acceptText="PNG or JPG, smaller than 5MB" v-model="images"
+                  :maxFileSize="5 * 1024 * 1024" acceptText="PNG, JPG sau PDF, mai mic de 15 MB" v-model="images"
                   :error="errors.images" />
               </div>
 
