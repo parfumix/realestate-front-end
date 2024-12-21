@@ -1,11 +1,10 @@
 <template>
   <div class="scroll-my-12">
-    <label
-      :for="id"
-      class="block text-sm font-medium leading-6 text-gray-900"
-    >
-    <span v-if="required" class="text-red-600">*</span> {{ label }}
+    
+    <label :for="id" class="block text-sm font-medium leading-6 text-gray-900">
+      <span v-if="required" class="text-red-600">*</span> {{ label }}
     </label>
+
     <div class="mt-2 flex flex-col">
       <textarea
         :id="id"
@@ -14,7 +13,7 @@
         :placeholder="placeholder"
         :class="[
           'block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset placeholder:text-gray-400 focus:ring-2 focus:ring-inset sm:text-sm sm:leading-6',
-          error ? 'text-red-900 ring-1 ring-inset ring-red-300 placeholder:text-red-300 focus:ring-2 focus:ring-inset focus:ring-red-500' : 'text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-blue-500',
+          error ? 'ring-1 ring-inset ring-red-300 placeholder:text-red-300 focus:ring-2 focus:ring-inset focus:ring-red-500' : 'text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-blue-500',
           borderColor,
           textColor,
           focusColor
@@ -24,15 +23,20 @@
         @input="e => handleInput(e.target.value)"
       />
 
-      <p v-if="error" :id="`${id}-error`" class="mt-2 text-sm text-red-600">
-        {{ error }}
-      </p>
-      <div class="mt-1 text-sm text-gray-500">
-        {{ characterCount }} / {{ maxLength }}
+      <div :class="`flex mt-2 ${error ? 'justify-between' : 'justify-end'}`">
+        <p v-if="error" :id="`${id}-error`" class="text-sm text-red-600">
+          {{ error }}
+        </p>
+
+        <div class="text-sm text-gray-500 self-end">
+          {{ characterCount }} / {{ maxLength }}
+        </div>
       </div>
+
       <div>
         <slot />
       </div>
+
     </div>
   </div>
 </template>
@@ -55,7 +59,7 @@ defineProps({
   },
   label: {
     type: String,
-    default: 'Enter text',
+    default: 'Introduceți textul',
   },
   rows: {
     type: Number,
@@ -63,7 +67,7 @@ defineProps({
   },
   placeholder: {
     type: String,
-    default: 'Type here...',
+    default: 'Tastați aici...',
   },
   borderColor: {
     type: String,
@@ -79,7 +83,7 @@ defineProps({
   },
   maxLength: {
     type: Number,
-    default: 200, // Default character limit
+    default: 200,
   },
   error: {
       type: String,

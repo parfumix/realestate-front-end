@@ -30,44 +30,23 @@
                   placeholder="Acest apartament modern cu 3 camere oferă finisaje de calitate superioară, spații luminoase și este situat într-o zonă centrală, aproape de toate facilitățile..."
                   :error="errors.description">
                   <div class="flex flex-row my-2 justify-between">
-                    <FormDropdown @click="handleSelectTone" :defaultItem="defaultTone"
-                      :buttonLabel="defaultTone ? (toneItems.find(el => el.value == defaultTone)?.label ?? 'Alege tonul') : 'Alege tonul'"
-                      :menuItems="toneItems" />
+                    <FormDropdown @click="handleSelectTone" :defaultItem="defaultTone" :buttonLabel="defaultTone ? (toneItems.find(el => el.value == defaultTone)?.label ?? 'Alege tonul') : 'Alege tonul'" :menuItems="toneItems" />
 
                     <div class="flex items-center">
                       <div class="mr-4 flex items-center space-x-2">
-                        <p @click="handleDiscard" v-if="aiGeneratedDescription?.length && !isAiDescriptionGenerating"
-                          class="flex items-center cursor-pointer">
-                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                            class="lucide lucide-trash size-3 mr-1">
-                            <path d="M3 6h18" />
-                            <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
-                            <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
-                          </svg>
+                        <p @click="handleDiscard" v-if="aiGeneratedDescription?.length && !isAiDescriptionGenerating" class="flex items-center cursor-pointer">
+                          <Trash size="14" class="mr-1" />
                           Discard
                         </p>
-                        <p @click="handleApply" v-if="aiGeneratedDescription?.length && !isAiDescriptionGenerating"
-                          class="flex items-center cursor-pointer">
-                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                            class="lucide lucide-check size-3 mr-1">
-                            <path d="M20 6 9 17l-5-5" />
-                          </svg>
+                        <p @click="handleApply" v-if="aiGeneratedDescription?.length && !isAiDescriptionGenerating" class="flex items-center cursor-pointer">
+                          <Check size="14" class="mr-1" />
                           Apply
                         </p>
                       </div>
 
-                      <FormButton :disabled="(isAiDescriptionGenerating) ? true : false" @onClick="handleAutoGenerate"
-                        v-if="description?.length > 7" class="flex items-center"
-                        :backgroundColor="description?.length < 7 ? 'bg-gray-200' : 'bg-blue-600'">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                          stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                          :class="[{ 'animate-spin': isAiDescriptionGenerating }, 'mr-1 lucide lucide-rotate-ccw size-3']">
-                          <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
-                          <path d="M3 3v5h5" />
-                        </svg>
-                        {{ aiGeneratedDescription?.length ? 'Mai incearca' : 'Completează cu AI' }}
+                      <FormButton :disabled="(isAiDescriptionGenerating) ? true : false" @onClick="handleAutoGenerate" v-if="description?.length > 7" class="flex items-center" :backgroundColor="description?.length < 7 ? 'bg-gray-200' : 'bg-blue-600'">
+                        <RefreshCcw size="14" :class="[{ 'animate-spin': isAiDescriptionGenerating }, 'mr-1 lucide lucide-rotate-ccw']" />
+                        {{ aiGeneratedDescription?.length ? 'Încercați din nou' : 'Generează cu AI' }}
                       </FormButton>
                     </div>
                   </div>
@@ -151,15 +130,17 @@
 // fix textarea
 // adding location field
 // review all fields
-// when click image open modal
 // allow to select text and apply AI changes
 // adding back-end API CRUD operations
+// when scroll to visible element shake it
 
 import { useForm, useField } from 'vee-validate';
 import * as yup from 'yup';
 
 import { chunkArray } from '../utils';
 import { generateDescription } from '../api/create'
+
+import { Trash, Check, RefreshCcw } from 'lucide-vue-next'
 
 const { user } = useAuthService()
 
@@ -361,20 +342,20 @@ const schema = yup.object({
   transactionType: yup.mixed().oneOf(['sell', 'rent']),
   selectedFacilities: yup.string().optional(),
 
-  description: yup.string().required('Descrierea este obligatorie').min(100, 'cel putin 100 caractere').max(500, 'maximum 500 caractere'),
+  description: yup.string().required('Descrierea este obligatorie').min(100, 'Minim 100 de caractere').max(500, 'Maximum 500 de caractere'),
   images: yup
     .array()
     .of(
       yup
         .mixed()
-        .test('fileType', 'Only PNG and JPEG files are allowed', (value) => {
+        .test('fileType', 'Sunt permise doar fișierele PNG și JPEG.', (value) => {
           return value.file && ['image/png', 'image/jpeg'].includes(value.file.type);
         })
-        .test('fileSize', 'File size must be less than 5MB', (value) => {
+        .test('fileSize', 'Dimensiunea fișierului trebuie să fie mai mică de 5 MB.', (value) => {
           return value.file && value.file.size <= 5 * 1024 * 1024; // 5MB
         })
     )
-    .required('At least one image is required'),
+    .required('Este necesară cel puțin o imagine.'),
 
   // characteristics
   roomCount: yup
