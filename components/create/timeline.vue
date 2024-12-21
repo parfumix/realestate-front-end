@@ -5,7 +5,7 @@
                 'after:content-[\'\'] after:w-0.5 after:h-full after:inline-block after:absolute after:-bottom-6 after:left-[11px]':
                 index !== fields.length - 1,
                 'after:bg-green-600': field.status === 'filled',
-                'after:bg-gray-200': field.status !== 'filled',
+                'after:bg-gray-300': field.status !== 'filled',
             }">
                 <a class="flex items-center font-medium w-full">
                     <span :title="field.status === 'errored' ? field.error : null" :class="{
