@@ -74,26 +74,6 @@
                 </FormTextarea>
               </div>
 
-              <!-- Facilities -->
-              <p @click="isFacilitiesCollpased = !isFacilitiesCollpased" class="cursor-pointer flex items-center">
-                <span>Facilitati</span>
-                <svg v-if="isFacilitiesCollpased" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
-                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                  class="lucide lucide-chevron-right size-4">
-                  <path d="m9 18 6-6-6-6" />
-                </svg>
-                <svg v-else xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                  stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                  class="lucide lucide-chevron-down size-4">
-                  <path d="m6 9 6 6 6-6" />
-                </svg>
-              </p>
-              <div v-if="!isFacilitiesCollpased" class="mt-4 flex justify-start">
-                <div v-for="items in chunkArray(facilities, 5)">
-                  <FormCheckbox :collapsible="true" :options="items" v-model="selectedFacilities" />
-                </div>
-              </div>
-
               <!-- Image Upload -->
               <div class="mt-4">
                 <FormFileUpload :required="isFieldRequired('images')" id="images" :accept="'image/png, image/jpeg'" :multiple="true"
@@ -101,37 +81,48 @@
                   :error="errors.images" />
               </div>
 
+              <!-- Facilities -->
+              <Collapsible title="Facilitiati" class="mt-4 collapsible">
+                <div class="flex justify-start">
+                  <div v-for="items in chunkArray(facilities, 5)">
+                    <FormCheckbox :collapsible="true" :options="items" v-model="selectedFacilities" />
+                  </div>
+                </div>
+              </Collapsible>
+
               <!-- Rooms and Details -->
-              <div class="mt-4 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-2">
-                <FormSelect id="roomCount" :required="isFieldRequired('roomCount')" name="roomCount" :options="roomCountOptions" :label="fieldLabels['roomCount'].long"
-                  placeholder="Select" v-model="roomCount" :error="errors.roomCount" />
+              <Collapsible :isOpened="false" title="Caracteristici" class="mt-4 collapsible">
+                <div class="mt-4 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-2">
+                  <FormSelect id="roomCount" :required="isFieldRequired('roomCount')" name="roomCount" :options="roomCountOptions" :label="fieldLabels['roomCount'].long"
+                    placeholder="Select" v-model="roomCount" :error="errors.roomCount" />
 
-                <FormInput id="totalArea" :required="isFieldRequired('totalArea')" name="totalArea" :label="fieldLabels['totalArea'].long" placeholder="mp" v-model="totalArea"
-                  :error="errors.totalArea" />
+                  <FormInput id="totalArea" :required="isFieldRequired('totalArea')" name="totalArea" :label="fieldLabels['totalArea'].long" placeholder="mp" v-model="totalArea"
+                    :error="errors.totalArea" />
 
-                <FormInput id="surface" :required="isFieldRequired('surface')" name="surface" :label="fieldLabels['surface'].long" placeholder="mp" v-model="surface"
-                  :error="errors.surface" />
+                  <FormInput id="surface" :required="isFieldRequired('surface')" name="surface" :label="fieldLabels['surface'].long" placeholder="mp" v-model="surface"
+                    :error="errors.surface" />
 
-                <FormSelect id="floor" :required="isFieldRequired('floor')" name="floor" :options="floorOptions" :label="fieldLabels['floor'].long" placeholder="Select"
-                  v-model="floor" :error="errors.floor" />
+                  <FormSelect id="floor" :required="isFieldRequired('floor')" name="floor" :options="floorOptions" :label="fieldLabels['floor'].long" placeholder="Select"
+                    v-model="floor" :error="errors.floor" />
 
-                <FormSelect id="balcony" :required="isFieldRequired('balcony')" name="balcony" :options="balconyOptions" :label="fieldLabels['balcony'].long"
-                  placeholder="Select" v-model="balcony" :error="errors.balcony" />
+                  <FormSelect id="balcony" :required="isFieldRequired('balcony')" name="balcony" :options="balconyOptions" :label="fieldLabels['balcony'].long"
+                    placeholder="Select" v-model="balcony" :error="errors.balcony" />
 
-                <FormSelect id="parking" :required="isFieldRequired('parking')"  name="parking" :options="parkingOptions" :label="fieldLabels['parking'].long"
-                  placeholder="Select" v-model="parking" :error="errors.parking" />
+                  <FormSelect id="parking" :required="isFieldRequired('parking')"  name="parking" :options="parkingOptions" :label="fieldLabels['parking'].long"
+                    placeholder="Select" v-model="parking" :error="errors.parking" />
 
-                <FormSelect id="apartmentCondition" name="apartmentCondition" :options="apartmentConditionOptions"
-                  :label="fieldLabels['apartmentCondition'].long" placeholder="Select" v-model="apartmentCondition" :error="errors.apartmentCondition" />
-              </div>
-
+                  <FormSelect id="apartmentCondition" name="apartmentCondition" :options="apartmentConditionOptions"
+                    :label="fieldLabels['apartmentCondition'].long" placeholder="Select" v-model="apartmentCondition" :error="errors.apartmentCondition" />
+                </div>
+              </Collapsible>
+              
               <!-- Contact Details -->
-              <div class="mt-4">
+              <Collapsible :isOpened="true" title="Contact" class="mt-4 collapsible">
                 <FormInput id="email" :required="isFieldRequired('email')" name="email" :label="fieldLabels['email'].long" placeholder="Email" type="email" v-model="email"
                   :error="errors.email" />
                 <FormInput id="phone" :required="isFieldRequired('phone')" name="phone" :label="fieldLabels['phone'].long" placeholder="Telefon" v-model="phone"
                   :error="errors.phone" />
-              </div>
+              </Collapsible>
             </div>
           </div>
         </form>
@@ -147,7 +138,7 @@
     </div>
 
     <div class="w-1/2">
-      <AdMap class="w-full h-full" />
+      <CreateMap class="w-full h-full" />
     </div>
   </main>
 </template>
@@ -155,10 +146,15 @@
 <script setup>
 //TODO adding moderation - https://chatgpt.com/share/6756fcb7-6464-8006-9453-d5f41b730e1e
 //TODO https://preline.co//docs/confetti.html
+
 // save & edit item
 // fix textarea
 // adding location field
 // review all fields
+// when click image open modal
+// adding sections
+// allow to select text and apply AI changes
+// adding back-end API CRUD operations
 
 import { useForm, useField } from 'vee-validate';
 import * as yup from 'yup';
@@ -359,7 +355,6 @@ const fieldLabels = {
 };
 
 const defaultTone = ref('professional')
-const isFacilitiesCollpased = ref(true)
 
 const schema = yup.object({
   // transaction type

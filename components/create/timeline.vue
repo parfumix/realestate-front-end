@@ -36,7 +36,7 @@
 <script setup>
 import { Check } from 'lucide-vue-next';
 
-defineProps({
+const props = defineProps({
     fields: {
         type: Array,
         required: true,
@@ -46,32 +46,37 @@ defineProps({
 
 const scrollToElement = (target, marginTop = 30) => {
     const element = document.getElementById(target);
+
     if (element) {
-        const elementRect = element.getBoundingClientRect();
+        const collapsibleParent = element.closest('.collapsible');
 
-        // Check if the element is already in the viewport
-        const isInViewport = 
-            elementRect.top >= marginTop && 
-            elementRect.bottom <= window.innerHeight;
-
-        if (isInViewport) {
-            element.focus();
-        } else {
-            // Scroll the element into view smoothly
-            element.scrollIntoView({ behavior: "smooth" });
-
-            // Adjust for margin after scrolling
-            setTimeout(() => {
-                const elementPosition = element.getBoundingClientRect().top + window.scrollY;
-                window.scrollTo({
-                    top: elementPosition - marginTop,
-                    behavior: "smooth",
-                });
-
-                // Focus the element
-                element.focus();
-            }, 0);
+        // Check if the parent has data-opened set to false
+        if (collapsibleParent && collapsibleParent.dataset.opened === "false") {
+            const toggleButton = collapsibleParent.querySelector('button');
+            if (toggleButton) {
+                toggleButton.click();
+            }
         }
+
+        // Allow time for the collapsible to expand before scrolling
+        setTimeout(() => {
+            const elementRect = element.getBoundingClientRect();
+
+            // Check if the element is already in the viewport
+            const isInViewport = 
+                elementRect.top >= marginTop && 
+                elementRect.bottom <= window.innerHeight;
+
+            if (isInViewport) {
+                element.focus();
+            } else {
+                element.scrollIntoView({ behavior: 'smooth' });
+
+                setTimeout(() => {
+                    element.focus();
+                }, 350); 
+            }
+        }, 300)
     }
-};
+}
 </script>

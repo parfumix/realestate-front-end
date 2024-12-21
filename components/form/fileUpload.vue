@@ -68,6 +68,10 @@
       type: String,
       default: 'dropzone-file',
     },
+    required: {
+      type: Boolean,
+      default: false,
+    },
     accept: {
       type: String,
       default: 'image/png, image/jpeg, application/pdf',
