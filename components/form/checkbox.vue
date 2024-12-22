@@ -11,7 +11,9 @@
       </div>
       <div class="ml-2 text-sm leading-6">
         <label :for="id" :class="['font-medium ', error ? 'text-red-500' : 'text-gray-900']">
-          {{ label }}
+          <slot>
+            {{ label }}
+          </slot>
         </label>
       </div>
     </div>
@@ -25,7 +27,8 @@
     },
     label: {
       type: String,
-      required: true,
+      required: false,
+      default: ''
     },
     error: {
         type: String,

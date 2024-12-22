@@ -115,11 +115,13 @@
               </Collapsible>
 
               <div class="mt-4">
-                <FormAlert message='Nu găsiți informațiile dorite? Scrieți-ne la <a class="text-blue underline" href="mailto:contact@imai.ro?subject=Solicitare%20specificații">contact@imai.ro</a>, iar echipa noastră va adăuga specificațiile necesare pe site.' />
+                <FormAlert message='Nu găsiți informațiile dorite? Scrieți-ne la <a class="text-blue underline" target="_blank" href="mailto:contact@imai.ro?subject=Solicitare%20specificații">contact@imai.ro</a>, iar echipa noastră va adăuga specificațiile necesare pe site.' />
               </div>
 
               <div class="mt-4 flex justify-center">
-                <FormCheckbox id="terms_and_conditions" :label="fieldLabels['terms_and_conditions'].long" v-model="terms_and_conditions" :error="errors.terms_and_conditions"  />
+                <FormCheckbox id="terms_and_conditions" v-model="terms_and_conditions" :error="errors.terms_and_conditions">
+                  {{ fieldLabels['terms_and_conditions'].long }} <RouterLink target="_blank" class="underline text-blue-600" to="terms-and-conditions">termenii și condițiile</RouterLink>
+                </FormCheckbox>
               </div>
             </div>
           </div>
@@ -152,7 +154,7 @@
 // adding back-end API CRUD operations
 // when scroll to visible element shake it
 // adding opt phone number verification https://chatgpt.com/share/6767432b-3a48-8006-a091-4544d72527cd
-// adding price & location fields
+// adding price & location fields -- location variable create in this component
 // adding scrolling buttons
 // adding moderation text & photos (photos min width & height) https://chatgpt.com/c/6768165f-b1a8-8006-80d6-d41efbb92dec
 // once ai text generated hide generate with ai button until user start typing again
@@ -215,7 +217,7 @@ const facilities = [
   { value: 'furnished', label: 'Mobilat' },
   { value: 'with_household_appliances', label: 'Cu tehnică electrocasnică' },
   { value: 'autonomous_heating', label: 'Încălzire autonomă' },
-  { value: 'air_conditioning', label: 'Aparat de aer condiționat' },
+  { value: 'air_conditioning', label: 'Aer condiționat' },
   { value: 'heated_floor', label: 'Podea cu încălzire' },
   { value: 'double_glazed_windows', label: 'Geamuri termopan' },
   { value: 'panoramic_windows', label: 'Geamuri panoramice' },
@@ -223,7 +225,7 @@ const facilities = [
   { value: 'laminate', label: 'Laminat' },
   { value: 'reinforced_door', label: 'Ușă blindată' },
   { value: 'phone_line', label: 'Linie telefonică' },
-  { value: 'smart_home_system', label: 'Sistem "casă inteligentă"' },
+  { value: 'smart_home_system', label: 'Casă inteligentă' },
   { value: 'intercom', label: 'Interfon' },
   { value: 'internet', label: 'Internet' },
   { value: 'cable_tv', label: 'Cablu TV' },
@@ -382,7 +384,7 @@ const fieldLabels = {
   },
   terms_and_conditions: {
     short: "T&C",
-    long: "Am citit și sunt de acord cu termenii și condițiile.",
+    long: "Am citit și sunt de acord cu",
     description: "Termeni și condiții pentru utilizarea serviciului.",
   },
 };
