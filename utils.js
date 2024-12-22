@@ -111,11 +111,8 @@ export const scrollToElement = (target, marginTop = 30) => {
           if (isInViewport) {
               element.focus();
           } else {
-              element.scrollIntoView({ behavior: 'smooth' });
-
-              setTimeout(() => {
-                  element.focus();
-              }, 350); 
+              element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+              setTimeout(() => element.focus(), 400); 
           }
       }, 300)
   }

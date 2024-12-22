@@ -388,7 +388,7 @@ const schema = yup.object({
   // transaction type
   propertyType: yup.mixed().oneOf(['apartment', 'home', 'comercial', 'land']),
   transactionType: yup.mixed().oneOf(['sell', 'rent']),
-  selectedFacilities: yup.string().optional(),
+  selectedFacilities: yup.array().of(yup.string()).optional().nullable(),
 
   description: yup.string().required('Descrierea este obligatorie').min(100, 'Minim 100 de caractere').max(500, 'Maximum 500 de caractere'),
   images: yup
@@ -403,6 +403,7 @@ const schema = yup.object({
           return value.file && value.file.size <= 5 * 1024 * 1024; // 5MB
         })
     )
+    .min(1, 'Este necesară cel puțin o imagine.')
     .required('Este necesară cel puțin o imagine.'),
 
   // characteristics
@@ -417,12 +418,15 @@ const schema = yup.object({
   
   balcony: yup
     .number()
-    .typeError('Numărul de balcoane trebuie să fie un număr')
-    .optional(),
+    .optional()
+    .transform((value, originalValue) => (originalValue === "" ? null : value))
+    .nullable(),
   parking: yup
     .mixed()
     .oneOf(['open', 'garage', 'covered', 'underground'])
-    .optional(),
+    .optional()
+    .transform((value, originalValue) => (originalValue === "" ? null : value))
+    .nullable(),
   apartmentCondition: yup
     .mixed()
     .oneOf([
@@ -437,7 +441,9 @@ const schema = yup.object({
       'cosmetic-renovation',
       'euro-renovation',
     ])
-    .optional(),
+    .transform((value, originalValue) => (originalValue === "" ? null : value))
+    .optional()
+    .nullable(),
 
   // contact section
   email: yup.string().email('Emailul este invalid').required('Emailul este obligatoriu'),
@@ -450,7 +456,7 @@ const schema = yup.object({
     .required('Numărul de telefon este obligatoriu'),
 });
 
-const { handleSubmit, errors, isSubmitting, values, meta } = useForm({
+const { handleSubmit, errors, isSubmitting, values } = useForm({
   validationSchema: schema, initialValues: {
     propertyType: 'apartment',
     transactionType: 'sell',
