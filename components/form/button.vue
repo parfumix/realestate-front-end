@@ -3,8 +3,7 @@
     :type="type"
     :disabled="disabled"
     :class="[
-      'rounded px-2 py-1 shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2',
-      defaultClass
+      'rounded-md px-2.5 py-1.5 shadow-sm text-sm font-semibold text-white shadow-sm',
     ]"
     @click="handleClick"
   >
@@ -20,10 +19,6 @@ defineProps({
   text: {
     type: String,
     default: 'Button',
-  },
-  defaultClass: {
-    type: String,
-    default: 'text-xs font-semibold'
   },
   type: {
     type: String,

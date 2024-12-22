@@ -127,8 +127,8 @@
           </div>
         </form>
 
-        <div class="h-[40px] px-6 my-[5px] flex justify-end gap-4">
-          <FormButton :defaultClass="[{'bg-blue-800 hover:bg-blue-700': true}, 'w-full text-lg font-semibold text-white']" :disabled="isSubmitting" text="Publică" @onClick="onSubmit" />
+        <div class="h-[40px] px-6 mb-[5px]">
+          <FormButton :class="['bg-blue-800 hover:bg-blue-700 w-full h-full text-lg']" :disabled="isSubmitting" text="Publică" @onClick="onSubmit" />
         </div>
       </div>
 
@@ -163,7 +163,7 @@
 import { useForm, useField } from 'vee-validate';
 import * as yup from 'yup';
 
-import { distributeArray } from '../utils';
+import { distributeArray, scrollToElement } from '../utils';
 import { generateDescription } from '../api/create'
 
 import { Trash, Check, RefreshCcw } from 'lucide-vue-next'
@@ -450,12 +450,12 @@ const schema = yup.object({
     .required('Numărul de telefon este obligatoriu'),
 });
 
-const { handleSubmit, errors, isSubmitting, values } = useForm({
+const { handleSubmit, errors, isSubmitting, values, meta } = useForm({
   validationSchema: schema, initialValues: {
     propertyType: 'apartment',
     transactionType: 'sell',
     selectedFacilities: [],
-    description: '',
+    description: 'Apartament modern situat în inima orașului, perfect pentru cei care doresc să îmbine confortul cu accesibilitatea. Cu un design contemporan și finisaje de calitate, această locuință este ideală pentru familii sau tineri profesioniști.',
     images: [],
     roomCount: '',
     totalArea: '',
@@ -465,9 +465,47 @@ const { handleSubmit, errors, isSubmitting, values } = useForm({
     parking: '',
     apartmentCondition: '',
     email: user.value.email,
-    phone: '',
+    phone: '0741123456',
   }
 });
+
+const getFieldStatus = (fieldName) => {
+  if (errors.value[fieldName]) {
+    return 'errored';
+  }
+  const value = values[fieldName];
+  if (value && value.length > 0) {
+    return 'filled';
+  }
+  return 'empty';
+};
+
+const isFieldRequired = fieldName => {
+  return ! schema.describe().fields[fieldName]?.optional || false
+}
+
+const getAllRequiredFields = () => {
+  return Object.keys(values).filter(fieldName => {
+    return isFieldRequired(fieldName)
+  })
+}
+
+// Utility function to get all fields and statuses
+const getAllFieldStatuses = () => {
+  return getAllRequiredFields().map((field) => {
+    return {
+      id: field,
+      label: fieldLabels?.[field]?.['short'] || field,
+      description: fieldLabels?.[field]?.['description'] || field,
+      status: getFieldStatus(field),
+      error: errors.value?.[field]
+    };
+  });
+};
+
+const fieldStatuses = computed(() => {
+  return getAllFieldStatuses()
+})
 
 const launchConfetti = () => {
   useNuxtApp().$confetti({
@@ -480,6 +518,13 @@ const launchConfetti = () => {
 const onSubmit = handleSubmit((values) => {
   console.log('Submitted:', values);
   launchConfetti()
+}, ({ errors }) => {
+  const requiredFields = getAllRequiredFields()
+  const errorsOnSubmit = Object.keys(errors).filter(el => requiredFields.includes(el))
+
+  if(errorsOnSubmit.length) {
+    scrollToElement(errorsOnSubmit[0])
+  }
 });
 
 // // Fetch data on mounted
@@ -516,39 +561,6 @@ const { value: phone } = useField('phone');
 const isAiDescriptionGenerating = ref(false)
 const aiGeneratedDescription = ref(null)
 
-const getFieldStatus = (fieldName) => {
-  if (errors.value[fieldName]) {
-    return 'errored';
-  }
-  const value = values[fieldName];
-  if (value && value.length > 0) {
-    return 'filled';
-  }
-  return 'empty';
-};
-
-const isFieldRequired = fieldName => {
-  return ! schema.describe().fields[fieldName]?.optional || false
-}
-
-// Utility function to get all fields and statuses
-const getAllFieldStatuses = () => {
-  return Object.keys(values).filter(fieldName => {
-    return isFieldRequired(fieldName)
-  }).map((field) => {
-    return {
-      id: field,
-      label: fieldLabels?.[field]?.['short'] || field,
-      description: fieldLabels?.[field]?.['description'] || field,
-      status: getFieldStatus(field),
-      error: errors.value?.[field]
-    };
-  });
-};
-
-const fieldStatuses = computed(() => {
-  return getAllFieldStatuses()
-})
 
 const handleSelectTone = ({ value }) => {
   defaultTone.value = value
