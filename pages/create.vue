@@ -120,7 +120,7 @@
                 <FormAlert message='Nu găsiți informațiile dorite? Scrieți-ne la <a class="text-blue underline" href="mailto:contact@imai.ro?subject=Solicitare%20specificații">contact@imai.ro</a>, iar echipa noastră va adăuga specificațiile necesare pe site.' />
               </div>
 
-              <div class="flex justify-center">
+              <div class="mt-4 flex justify-center">
                 <FormCheckbox id="terms_and_conditions" :label="fieldLabels['terms_and_conditions'].long" v-model="terms_and_conditions" :error="errors.terms_and_conditions"  />
               </div>
             </div>
@@ -158,6 +158,7 @@
 // adding scrolling buttons
 // adding moderation text & photos (photos min width & height) https://chatgpt.com/c/6768165f-b1a8-8006-80d6-d41efbb92dec
 // once ai text generated hide generate with ai button until user start typing again
+// https://shift.infinite.red/avoid-nightmares-nsfw-js-ab7b176978b1
 
 import { useForm, useField } from 'vee-validate';
 import * as yup from 'yup';
@@ -383,7 +384,7 @@ const fieldLabels = {
   },
   terms_and_conditions: {
     short: "T&C",
-    long: "Termeni și condiții",
+    long: "Am citit și sunt de acord cu termenii și condițiile.",
     description: "Termeni și condiții pentru utilizarea serviciului.",
   },
 };
