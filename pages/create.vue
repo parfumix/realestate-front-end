@@ -77,7 +77,7 @@
               <Collapsible title="Facilitiati" class="mt-4 collapsible">
                   <div class="flex flex-row justify-between items-center">
                     <div class="flex flex-col" v-for="items in distributeArray(facilities, 3)">
-                        <FormCheckbox :collapsible="true" :options="items" v-model="selectedFacilities" />
+                        <FormCheckboxes :options="items" v-model="selectedFacilities" />
                     </div>
                   </div>
               </Collapsible>
@@ -120,8 +120,8 @@
                 <FormAlert message='Nu găsiți informațiile dorite? Scrieți-ne la <a class="text-blue underline" href="mailto:contact@imai.ro?subject=Solicitare%20specificații">contact@imai.ro</a>, iar echipa noastră va adăuga specificațiile necesare pe site.' />
               </div>
 
-              <div class="mt-4 flex justify-center">
-                <FormCheckbox :collapsible="true" :options="[{value: 1, label: 'Am citit și sunt de acord cu termenii și condițiile imai.ro'}]" v-model="selectedFacilities" />
+              <div class="flex justify-center">
+                <FormCheckbox id="terms_and_conditions" :label="fieldLabels['terms_and_conditions'].long" v-model="terms_and_conditions" :error="errors.terms_and_conditions"  />
               </div>
             </div>
           </div>
@@ -157,7 +157,7 @@
 // adding price & location fields
 // adding scrolling buttons
 // adding moderation text & photos (photos min width & height) https://chatgpt.com/c/6768165f-b1a8-8006-80d6-d41efbb92dec
-// when clicking submit show errors & focus in order
+// once ai text generated hide generate with ai button until user start typing again
 
 import { useForm, useField } from 'vee-validate';
 import * as yup from 'yup';
@@ -381,6 +381,11 @@ const fieldLabels = {
     long: "Telefon",
     description: "Numărul de telefon pentru contact direct.",
   },
+  terms_and_conditions: {
+    short: "T&C",
+    long: "Termeni și condiții",
+    description: "Termeni și condiții pentru utilizarea serviciului.",
+  },
 };
 
 const defaultTone = ref('professional')
@@ -455,6 +460,10 @@ const schema = yup.object({
       'Numărul de telefon trebuie să fie valid și să aibă 10 cifre'
     )
     .required('Numărul de telefon este obligatoriu'),
+
+  terms_and_conditions: yup.boolean()
+    .oneOf([true], 'Trebuie să acceptați Termenii și Condițiile')
+    .required('Trebuie să acceptați Termenii și Condițiile'),
 });
 
 const initialValues = {
@@ -472,6 +481,7 @@ const initialValues = {
     apartmentCondition: '',
     email: user.value.email,
     phone: '0741123456',
+    terms_and_conditions: false
 }
 
 const { handleSubmit, errors, isSubmitting, values } = useForm({
@@ -564,6 +574,8 @@ const { value: apartmentCondition } = useField('apartmentCondition');
 // contat section
 const { value: email } = useField('email');
 const { value: phone } = useField('phone');
+
+const { value: terms_and_conditions } = useField('terms_and_conditions');
 
 /**
  * Helpers
