@@ -155,16 +155,17 @@
 // when scroll to visible element shake it
 // adding opt phone number verification https://chatgpt.com/share/6767432b-3a48-8006-a091-4544d72527cd
 // adding price & location fields
-// adding label for fileUpload image
 // adding scrolling buttons
-// adding moderation text & photos (photos min width & height)
-// 
+// adding moderation text & photos (photos min width & height) https://chatgpt.com/c/6768165f-b1a8-8006-80d6-d41efbb92dec
+// when clicking submit show errors & focus in order
 
 import { useForm, useField } from 'vee-validate';
 import * as yup from 'yup';
 
-import { distributeArray, scrollToElement } from '../utils';
+import { distributeArray, scrollToElement, setHead } from '../utils';
 import { generateDescription } from '../api/create'
+
+setHead('Listează-ți Proprietatea Gratuit', 'Adaugă anunțul tău imobiliar în câteva minute! Prezintă-ți proprietatea unui public larg de cumpărători și chiriași. Platformă ușor de utilizat pentru vânzare, închiriere sau leasing.')
 
 import { Trash, Check, RefreshCcw } from 'lucide-vue-next'
 
@@ -456,13 +457,12 @@ const schema = yup.object({
     .required('Numărul de telefon este obligatoriu'),
 });
 
-const { handleSubmit, errors, isSubmitting, values } = useForm({
-  validationSchema: schema, initialValues: {
+const initialValues = {
     propertyType: 'apartment',
     transactionType: 'sell',
-    selectedFacilities: [],
     description: 'Apartament modern situat în inima orașului, perfect pentru cei care doresc să îmbine confortul cu accesibilitatea. Cu un design contemporan și finisaje de calitate, această locuință este ideală pentru familii sau tineri profesioniști.',
     images: [],
+    selectedFacilities: [],
     roomCount: '',
     totalArea: '',
     surface: '',
@@ -472,7 +472,10 @@ const { handleSubmit, errors, isSubmitting, values } = useForm({
     apartmentCondition: '',
     email: user.value.email,
     phone: '0741123456',
-  }
+}
+
+const { handleSubmit, errors, isSubmitting, values } = useForm({
+  validationSchema: schema, initialValues
 });
 
 const getFieldStatus = (fieldName) => {
@@ -526,8 +529,9 @@ const onSubmit = handleSubmit((values) => {
   console.log('Submitted:', values);
   launchConfetti()
 }, ({ errors }) => {
+  const orderedFields = Object.keys(initialValues)
   const requiredFields = getAllRequiredFields()
-  const errorsOnSubmit = Object.keys(errors).filter(el => requiredFields.includes(el))
+  const errorsOnSubmit = Object.keys(errors).filter(el => requiredFields.includes(el)).sort((a, b) => orderedFields.indexOf(a) - orderedFields.indexOf(b));
 
   if(errorsOnSubmit.length) {
     scrollToElement(errorsOnSubmit[0])
