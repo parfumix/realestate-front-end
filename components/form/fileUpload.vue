@@ -1,5 +1,5 @@
 <template>
-  <div :id="id" :class="['w-full mb-5 scroll-my-12 rounded-md']">
+  <div :id="id" :class="['w-full mb-2 scroll-my-12 rounded-md']">
     <label :for="`input-${id}`" :class="['flex flex-col border border-dashed items-center justify-center py-9 w-full rounded-2xl cursor-pointer bg-gray-50',
       error ? 'border-red-300' : 'border-gray-300 '
     ]">
@@ -18,7 +18,7 @@
   </div>
 
   <!-- Preview Images -->
-  <div v-if="previewImages.length" class="w-full grid gap-1 mb-4">
+  <div v-if="previewImages.length" class="w-full grid gap-1">
     <VueGallery :options="galleryOptions" :images="galleryImages" :index="galleryIndex" @close="closeGallery" />
 
     <div v-for="(image, index) in previewImages" :key="image.id" class="flex items-center justify-between gap-2">
@@ -31,11 +31,12 @@
       </div>
       <CircleMinus class="cursor-pointer text-red-500 hover:text-red-600" size="16" @click="removeImage(image.id)" />
     </div>
-
-    <p v-if="error" :id="`${id}-error`" class="mt-2 text-sm text-red-600">
-      {{ error }}
-    </p>
+   
   </div>
+
+  <p v-if="error" :id="`${id}-error`" class="text-sm text-red-600">
+      {{ error }}
+  </p>
 </template>
 
 <script setup>
@@ -66,7 +67,7 @@ const props = defineProps({
   },
   acceptText: {
     type: String,
-    default: 'PNG, JPG sau PDF, mai mic de 15 MB',
+    default: 'Sunt permise doar fișierele PNG și JPEG',
   },
   error: {
     type: String,

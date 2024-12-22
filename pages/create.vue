@@ -68,9 +68,7 @@
 
               <!-- Image Upload -->
               <div class="mt-4">
-                <FormFileUpload :required="isFieldRequired('images')" id="images" :accept="'image/png, image/jpeg'" :multiple="true"
-                  :maxFileSize="5 * 1024 * 1024" acceptText="Sunt permise doar fișierele PNG și JPEG" v-model="images"
-                  :error="errors.images" />
+                <FormFileUpload :required="isFieldRequired('images')" id="images" :accept="'image/png, image/jpeg'" :multiple="true" :maxFileSize="5 * 1024 * 1024" v-model="images" :error="errors.images" />
               </div>
 
               <!-- Facilities -->
