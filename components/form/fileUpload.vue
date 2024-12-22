@@ -1,7 +1,8 @@
 <template>
-  <div :id="id" class="w-full mb-5 scroll-my-12">
-    <label :for="`input-${id}`"
-      class="flex flex-col items-center justify-center py-9 w-full border border-gray-300 border-dashed rounded-2xl cursor-pointer bg-gray-50">
+  <div :id="id" :class="['w-full mb-5 scroll-my-12 rounded-md',
+    error ? 'ring-1 ring-red-300 focus:ring-1 focus:ring focus:ring-red-500' : ''
+  ]">
+    <label :for="`input-${id}`" class="flex flex-col items-center justify-center py-9 w-full border border-gray-300 border-dashed rounded-2xl cursor-pointer bg-gray-50">
       <div class="mb-3 flex items-center justify-center">
         <CloudUpload size="40" />
       </div>
