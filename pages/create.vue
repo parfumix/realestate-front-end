@@ -128,7 +128,7 @@
         </form>
 
         <div class="h-[40px] px-6 my-[5px] flex justify-end gap-4">
-          <FormButton defaultClass="w-full bg-blue-800 hover:bg-blue-700 text-lg font-semibold text-white" :disabled="isSubmitting" text="Publică" @onClick="onSubmit" />
+          <FormButton :defaultClass="[{'bg-blue-800 hover:bg-blue-700': true}, 'w-full text-lg font-semibold text-white']" :disabled="isSubmitting" text="Publică" @onClick="onSubmit" />
         </div>
       </div>
 
@@ -147,8 +147,8 @@
 //TODO adding moderation - https://chatgpt.com/share/6756fcb7-6464-8006-9453-d5f41b730e1e
 //TODO https://preline.co//docs/confetti.html
 
-// save & edit item
 // fix textarea
+// save & edit item
 // review all fields
 // allow to select text and apply AI changes
 // adding back-end API CRUD operations
@@ -157,6 +157,7 @@
 // adding price & location fields
 // adding label for fileUpload image
 // adding scrolling buttons
+// adding moderation text & photos (photos min width & height)
 // 
 
 import { useForm, useField } from 'vee-validate';
@@ -192,7 +193,7 @@ const propertyTypeOptions = [
     `,
   },
   {
-    title: "Loturi de teren",
+    title: "Teren",
     value: "land",
     svg: `
      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-land-plot"><path d="m12 8 6-3-6-3v10"/><path d="m8 11.99-5.5 3.14a1 1 0 0 0 0 1.74l8.5 4.86a2 2 0 0 0 2 0l8.5-4.86a1 1 0 0 0 0-1.74L16 12"/><path d="m6.49 12.85 11.02 6.3"/><path d="M17.51 12.85 6.5 19.15"/></svg>

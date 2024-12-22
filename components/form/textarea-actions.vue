@@ -1,20 +1,21 @@
 <template>
     <div class="flex-1 scroll-my-12 relative">
-        <div class="overflow-hidden rounded-lg shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-1 focus-within:ring-gray-300">
+        <div :class="['overflow-hidden shadow-sm rounded-lg ring-1 ring-inset',  
+            error ? 'ring-red-200 focus-within:ring-red-500' : 'ring-gray-200 focus-within:ring-gray-400',]">
             <label :for="id">
-                <span v-if="required" class="text-red-600">*</span> {{ label }}
+                <span v-if="required" class="text-red-600 py-2 px-1 inline-block">*</span> {{ label }}
             </label>
 
             <textarea :id="id" :rows="rows" :placeholder="placeholder" :value="model" :maxlength="maxLength" :class="[
-                'block w-full resize-none border-0 bg-transparent py-1.5 placeholder:text-gray-400 sm:text-sm sm:leading-6',
-                error ? 'ring-1 ring-inset ring-red-200 placeholder:text-red-300 focus:ring-2 focus:ring-inset focus:ring-red-500' : 'text-gray-900 ring-1 ring-inset ring-gray-300',
+                'block w-full resize-none border-0 bg-transparent py-1.5 text-gray-900 sm:text-sm sm:leading-6 focus:outline-none focus:outline-0 focus:ring-0',
+                error ? ' placeholder:text-red-300' : 'placeholder:text-gray-400',
                 borderColor,
                 textColor,
                 focusColor
             ]" @input="e => handleInput(e.target.value)" />
 
             <!-- Spacer element to match the height of the toolbar -->
-            <div class="py-2" aria-hidden="true">
+            <div class="py-2 border-t border-gray-400" aria-hidden="true">
                 <div class="py-px">
                     <div class="h-9"></div>
                 </div>
