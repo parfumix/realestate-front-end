@@ -515,6 +515,7 @@ const fieldStatuses = computed(() => {
 
 const launchConfetti = () => {
   useNuxtApp().$confetti({
+    zIndex: 99999999,
     particleCount: 400,
     spread: 260,
     origin: { x: 0.5, y: 0.5 },
