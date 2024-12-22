@@ -2,22 +2,14 @@
     <div class="flex flex-col h-full relative">
         <!-- Address Input -->
         <div class="flex flex-col items-center p-4 absolute top-0 inset-0 z-[9999] h-[50px]">
-            <div class="w-full relative rounded-md shadow-sm">
-                <input id="address" autocomplete="off" v-model="address" @input="debouncedSearchAddress" class="border rounded w-full p-2 pr-[40px]" placeholder="Enter address to sell your property" />
+            <div class="w-full relative rounded-md shadow-sm focus-within:ring-2 focus-within:ring-gray-500 focus-within:ring-offset-4">
+                <input id="address" autocomplete="off" v-model="address" @input="debouncedSearchAddress" class="border-0 rounded w-full p-2 pr-[40px] ring-1 ring-gray-400 focus:ring-0	focus-within:outline-0 focus-within:outline-none" placeholder="Introduceți locația exactă a adresei dumneavoastră.." />
                 <div v-if="isLoading" class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
-                    <svg class="animate-spin -ml-1 h-5 w-5 text-black" xmlns="http://www.w3.org/2000/svg" fill="none"
-                        viewBox="0 0 24 24">
-                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4">
-                        </circle>
-                        <path class="opacity-75" fill="currentColor"
-                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
-                        </path>
-                    </svg>
+                    <LoaderCircle class="animate-spin -ml-1 h-5 w-5 text-black" />
                 </div>
             </div>
             <ul v-if="suggestions.length" class="border bg-white w-full mt-2 rounded shadow">
-                <li v-for="(suggestion, index) in suggestions" :key="index" @click="selectSuggestion(suggestion)"
-                    class="p-2 cursor-pointer hover:bg-gray-200">
+                <li v-for="(suggestion, index) in suggestions" :key="index" @click="selectSuggestion(suggestion)" class="p-2 cursor-pointer hover:bg-gray-200">
                     {{ suggestion.display_name }}
                 </li>
             </ul>
@@ -29,6 +21,8 @@
 </template>
 
 <script setup>
+import { LoaderCircle } from 'lucide-vue-next'
+
 import L from 'leaflet';
 import debounce from 'lodash-es/debounce';
 import "leaflet/dist/leaflet.css";
