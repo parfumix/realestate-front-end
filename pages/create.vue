@@ -148,11 +148,10 @@
 </template>
 
 <script setup>
-//TODO adding moderation - https://chatgpt.com/share/6756fcb7-6464-8006-9453-d5f41b730e1e
-//TODO https://preline.co//docs/confetti.html - x
+// adding moderation - https://chatgpt.com/share/6756fcb7-6464-8006-9453-d5f41b730e1e
+// adding https://preline.co//docs/confetti.html - x
 // fix textarea
 // save & edit item
-// review all fields
 // allow to select text and apply AI changes
 // adding back-end API CRUD operations
 // when scroll to visible element shake it - x
@@ -168,19 +167,20 @@
 // use tone as dropdown to the same button - x
 // adding location field in form with text pointing to the map
 // hide sidebar if responsive mobile
+// change characteristics & facilites based on property type
 
-import { useForm, useField } from 'vee-validate';
-import * as yup from 'yup';
+import { useForm, useField } from 'vee-validate'
+import { Trash, Check, RefreshCcw } from 'lucide-vue-next'
 
-import { distributeArray, scrollToElement, setHead, shakeElement } from '../utils';
+import * as yup from 'yup'
+
+import { distributeArray, scrollToElement, setHead, shakeElement } from '../utils'
 import { generateDescription } from '../api/create'
 
 setHead(
   'Listează-ți Proprietatea Gratuit', 
   'Adaugă anunțul tău imobiliar în câteva minute! Prezintă-ți proprietatea unui public larg de cumpărători și chiriași. Platformă ușor de utilizat pentru vânzare, închiriere sau leasing.'
 )
-
-import { Trash, Check, RefreshCcw } from 'lucide-vue-next'
 
 const { user } = useAuthService()
 
@@ -220,6 +220,10 @@ const transactionTypeOptions = [
   { value: 'rent', title: 'De închiriat' },
 ]
 
+/**
+ * Facilities
+ * 
+ */
 const facilities = [
   { value: 'ready_to_move_in', label: 'Gata de mutat' },
   { value: 'annex', label: 'Anexă' },
@@ -247,6 +251,7 @@ const facilities = [
   { value: 'playground', label: 'Teren de joacă' },
 ]
 
+const defaultTone = ref('professional')
 const toneItems = computed(() => {
   return [
     { active: defaultTone.value == 'professional' ,value: 'professional', label: 'Ton Profesional', description: 'Descriere clară și bine structurată.' },
@@ -254,6 +259,20 @@ const toneItems = computed(() => {
     { active: defaultTone.value == 'luxury' ,value: 'luxury', label: 'Ton Lux', description: 'Elegant și exclusivist.' }
   ]
 })
+
+
+/**
+ * Characteristics
+ * 
+ */
+const roomCountOptions = [
+  { "value": "1", "label": "O cameră" },
+  { "value": "1", "label": "1 cameră" },
+  { "value": "2", "label": "2 camere" },
+  { "value": "3", "label": "3 camere" },
+  { "value": "4", "label": "4 camere" },
+  { "value": "5", "label": "5 camere sau mai multe" }
+]
 
 const floorOptions = [
   { "value": "-2", "label": "Subsol" },
@@ -287,13 +306,12 @@ const floorOptions = [
   { "value": "attic", "label": "Mansardă" }
 ]
 
-const roomCountOptions = [
-  { "value": "1", "label": "O cameră" },
-  { "value": "1", "label": "Apartament cu 1 cameră" },
-  { "value": "2", "label": "Apartament cu 2 camere" },
-  { "value": "3", "label": "Apartament cu 3 camere" },
-  { "value": "4", "label": "Apartament cu 4 camere" },
-  { "value": "5", "label": "Apartament cu 5 camere sau mai multe" }
+const balconyOptions = [
+  { "value": "0", "label": "Nu" },
+  { "value": "1", "label": "1" },
+  { "value": "2", "label": "2" },
+  { "value": "3", "label": "3" },
+  { "value": "4", "label": "4 și mai multe" }
 ]
 
 const parkingOptions = [
@@ -301,14 +319,6 @@ const parkingOptions = [
   { "value": "garage", "label": "Garaj" },
   { "value": "covered", "label": "Sub acoperiș" },
   { "value": "underground", "label": "Subterană" }
-]
-
-const balconyOptions = [
-  { "value": "0", "label": "Nu" },
-  { "value": "1", "label": "1" },
-  { "value": "2", "label": "2" },
-  { "value": "3", "label": "3" },
-  { "value": "4", "label": "4 și mai multe" }
 ]
 
 const apartmentConditionOptions = [
@@ -323,6 +333,7 @@ const apartmentConditionOptions = [
   { "value": "cosmetic-renovation", "label": "Reparație cosmetică" },
   { "value": "euro-renovation", "label": "Euroreparație" }
 ]
+
 
 // Field labels for real estate ads with short, long, and descriptive text
 const fieldLabels = {
@@ -407,8 +418,6 @@ const fieldLabels = {
     description: "Termeni și condiții pentru utilizarea serviciului.",
   },
 };
-
-const defaultTone = ref('professional')
 
 const schema = yup.object({
   // transaction type
@@ -679,7 +688,7 @@ const handleAutoGenerate = async () => {
 }
 </script>
 
-<style >
+<style>
 .scrollGradient {
   background: 
     linear-gradient(#ffffff 33%, rgba(255,255,255, 0)),
