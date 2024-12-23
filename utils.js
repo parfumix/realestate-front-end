@@ -83,35 +83,58 @@ export const distributeArray = (array, groups) => {
   return result;
 };
 
+export const delay = (ms) => {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 export const scrollToElement = (target, marginTop = 30) => {
+  return new Promise(async(resolve, reject) => {
+    const element = document.getElementById(target);
+
+    if (element) {
+        const collapsibleParent = element.closest('.collapsible');
+
+        // Check if the parent has data-opened set to false
+        if (collapsibleParent && collapsibleParent.dataset.opened === "false") {
+            const toggleButton = collapsibleParent.querySelector('button');
+            if (toggleButton) {
+                toggleButton.click();
+            }
+        }
+
+        await delay(300) // Allow time for the collapsible to expand before scrolling
+        const elementRect = element.getBoundingClientRect();
+
+        // Check if the element is already in the viewport
+        const isInViewport = 
+            elementRect.top >= marginTop && 
+            elementRect.bottom <= window.innerHeight;
+
+        if (isInViewport) {
+            element.focus();
+        } else {
+            element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            await delay(400) //wait 400ms
+            element.focus()
+        }
+
+        resolve()
+    }
+  })
+}
+
+export const  shakeElement = (target, duration = 0.5) => {
   const element = document.getElementById(target);
 
-  if (element) {
-      const collapsibleParent = element.closest('.collapsible');
-
-      // Check if the parent has data-opened set to false
-      if (collapsibleParent && collapsibleParent.dataset.opened === "false") {
-          const toggleButton = collapsibleParent.querySelector('button');
-          if (toggleButton) {
-              toggleButton.click();
-          }
-      }
-
-      // Allow time for the collapsible to expand before scrolling
-      setTimeout(() => {
-          const elementRect = element.getBoundingClientRect();
-
-          // Check if the element is already in the viewport
-          const isInViewport = 
-              elementRect.top >= marginTop && 
-              elementRect.bottom <= window.innerHeight;
-
-          if (isInViewport) {
-              element.focus();
-          } else {
-              element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-              setTimeout(() => element.focus(), 400); 
-          }
-      }, 300)
+  if (!element) {
+    return;
   }
+
+  // Add the shake class
+  element.classList.add('shake');
+
+  // Remove the shake class after the duration ends
+  setTimeout(() => {
+    element.classList.remove('shake');
+  }, duration * 1000);
 }

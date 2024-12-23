@@ -108,7 +108,6 @@
 
                   <FormInput id="location" :required="isFieldRequired('location')" name="location" :label="fieldLabels['location'].long" :placeholder="fieldLabels['location'].description" v-model="location"
                     :error="errors.location" />
-
                 </div>
               </Collapsible>
               
@@ -158,7 +157,7 @@
 // review all fields
 // allow to select text and apply AI changes
 // adding back-end API CRUD operations
-// when scroll to visible element shake it
+// when scroll to visible element shake it - x
 // adding opt phone number verification https://chatgpt.com/share/6767432b-3a48-8006-a091-4544d72527cd
 // adding price & location fields -- location variable create in this component
 // adding scrolling buttons
@@ -169,13 +168,13 @@
 // auto-generate facilities & characterhistics
 // make different color for generated description
 // for location show that map is on right side
-// use tone as dropdown to the same button
+// use tone as dropdown to the same button - x
 // adding location field in form with text pointing to the map
 
 import { useForm, useField } from 'vee-validate';
 import * as yup from 'yup';
 
-import { distributeArray, scrollToElement, setHead } from '../utils';
+import { distributeArray, scrollToElement, setHead, shakeElement } from '../utils';
 import { generateDescription } from '../api/create'
 
 setHead('Listează-ți Proprietatea Gratuit', 'Adaugă anunțul tău imobiliar în câteva minute! Prezintă-ți proprietatea unui public larg de cumpărători și chiriași. Platformă ușor de utilizat pentru vânzare, închiriere sau leasing.')
@@ -416,7 +415,7 @@ const schema = yup.object({
   transactionType: yup.mixed().oneOf(['sell', 'rent']),
   selectedFacilities: yup.array().of(yup.string()).optional().nullable(),
 
-  description: yup.string().required('Descrierea este obligatorie').min(100, 'Minim 100 de caractere').max(500, 'Maximum 500 de caractere'),
+  description: yup.string().required('Descrierea este obligatorie').min(100, 'Este nevoie de minim 100 de caractere').max(500, 'Maximum 500 de caractere'),
   images: yup
     .array()
     .of(
@@ -537,9 +536,15 @@ const getAllRequiredFields = () => {
   })
 }
 
+const fieldsToBeExcludedFromTimeline = () => {
+  return ['terms_and_conditions']
+}
+
 // Utility function to get all fields and statuses
 const getAllFieldStatuses = () => {
-  return getAllRequiredFields().map((field) => {
+  return getAllRequiredFields()
+  .filter(el => ! fieldsToBeExcludedFromTimeline().includes(el))
+  .map((field) => {
     return {
       id: field,
       label: fieldLabels?.[field]?.['short'] || field,
@@ -566,13 +571,14 @@ const launchConfetti = () => {
 const onSubmit = handleSubmit((values) => {
   console.log('Submitted:', values);
   launchConfetti()
-}, ({ errors }) => {
+}, async({ errors }) => {
   const orderedFields = Object.keys(initialValues)
   const requiredFields = getAllRequiredFields()
   const errorsOnSubmit = Object.keys(errors).filter(el => requiredFields.includes(el)).sort((a, b) => orderedFields.indexOf(a) - orderedFields.indexOf(b));
 
   if(errorsOnSubmit.length) {
-    scrollToElement(errorsOnSubmit[0])
+    await scrollToElement(errorsOnSubmit[0])
+    shakeElement(errorsOnSubmit[0])
   }
 });
 
@@ -614,11 +620,12 @@ const { value: terms_and_conditions } = useField('terms_and_conditions');
 
 const isAiDescriptionGenerating = ref(false)
 const aiGeneratedDescription = ref(null)
+const isDescriptionDirty = ref(false)
 
 const generateDropDownClass = computed(() => {
-  if (description?.value?.length < 7 || isAiDescriptionGenerating?.value) {
+  if ((description?.value?.length < 7 || isAiDescriptionGenerating?.value) && !isDescriptionDirty.value) {
       return 'bg-gray-300 hover:bg-gray-350 text-gray-800';
-    } else if (description?.value.length >= 7 && !isAiDescriptionGenerating.value) {
+    } else if ((description?.value.length >= 7 && !isAiDescriptionGenerating.value) && isDescriptionDirty.value) {
       return "bg-blue-700 hover:bg-blue-700 text-gray-200";
     }
     return '';
@@ -634,6 +641,7 @@ const handleDiscard = () => {
 
 const handleApply = () => {
   setDescription(aiGeneratedDescription.value)
+  isDescriptionDirty.value = false
   aiGeneratedDescription.value = null
 }
 
@@ -645,6 +653,7 @@ const computedDescription = computed(({
     if (aiGeneratedDescription.value?.length) {
       aiGeneratedDescription.value = newValue
     } else {
+      isDescriptionDirty.value = true
       setDescription(newValue)
     }
   }
@@ -653,7 +662,6 @@ const computedDescription = computed(({
 const handleAutoGenerate = async () => {
   try {
     if(! description.value?.length || description.value?.length < 7) return
-
     isAiDescriptionGenerating.value = true
 
     const { data } = await generateDescription({
@@ -665,6 +673,7 @@ const handleAutoGenerate = async () => {
     // show erro message
   } finally {
     isAiDescriptionGenerating.value = false
+    isDescriptionDirty.value = false
   }
 }
 </script>

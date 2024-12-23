@@ -18,7 +18,7 @@
                         <span class="text-xs" v-else>{{ index + 1 }}</span>
                     </span>
                     <div class="block">
-                        <h4 @click="() => scrollToElement(field.id)" v-tooltip="{ content: field.description, delay: { show: 750, hide: 0 } }" :title="field.description" :class="{
+                        <h4 @click="() => handleScroll(field.id)" v-tooltip="{ content: field.description, delay: { show: 750, hide: 0 } }" :title="field.description" :class="{
                             'text-xs cursor-pointer hover:underline': true,
                             'text-green-600': field.status === 'filled',
                             'text-red-600': field.status === 'errored',
@@ -35,7 +35,7 @@
 
 <script setup>
 import { Check } from 'lucide-vue-next';
-import { scrollToElement } from '../utils';
+import { scrollToElement, shakeElement } from '../utils';
 
 const props = defineProps({
     fields: {
@@ -44,4 +44,9 @@ const props = defineProps({
         default: () => [],
     },
 })
+
+const handleScroll = async(target) => {
+    await scrollToElement(target)
+    shakeElement(target)
+}
 </script>
