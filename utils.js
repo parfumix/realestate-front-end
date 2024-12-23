@@ -4,7 +4,7 @@ export const getRomanianBounds = (flat = false) => {
       [43.6, 20.2],
       [48.3, 29.7]
     ]
-  }
+}
 
   export const removeEmptyValues = (obj) => {
     if(! obj) return {}
@@ -68,7 +68,6 @@ export const chunkArray = (array, size) => {
   return chunks;
 }
 
-
 export const distributeArray = (array, groups) => {
   if (groups <= 0) {
     throw new Error("Number of groups must be greater than 0");
@@ -83,7 +82,6 @@ export const distributeArray = (array, groups) => {
 
   return result;
 };
-
 
 export const scrollToElement = (target, marginTop = 30) => {
   const element = document.getElementById(target);

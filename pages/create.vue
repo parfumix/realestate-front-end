@@ -44,14 +44,12 @@
                   </template>
                   <template #right-actions>
                     <div class="flex items-center">
-                      <div class="mr-4 flex items-center space-x-2">
-                        <p @click="handleDiscard" v-if="aiGeneratedDescription?.length && !isAiDescriptionGenerating" class="flex items-center cursor-pointer">
-                          <Trash size="14" class="mr-1" />
-                          Renunță
+                      <div class="mr-4 flex items-center space-x-4">
+                        <p @click="handleDiscard" v-if="aiGeneratedDescription?.length && !isAiDescriptionGenerating" class="flex items-center cursor-pointer text-sm">
+                          <Trash size="14" class="mr-1 text-red-800" /> Renunță
                         </p>
-                        <p @click="handleApply" v-if="aiGeneratedDescription?.length && !isAiDescriptionGenerating" class="flex items-center cursor-pointer">
-                          <Check size="14" class="mr-1" />
-                          Aplică
+                        <p @click="handleApply" v-if="aiGeneratedDescription?.length && !isAiDescriptionGenerating" class="flex items-center cursor-pointer text-sm">
+                          <Check size="14" class="mr-1 text-green-800" /> Aplică
                         </p>
                       </div>
 
@@ -85,7 +83,7 @@
               </Collapsible>
 
               <!-- Rooms and Details -->
-              <Collapsible :isOpened="false" title="Caracteristici" class="mt-4 collapsible">
+              <Collapsible :isOpened="true" title="Caracteristici" class="mt-4 collapsible">
                 <div class="mt-4 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-2">
                   <FormSelect id="roomCount" :required="isFieldRequired('roomCount')" name="roomCount" :options="roomCountOptions" :label="fieldLabels['roomCount'].long"
                     placeholder="Select" v-model="roomCount" :error="errors.roomCount" />
@@ -619,9 +617,9 @@ const aiGeneratedDescription = ref(null)
 
 const generateDropDownClass = computed(() => {
   if (description?.value?.length < 7 || isAiDescriptionGenerating?.value) {
-      return 'bg-gray-300 hover:bg-gray-350';
+      return 'bg-gray-300 hover:bg-gray-350 text-gray-800';
     } else if (description?.value.length >= 7 && !isAiDescriptionGenerating.value) {
-      return "bg-blue-700 hover:bg-blue-700";
+      return "bg-blue-700 hover:bg-blue-700 text-gray-200";
     }
     return '';
 })

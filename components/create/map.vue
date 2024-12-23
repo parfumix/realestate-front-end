@@ -3,7 +3,7 @@
         <!-- Address Input -->
         <div class="flex flex-col items-center p-4 absolute top-0 inset-0 z-[9999] h-[50px]">
             <div class="w-full relative rounded-md shadow-sm focus-within:ring-2 focus-within:ring-gray-500 focus-within:ring-offset-4">
-                <input id="address" autocomplete="off" v-model="address" @input="debouncedSearchAddress" class="border-0 rounded w-full p-2 pr-[40px] ring-1 ring-gray-400 focus:ring-0	focus-within:outline-0 focus-within:outline-none" placeholder="Introduceți locația exactă a adresei dumneavoastră.." />
+                <input :id="id" autocomplete="off" v-model="address" @input="debouncedSearchAddress" class="border-0 rounded w-full p-2 pr-[40px] ring-1 ring-gray-400 focus:ring-0	focus-within:outline-0 focus-within:outline-none" placeholder="Introduceți locația exactă a adresei dumneavoastră.." />
                 <div v-if="isLoading" class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
                     <LoaderCircle class="animate-spin -ml-1 h-5 w-5 text-black" />
                 </div>
@@ -29,11 +29,22 @@ import "leaflet/dist/leaflet.css";
 
 import { getRomanianBounds } from '../utils'
 
+const props = defineProps({
+    id: {
+        type: String, 
+        required: true
+    },
+    error: {
+        type: String, 
+        required: false,
+        default: null
+    }
+})
+
 const isLoading = ref(false);
 const suggestions = ref([]);
 
 const userLocation = JSON.parse(localStorage.getItem('userLocation') ?? '{}')
-
 const selectedLocation = ref({ lat: userLocation?.lat ?? 44.4268, lng: userLocation?.lng ?? 26.1025 });
 const address = ref(userLocation?.street);
 

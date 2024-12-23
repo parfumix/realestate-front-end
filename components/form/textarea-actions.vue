@@ -15,14 +15,14 @@
             ]" @input="e => handleInput(e.target.value)" />
 
             <!-- Spacer element to match the height of the toolbar -->
-            <div class="py-2 border-t border-gray-400" aria-hidden="true">
+            <div class="py-2 " aria-hidden="true">
                 <div class="py-px">
                     <div class="h-9"></div>
                 </div>
             </div>
         </div>
 
-        <div class="absolute inset-x-0 bottom-0 flex justify-between items-center py-1 px-4">
+        <div class="absolute border-t border-gray-400 inset-x-0 bottom-0 flex justify-between items-center py-2 px-4">
             <slot name="left-actions"></slot>
             <slot name="right-actions"></slot>
         </div>
