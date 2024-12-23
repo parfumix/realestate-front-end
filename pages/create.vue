@@ -40,9 +40,7 @@
                   :error="errors.description"
                 >
                   <template #left-actions>
-                    <div class="flex flex-row my-2 justify-between">
-                        <FormDropdown @click="handleSelectTone" :defaultItem="defaultTone" :buttonLabel="defaultTone ? (toneItems.find(el => el.value == defaultTone)?.label ?? 'Alege tonul') : 'Alege tonul'" :menuItems="toneItems" />
-                      </div>
+                    <div></div>
                   </template>
                   <template #right-actions>
                     <div class="flex items-center">
@@ -57,10 +55,16 @@
                         </p>
                       </div>
 
-                      <FormButton :disabled="(isAiDescriptionGenerating || description?.length < 7) ? true : false" @onClick="handleAutoGenerate" :class="[{'bg-gray-300 hover:bg-gray-350': description?.length < 7 || isAiDescriptionGenerating, 'bg-blue-700 hover:bg-blue-700': description?.length >= 7 && !isAiDescriptionGenerating}, 'flex items-center text-white']">
+                      <FormButtonDropdown
+                        :disabled="(isAiDescriptionGenerating || description?.length < 7) ? true : false" 
+                        :btnClass="generateDropDownClass"
+                        @onClick="handleAutoGenerate"
+                        @onSecondaryClick="handleSelectTone"
+                        :options="toneItems"
+                      >
                         <RefreshCcw size="14" :class="[{ 'animate-spin': isAiDescriptionGenerating }, 'mr-1 lucide lucide-rotate-ccw']" />
                         {{ isAiDescriptionGenerating ? 'Se generează' : (aiGeneratedDescription?.length ? 'Încercați din nou' : 'Generează cu AI') }}
-                      </FormButton>
+                      </FormButtonDropdown>
                     </div>
                   </template>
                 </FormTextareaActions>
@@ -103,6 +107,10 @@
 
                   <FormSelect id="apartmentCondition" name="apartmentCondition" :options="apartmentConditionOptions"
                     :label="fieldLabels['apartmentCondition'].long" placeholder="Select" v-model="apartmentCondition" :error="errors.apartmentCondition" />
+
+                  <FormInput id="location" :required="isFieldRequired('location')" name="location" :label="fieldLabels['location'].long" :placeholder="fieldLabels['location'].description" v-model="location"
+                    :error="errors.location" />
+
                 </div>
               </Collapsible>
               
@@ -138,7 +146,7 @@
     </div>
 
     <div class="w-1/2">
-      <CreateMap class="w-full h-full" />
+      <CreateMap v-model="location" id="location_map" :error="errors.location" class="w-full h-full" />
     </div>
   </main>
 </template>
@@ -159,6 +167,12 @@
 // adding moderation text & photos (photos min width & height) https://chatgpt.com/c/6768165f-b1a8-8006-80d6-d41efbb92dec
 // once ai text generated hide generate with ai button until user start typing again
 // https://shift.infinite.red/avoid-nightmares-nsfw-js-ab7b176978b1
+// if section have required fields show * required
+// auto-generate facilities & characterhistics
+// make different color for generated description
+// for location show that map is on right side
+// use tone as dropdown to the same button
+// adding location field in form with text pointing to the map
 
 import { useForm, useField } from 'vee-validate';
 import * as yup from 'yup';
@@ -235,11 +249,13 @@ const facilities = [
   { value: 'playground', label: 'Teren de joacă' },
 ]
 
-const toneItems = [
-  { value: 'professional', label: 'Ton Profesional', description: 'Descriere clară și bine structurată.' },
-  { value: 'friendly', label: 'Ton Prietenos', description: 'Ton cald și accesibil.' },
-  { value: 'luxury', label: 'Ton Lux', description: 'Elegant și exclusivist.' }
-]
+const toneItems = computed(() => {
+  return [
+    { active: defaultTone.value == 'professional' ,value: 'professional', label: 'Ton Profesional', description: 'Descriere clară și bine structurată.' },
+    { active: defaultTone.value == 'friendly' ,value: 'friendly', label: 'Ton Prietenos', description: 'Ton cald și accesibil.' },
+    { active: defaultTone.value == 'luxury' ,value: 'luxury', label: 'Ton Lux', description: 'Elegant și exclusivist.' }
+  ]
+})
 
 const floorOptions = [
   { "value": "-2", "label": "Subsol" },
@@ -372,6 +388,11 @@ const fieldLabels = {
     long: "Starea apartamentului",
     description: "Starea actuală a apartamentului, cum ar fi renovat, mobilat, semifinisat.",
   },
+  location: {
+    short: "Loc.",
+    long: "Locație",
+    description: "Adresa sau locația utilizată pentru a identifica poziția sau punctul de contact."
+  },
   email: {
     short: "Email",
     long: "Email",
@@ -452,6 +473,13 @@ const schema = yup.object({
     .optional()
     .nullable(),
 
+  // location section
+  location: yup
+    .string()
+    .required('Locația este obligatorie')
+    .min(5, 'Locația trebuie să aibă cel puțin 5 caractere')
+    .max(100, 'Locația poate avea maximum 100 de caractere'),
+
   // contact section
   email: yup.string().email('Emailul este invalid').required('Emailul este obligatoriu'),
   phone: yup
@@ -480,6 +508,7 @@ const initialValues = {
     balcony: '',
     parking: '',
     apartmentCondition: '',
+    location: '',
     email: user.value.email,
     phone: '0741123456',
     terms_and_conditions: false
@@ -572,6 +601,9 @@ const { value: balcony } = useField('balcony');
 const { value: parking } = useField('parking');
 const { value: apartmentCondition } = useField('apartmentCondition');
 
+// location section
+const { value: location } = useField('location');
+
 // contat section
 const { value: email } = useField('email');
 const { value: phone } = useField('phone');
@@ -585,10 +617,19 @@ const { value: terms_and_conditions } = useField('terms_and_conditions');
 const isAiDescriptionGenerating = ref(false)
 const aiGeneratedDescription = ref(null)
 
+const generateDropDownClass = computed(() => {
+  if (description?.value?.length < 7 || isAiDescriptionGenerating?.value) {
+      return 'bg-gray-300 hover:bg-gray-350';
+    } else if (description?.value.length >= 7 && !isAiDescriptionGenerating.value) {
+      return "bg-blue-700 hover:bg-blue-700";
+    }
+    return '';
+})
 
-const handleSelectTone = ({ value }) => {
+const handleSelectTone = (value) => {
   defaultTone.value = value
 }
+
 const handleDiscard = () => {
   aiGeneratedDescription.value = null
 }
