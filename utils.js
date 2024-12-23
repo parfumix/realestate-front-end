@@ -138,3 +138,12 @@ export const  shakeElement = (target, duration = 0.5) => {
     element.classList.remove('shake');
   }, duration * 1000);
 }
+
+export const launchConfetti = () => {
+  useNuxtApp().$confetti({
+    zIndex: 99999999,
+    particleCount: 400,
+    spread: 260,
+    origin: { x: 0.5, y: 0.5 },
+  });
+}
