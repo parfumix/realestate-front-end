@@ -1,14 +1,13 @@
 <template>
   <main class="flex flex-row space-x-2 ml-20">
-    <div class="w-1/2 flex">
-
+    <div class="lg:w-1/2 md:w-full md:mx-auto flex">
       <div class="w-5/6">
         <div class="p-6 h-[20px]">
           <h1 class="text-xl font-semibold text-gray-900">Vindeți o proprietate?</h1>
           <p class="mt-1 text-sm text-gray-600">Urmează paşii, e mai simplu ca niciodată.</p>
         </div>
 
-        <form @submit.prevent="onSubmit" class="no-scrollbar overflow-auto h-[calc(100vh-130px)] mt-[30px]">
+        <form @submit.prevent="onSubmit" class="no-scrollbar scrollGradient overflow-auto h-[calc(100vh-130px)] mt-[30px]">
           <div class="space-y-12 px-6 pb-4">
             <div class="border-b border-gray-900/10 pb-6">
               <!-- Property Type -->
@@ -142,7 +141,7 @@
       </div>
     </div>
 
-    <div class="w-1/2">
+    <div class="lg:w-1/2">
       <CreateMap v-model="location" id="location_map" :error="errors.location" class="w-full h-full" />
     </div>
   </main>
@@ -150,8 +149,7 @@
 
 <script setup>
 //TODO adding moderation - https://chatgpt.com/share/6756fcb7-6464-8006-9453-d5f41b730e1e
-//TODO https://preline.co//docs/confetti.html
-
+//TODO https://preline.co//docs/confetti.html - x
 // fix textarea
 // save & edit item
 // review all fields
@@ -160,16 +158,16 @@
 // when scroll to visible element shake it - x
 // adding opt phone number verification https://chatgpt.com/share/6767432b-3a48-8006-a091-4544d72527cd
 // adding price & location fields -- location variable create in this component
-// adding scrolling buttons
+// adding scrolling buttons & shadow // https://css-scroll-shadows.vercel.app/?bgColor=ffffff&shadowColor=666666&pxSize=34
 // adding moderation text & photos (photos min width & height) https://chatgpt.com/c/6768165f-b1a8-8006-80d6-d41efbb92dec
 // once ai text generated hide generate with ai button until user start typing again
 // https://shift.infinite.red/avoid-nightmares-nsfw-js-ab7b176978b1
-// if section have required fields show * required
 // auto-generate facilities & characterhistics
 // make different color for generated description
-// for location show that map is on right side
+// for location show that map is on right side, autocomplete
 // use tone as dropdown to the same button - x
 // adding location field in form with text pointing to the map
+// hide sidebar if responsive mobile
 
 import { useForm, useField } from 'vee-validate';
 import * as yup from 'yup';
@@ -177,7 +175,10 @@ import * as yup from 'yup';
 import { distributeArray, scrollToElement, setHead, shakeElement } from '../utils';
 import { generateDescription } from '../api/create'
 
-setHead('Listează-ți Proprietatea Gratuit', 'Adaugă anunțul tău imobiliar în câteva minute! Prezintă-ți proprietatea unui public larg de cumpărători și chiriași. Platformă ușor de utilizat pentru vânzare, închiriere sau leasing.')
+setHead(
+  'Listează-ți Proprietatea Gratuit', 
+  'Adaugă anunțul tău imobiliar în câteva minute! Prezintă-ți proprietatea unui public larg de cumpărători și chiriași. Platformă ușor de utilizat pentru vânzare, închiriere sau leasing.'
+)
 
 import { Trash, Check, RefreshCcw } from 'lucide-vue-next'
 
@@ -677,3 +678,17 @@ const handleAutoGenerate = async () => {
   }
 }
 </script>
+
+<style >
+.scrollGradient {
+  background: 
+    linear-gradient(#ffffff 33%, rgba(255,255,255, 0)),
+    linear-gradient(rgba(255,255,255, 0), #ffffff 66%) 0 100%,
+    radial-gradient(farthest-side at 50% 0, rgba(102,102,102, 0.5), rgba(0,0,0,0)),
+    radial-gradient(farthest-side at 50% 100%, rgba(102,102,102, 0.5), rgba(0,0,0,0)) 0 100%;
+  background-color: #ffffff;
+  background-repeat: no-repeat;
+  background-attachment: local, local, scroll, scroll;
+  background-size: 100% 102px, 100% 102px, 100% 34px, 100% 34px;
+}
+</style>
