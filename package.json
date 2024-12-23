@@ -10,10 +10,12 @@
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
+    "@headlessui/vue": "^1.7.23",
     "@heroicons/vue": "^2.1.5",
     "@nuxtjs/supabase": "^1.4.0",
     "@pinia/nuxt": "^0.5.4",
     "canvas-confetti": "^1.9.3",
+    "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
     "floating-vue": "^5.2.2",
     "leaflet": "^1.9.4",
