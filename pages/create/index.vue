@@ -420,87 +420,89 @@
     },
   };
   
-  const schema = yup.object({
-    // transaction type
-    propertyType: yup.mixed().oneOf(['apartment', 'home', 'comercial', 'land']),
-    transactionType: yup.mixed().oneOf(['sell', 'rent']),
-    selectedFacilities: yup.array().of(yup.string()).optional().nullable(),
-  
-    description: yup.string().required('Descrierea este obligatorie').min(100, 'Este nevoie de minim 100 de caractere').max(500, 'Maximum 500 de caractere'),
-    images: yup
-      .array()
-      .of(
-        yup
+  const schema = computed(() => {
+    return yup.object({
+        // transaction type
+        propertyType: yup.mixed().oneOf(['apartment', 'home', 'comercial', 'land']),
+        transactionType: yup.mixed().oneOf(['sell', 'rent']),
+        selectedFacilities: yup.array().of(yup.string()).optional().nullable(),
+      
+        description: yup.string().required('Descrierea este obligatorie').min(100, 'Este nevoie de minim 100 de caractere').max(500, 'Maximum 500 de caractere'),
+        images: yup
+          .array()
+          .of(
+            yup
+              .mixed()
+              .test('fileType', 'Sunt permise doar fișierele PNG și JPEG.', (value) => {
+                return value.file && ['image/png', 'image/jpeg'].includes(value.file.type);
+              })
+              .test('fileSize', 'Dimensiunea fișierului trebuie să fie mai mică de 5 MB.', (value) => {
+                return value.file && value.file.size <= 5 * 1024 * 1024; // 5MB
+              })
+          )
+          .min(1, 'Este necesară cel puțin o imagine.')
+          .required('Este necesară cel puțin o imagine.'),
+      
+        // characteristics
+        roomCount: yup
+          .number()
+          .typeError('Numărul de camere trebuie să fie un număr')
+          .required('Numărul de camere este obligatoriu'),
+        
+        totalArea: yup.number().typeError('Trebuie să fie un număr').required('Suprafața totală este obligatorie'),
+        floor: yup.number().typeError('Trebuie să fie un număr').required('Etajul este obligatoriu'),
+        surface: yup.number().typeError('Trebuie să fie un număr').required('Suprafața utilă este obligatorie'),
+        
+        balcony: yup
+          .number()
+          .optional()
+          .transform((value, originalValue) => (originalValue === "" ? null : value))
+          .nullable(),
+        parking: yup
           .mixed()
-          .test('fileType', 'Sunt permise doar fișierele PNG și JPEG.', (value) => {
-            return value.file && ['image/png', 'image/jpeg'].includes(value.file.type);
-          })
-          .test('fileSize', 'Dimensiunea fișierului trebuie să fie mai mică de 5 MB.', (value) => {
-            return value.file && value.file.size <= 5 * 1024 * 1024; // 5MB
-          })
-      )
-      .min(1, 'Este necesară cel puțin o imagine.')
-      .required('Este necesară cel puțin o imagine.'),
-  
-    // characteristics
-    roomCount: yup
-      .number()
-      .typeError('Numărul de camere trebuie să fie un număr')
-      .required('Numărul de camere este obligatoriu'),
-    
-    totalArea: yup.number().typeError('Trebuie să fie un număr').required('Suprafața totală este obligatorie'),
-    floor: yup.number().typeError('Trebuie să fie un număr').required('Etajul este obligatoriu'),
-    surface: yup.number().typeError('Trebuie să fie un număr').required('Suprafața utilă este obligatorie'),
-    
-    balcony: yup
-      .number()
-      .optional()
-      .transform((value, originalValue) => (originalValue === "" ? null : value))
-      .nullable(),
-    parking: yup
-      .mixed()
-      .oneOf(['open', 'garage', 'covered', 'underground'])
-      .optional()
-      .transform((value, originalValue) => (originalValue === "" ? null : value))
-      .nullable(),
-    apartmentCondition: yup
-      .mixed()
-      .oneOf([
-        'demolition-house',
-        'custom-design',
-        'no-renovation',
-        'in-use',
-        'unfinished-construction',
-        'needs-repair',
-        'gray-finish',
-        'white-finish',
-        'cosmetic-renovation',
-        'euro-renovation',
-      ])
-      .transform((value, originalValue) => (originalValue === "" ? null : value))
-      .optional()
-      .nullable(),
-  
-    // location section
-    location: yup
-      .string()
-      .required('Locația este obligatorie')
-      .min(5, 'Locația trebuie să aibă cel puțin 5 caractere')
-      .max(100, 'Locația poate avea maximum 100 de caractere'),
-  
-    // contact section
-    email: yup.string().email('Emailul este invalid').required('Emailul este obligatoriu'),
-    phone: yup
-      .string()
-      .matches(
-        /^(07\d{8}|02\d{7}|03\d{7})$/,
-        'Numărul de telefon trebuie să fie valid și să aibă 10 cifre'
-      )
-      .required('Numărul de telefon este obligatoriu'),
-  
-    terms_and_conditions: yup.boolean()
-      .oneOf([true], 'Trebuie să acceptați Termenii și Condițiile')
-      .required('Trebuie să acceptați Termenii și Condițiile'),
+          .oneOf(['open', 'garage', 'covered', 'underground'])
+          .optional()
+          .transform((value, originalValue) => (originalValue === "" ? null : value))
+          .nullable(),
+        apartmentCondition: yup
+          .mixed()
+          .oneOf([
+            'demolition-house',
+            'custom-design',
+            'no-renovation',
+            'in-use',
+            'unfinished-construction',
+            'needs-repair',
+            'gray-finish',
+            'white-finish',
+            'cosmetic-renovation',
+            'euro-renovation',
+          ])
+          .transform((value, originalValue) => (originalValue === "" ? null : value))
+          .optional()
+          .nullable(),
+      
+        // location section
+        location: yup
+          .string()
+          .required('Locația este obligatorie')
+          .min(5, 'Locația trebuie să aibă cel puțin 5 caractere')
+          .max(100, 'Locația poate avea maximum 100 de caractere'),
+      
+        // contact section
+        email: yup.string().email('Emailul este invalid').required('Emailul este obligatoriu'),
+        phone: yup
+          .string()
+          .matches(
+            /^(07\d{8}|02\d{7}|03\d{7})$/,
+            'Numărul de telefon trebuie să fie valid și să aibă 10 cifre'
+          )
+          .required('Numărul de telefon este obligatoriu'),
+      
+        terms_and_conditions: yup.boolean()
+          .oneOf([true], 'Trebuie să acceptați Termenii și Condițiile')
+          .required('Trebuie să acceptați Termenii și Condițiile'),
+    })
   });
   
   const initialValues = {
@@ -538,7 +540,7 @@
   };
   
   const isFieldRequired = fieldName => {
-    return ! schema.describe().fields[fieldName]?.optional || false
+    return ! schema.value.describe().fields[fieldName]?.optional || false
   }
   
   const getAllRequiredFields = () => {
