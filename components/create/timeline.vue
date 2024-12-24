@@ -7,7 +7,7 @@
                 'after:bg-green-600': field.status === 'filled',
                 'after:bg-gray-300': field.status !== 'filled',
             }">
-                <a @click="() => scrollToElement(field.id)" class="flex items-center font-medium w-full cursor-pointer">
+                <a @click="() => handleScroll(field.id)" class="flex items-center font-medium w-full cursor-pointer">
                     <span v-tooltip="field.status === 'errored' ? field.error : null" :title="field.status === 'errored' ? field.error : null" :class="{
                         'w-6 h-6 flex justify-center items-center mr-3 text-sm rounded-full border': true,
                         'bg-green-600 text-white border-transparent': field.status === 'filled',
