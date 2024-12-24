@@ -59,7 +59,7 @@
       </div>
   
       <div class="lg:w-1/2">
-        <!-- <CreateMap v-model="location" id="location_map" :error="errors.location" class="w-full h-full" /> -->
+        <CreateElementsLocationMap :title="fieldsMeta['location'].long" :description="fieldsMeta['location'].description" name="location" />
       </div>
     </main>
   </template>
