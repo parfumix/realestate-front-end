@@ -84,7 +84,7 @@
   // use tone as dropdown to the same button - x
   // adding location field in form with text pointing to the map
   // hide sidebar if responsive mobile
-  // change characteristics & facilites based on property type
+  // change characteristics & facilites based on property type - x
   
   import { useForm } from 'vee-validate'
   import { delay, scrollToElement, setHead, shakeElement } from '../../utils'
@@ -147,6 +147,7 @@
       description: "Suprafața utilizabilă efectivă a spațiului, excluzând anexele.",
     },
     floor: {
+      required: true,
       short: "Etaj",
       long: "Etaj",
       description: "Nivelul etajului unde se află proprietatea (ex: parter, etaj 1, mansardă).",
