@@ -1,5 +1,4 @@
 <template>
-
     <FormInput id="phone" :required="true" :name="name" :label="title" placeholder="Telefon" v-model="value"
         :error="errorMessage" />
 </template>

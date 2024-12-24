@@ -65,13 +65,16 @@
   </template>
   
   <script setup>
-  // adding moderation - https://chatgpt.com/share/6756fcb7-6464-8006-9453-d5f41b730e1e
   // adding https://preline.co//docs/confetti.html - x
+  // when scroll to visible element shake it - x
+  // use tone as dropdown to the same button - x
+  // change characteristics & facilites based on property type - x
+
+  // adding moderation - https://chatgpt.com/share/6756fcb7-6464-8006-9453-d5f41b730e1e
   // fix textarea
   // save & edit item
   // allow to select text and apply AI changes
   // adding back-end API CRUD operations
-  // when scroll to visible element shake it - x
   // adding opt phone number verification https://chatgpt.com/share/6767432b-3a48-8006-a091-4544d72527cd
   // adding price & location fields -- location variable create in this component
   // adding scrolling buttons & shadow // https://css-scroll-shadows.vercel.app/?bgColor=ffffff&shadowColor=666666&pxSize=34
@@ -81,10 +84,9 @@
   // auto-generate facilities & characterhistics
   // make different color for generated description
   // for location show that map is on right side, autocomplete
-  // use tone as dropdown to the same button - x
   // adding location field in form with text pointing to the map
   // hide sidebar if responsive mobile
-  // change characteristics & facilites based on property type - x
+  // adding cloudflare protection
   
   import { useForm } from 'vee-validate'
   import { delay, scrollToElement, setHead, shakeElement } from '../../utils'
