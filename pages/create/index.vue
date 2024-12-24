@@ -18,7 +18,7 @@
   
                 <!-- Facilities -->
                 <Collapsible title="Facilitiati" class="mt-4 collapsible">
-                  <CreateElementsFacilities class="mt-4" name="selectedFacilities" />
+                  <CreateElementsFacilities name="selectedFacilities" />
                 </Collapsible>
   
                 <!-- Rooms and Details -->
@@ -33,8 +33,9 @@
                 
                 <!-- Contact Details -->
                 <Collapsible :isOpened="true" title="Persoana de contact" class="mt-4 collapsible">
-                  <CreateElementsEmail :title="fieldsMeta['email'].long" name="email" />
-                  <CreateElementsPhone :title="fieldsMeta['phone'].long" name="phone" />
+                  <CreateElementsPrice class="mt-2" :title="fieldsMeta?.['price'].long" name="price" />
+                  <CreateElementsEmail class="mt-2" :title="fieldsMeta?.['email'].long" name="email" />
+                  <CreateElementsPhone class="mt-2" :title="fieldsMeta?.['phone'].long" name="phone" />
                 </Collapsible>
 
                 <div class="mt-4">
@@ -175,6 +176,12 @@
       long: "Locație",
       description: "Adresa sau locația utilizată pentru a identifica poziția sau punctul de contact."
     },
+    price: {
+      required: true,
+      short: "Preț",
+      long: "Prețul proprietății",
+      description: "Costul proprietății, exprimat în moneda specificată.",
+    },
     email: {
       required: true,
       short: "Email",
@@ -209,6 +216,7 @@
       parking: '',
       apartmentCondition: '',
       location: '',
+      price: '',
       email: user.value.email,
       phone: '0741123456',
       terms_and_conditions: false
@@ -227,13 +235,9 @@
     return 'empty';
   };
   
-  const isFieldRequired = fieldName => {
-    return fieldsMeta[fieldName]?.required || false
-  }
-  
   const getAllRequiredFields = () => {
-    return Object.keys(values).filter(fieldName => {
-      return isFieldRequired(fieldName)
+    return Object.keys(fieldsMeta).filter(fieldName => {
+      return fieldsMeta[fieldName]?.required || false
     })
   }
   
@@ -268,6 +272,7 @@
   }, async({ errors }) => {
     const orderedFields = Object.keys(initialValues)
     const requiredFields = getAllRequiredFields()
+
     const errorsOnSubmit = Object.keys(errors).filter(el => requiredFields.includes(el)).sort((a, b) => orderedFields.indexOf(a) - orderedFields.indexOf(b));
   
     if(errorsOnSubmit.length) {
