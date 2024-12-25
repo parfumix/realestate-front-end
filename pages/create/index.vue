@@ -76,13 +76,15 @@
   // save & edit item
   // allow to select text and apply AI changes
   // adding back-end API CRUD operations
+
   // adding opt phone number verification https://chatgpt.com/share/6767432b-3a48-8006-a091-4544d72527cd
   // adding price & location fields -- location variable create in this component
   // adding scrolling buttons & shadow // https://css-scroll-shadows.vercel.app/?bgColor=ffffff&shadowColor=666666&pxSize=34
   // adding moderation text & photos (photos min width & height) https://chatgpt.com/c/6768165f-b1a8-8006-80d6-d41efbb92dec
   // once ai text generated hide generate with ai button until user start typing again
-  // https://shift.infinite.red/avoid-nightmares-nsfw-js-ab7b176978b1
   // auto-generate facilities & characterhistics
+
+  // https://shift.infinite.red/avoid-nightmares-nsfw-js-ab7b176978b1
   // make different color for generated description
   // for location show that map is on right side, autocomplete
   // adding location field in form with text pointing to the map
@@ -206,8 +208,10 @@
       propertyType: 'apartment',
       transactionType: 'sell',
       description: 'Apartament modern situat în inima orașului, perfect pentru cei care doresc să îmbine confortul cu accesibilitatea. Cu un design contemporan și finisaje de calitate, această locuință este ideală pentru familii sau tineri profesioniști.',
+
       images: [],
       selectedFacilities: [],
+
       roomCount: '',
       totalArea: '',
       surface: '',
@@ -216,6 +220,7 @@
       parking: '',
       apartmentCondition: '',
       location: '',
+      
       price: '',
       email: user.value.email,
       phone: '0741123456',
@@ -236,9 +241,11 @@
   };
   
   const getAllRequiredFields = () => {
-    return Object.keys(fieldsMeta).filter(fieldName => {
+    const orderedFields = Object.keys(initialValues)
+
+    return Object.keys(values).filter(fieldName => {
       return fieldsMeta[fieldName]?.required || false
-    })
+    }).sort((a, b) => orderedFields.indexOf(a) - orderedFields.indexOf(b));
   }
   
   const fieldsToBeExcludedFromTimeline = () => {
@@ -263,7 +270,7 @@
   const fieldStatuses = computed(() => {
     return getAllFieldStatuses()
   })
-  
+
   const onSubmit = handleSubmit(async(values) => {
     console.log('Submitted:', values);
 
