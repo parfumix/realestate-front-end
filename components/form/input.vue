@@ -4,12 +4,15 @@
       <span v-if="required" class="text-red-600">*</span> {{ label }}
     </label>
     <div class="relative mt-2 rounded-md shadow-sm">
+      <div class="absolute inset-y-0 left-0 flex items-center">
+        <slot name="prefix"></slot>
+      </div>
       <input
         :type="type"
         :name="name"
         :id="id"
         :class="[
-          'scroll-my-12 block w-full rounded-md border-0 py-1.5 pr-10 sm:text-sm sm:leading-6 text-gray-900',
+          inputClass,
           error ? 'ring-1 ring-inset ring-red-300 placeholder:text-red-300 focus:ring-1 focus:ring-inset focus:ring-red-500' : ' ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-inset focus:ring-gray-400'
         ]"
         :placeholder="placeholder"
@@ -30,9 +33,10 @@
 
 <script setup>
 import { ExclamationCircleIcon } from '@heroicons/vue/20/solid'
+import { twMerge } from 'tailwind-merge';
 
 // Props
-defineProps({
+const props = defineProps({
   label: {
     type: String,
     required: true
@@ -50,6 +54,10 @@ defineProps({
     required: false, 
     default: false
   },
+  inputClass: {
+    type: String,
+    default: ''
+  },
   name: {
     type: String,
     required: true
@@ -64,9 +72,23 @@ defineProps({
   }
 })
 
+const inputClass = computed(() => {
+    return twMerge('scroll-my-12 block w-full rounded-md border-0 py-1.5 pr-10 sm:text-sm sm:leading-6 text-gray-900', props.inputClass);
+})
+
 const model = defineModel()
 const handleInput = value => {
   model.value = value
 }
 
 </script>
+
+<style scoped>
+input[type=number]::-webkit-inner-spin-button, 
+input[type=number]::-webkit-outer-spin-button { 
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    margin: 0; 
+}
+</style>
