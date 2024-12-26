@@ -215,7 +215,7 @@
       
       price: '',
 
-      phones: [],
+      phone: '',
       terms_and_conditions: false
   }
   
