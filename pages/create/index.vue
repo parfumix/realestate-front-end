@@ -34,7 +34,6 @@
                 <!-- Contact Details -->
                 <Collapsible :isOpened="true" title="Persoana de contact" class="mt-4 collapsible">
                   <CreateElementsPrice class="mt-2" :title="fieldsMeta?.['price'].long" name="price" />
-                  <CreateElementsEmail class="mt-2" :title="fieldsMeta?.['email'].long" name="email" />
                   <CreateElementsPhone class="mt-2" :title="fieldsMeta?.['phone'].long" name="phone" />
                 </Collapsible>
 
@@ -99,7 +98,6 @@
     'Adaugă anunțul tău imobiliar în câteva minute! Prezintă-ți proprietatea unui public larg de cumpărători și chiriași. Platformă ușor de utilizat pentru vânzare, închiriere sau leasing.'
   )
   
-  const { user } = useAuthService()
   const router = useRouter()
   
   // Field labels for real estate ads with short, long, and descriptive text
@@ -184,12 +182,6 @@
       long: "Prețul proprietății",
       description: "Costul proprietății, exprimat în moneda specificată.",
     },
-    email: {
-      required: true,
-      short: "Email",
-      long: "Email",
-      description: "Adresa de email utilizată pentru a fi contactat.",
-    },
     phone: {
       required: true,
       short: "Tel.",
@@ -222,8 +214,8 @@
       location: '',
       
       price: '',
-      email: user.value.email,
-      phone: '0741123456',
+
+      phones: [],
       terms_and_conditions: false
   }
   
