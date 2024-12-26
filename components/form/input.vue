@@ -11,6 +11,7 @@
         <input
           :type="type"
           :name="name"
+          :disabled="disabled"
           :id="id"
           :class="[
             inputClass,
@@ -51,6 +52,10 @@ const props = defineProps({
   id: {
     type: String,
     required: true
+  },
+  disabled: {
+    type: Boolean,
+    required: false
   },
   required: {
     type: Boolean,
