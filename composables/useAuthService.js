@@ -1,4 +1,5 @@
 export const useAuthService = () => {
+  
   const supabase = useSupabaseClient();
   const user = useSupabaseUser()
 
@@ -84,17 +85,89 @@ export const useAuthService = () => {
 
       return data;
     } catch (error) {
-      throw err;
+      throw error;
     }
   }
 
   const isUserPendingConfirmation = () => {
-    return user.value?.new_email && !user.value?.email
+    return user.value?.new_email && !user.value?.email;
   }
 
   const isAuthenticated = () => {
-    if(! user.value) return false
-    return user.value?.role == 'authenticated' && user.value?.is_anonymous === false
+    if (!user.value) return false;
+    return user.value?.role == 'authenticated' && user.value?.is_anonymous === false;
+  }
+
+  const addPhoneNumber = async (phoneNumber) => {
+    try {
+      const { data, error } = await supabase
+        .from('phone_numbers')
+        .insert({
+          user_id: user.value?.id,
+          phone_number: phoneNumber,
+        });
+
+      if (error) {
+        throw new Error(error.message);
+      }
+
+      return data;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  const confirmPhoneNumber = async (phoneNumber) => {
+    try {
+      const { data, error } = await supabase
+        .from('phone_numbers')
+        .update({ verified: true })
+        .eq('user_id', user.value?.id)
+        .eq('phone_number', phoneNumber);
+
+      if (error) {
+        throw new Error(error.message);
+      }
+
+      return data;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  const deletePhoneNumber = async (phoneNumber) => {
+    try {
+      const { data, error } = await supabase
+        .from('phone_numbers')
+        .delete()
+        .eq('user_id', user.value?.id)
+        .eq('phone_number', phoneNumber);
+
+      if (error) {
+        throw new Error(error.message);
+      }
+
+      return data;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  const fetchPhoneNumbers = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('phone_numbers')
+        .select('*')
+        .eq('user_id', user.value?.id);
+
+      if (error) {
+        throw new Error(error.message);
+      }
+
+      return data;
+    } catch (error) {
+      throw error;
+    }
   }
 
   return {
@@ -105,6 +178,11 @@ export const useAuthService = () => {
     registerUser,
     logoutUser,
     loginUser,
-    convertAnonymousToRealUser
+    convertAnonymousToRealUser,
+
+    fetchPhoneNumbers,
+    addPhoneNumber,
+    confirmPhoneNumber,
+    deletePhoneNumber,
   }
-}
+};
