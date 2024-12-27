@@ -34,7 +34,7 @@
                 <!-- Contact Details -->
                 <Collapsible :isOpened="true" title="Persoana de contact" class="mt-4 collapsible">
                   <CreateElementsPrice class="mt-2" :title="fieldsMeta?.['price'].long" name="price" />
-                  <CreateElementsPhone class="mt-2" :title="fieldsMeta?.['phone'].long" name="phone" />
+                  <CreateElementsPhone class="mt-4" :title="fieldsMeta?.['phone'].long" name="phone" />
                 </Collapsible>
 
                 <div class="mt-4">
