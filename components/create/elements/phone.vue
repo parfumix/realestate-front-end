@@ -58,7 +58,7 @@ const { value, errorMessage } = useField(() => props.name, yup.string()
 
 watch(() => errorMessage.value, newval => {
     errorMessages[0] = newval
-})
+}, { deep: true })
 
 // Validate individual phone number
 const validatePhone = async (phoneNumber, index) => {
@@ -104,7 +104,7 @@ const isLastPhoneValid = computed(() => {
         const lastPhoneAdded = phones.value.length ? phones.value[phones.value.length - 1] : null
         if(! lastPhoneAdded) return false
 
-        if(! lastPhoneAdded.phone_number) throw new Error('Empty phone')
+        if(! lastPhoneAdded.phone_number || !lastPhoneAdded.verified) throw new Error('Invalid phone')
         phoneSchema.validateSync(lastPhoneAdded.phone_number)
         return true
     } catch(err) {
