@@ -14,10 +14,8 @@
             <form v-else class="space-y-6 w-full" @submit.prevent="validateOtp">
                 <p class="text-sm text-gray-700 text-center">La numărul indicat în decurs de cinci minute va veni un mesaj-SMS cu codul, necesar a fi introdus în cîmpul de mai jos.</p>
                 <CreateOtp class="flex justify-center" v-model="code" :length="CODE_LENGTH" />
-                <FormButton type="submit" :class="[
-                    code?.length < CODE_LENGTH ? 'bg-blue-400 hover:bg-blue-500' : 'bg-blue-800 hover:bg-blue-700',
-                    ' w-full h-[35px] text-lg',
-                ]" text="Valideaza" :disabled="code?.length < CODE_LENGTH || isLoading" />
+                <FormAlert message="Nu ai primit codul?" />
+                <FormButton type="submit" :class="[code?.length < CODE_LENGTH ? 'bg-blue-400 hover:bg-blue-500' : 'bg-blue-800 hover:bg-blue-700', ' w-full h-[35px] text-lg']" text="Valideaza" :disabled="code?.length < CODE_LENGTH || isLoading" />
             </form>
         </div>
     </div>
@@ -40,23 +38,17 @@ const code = ref('');
 // Common success handler
 const handleSuccess = (message) => {
     modalStore.success({ message });
-};
-
-// Common failure handler
-const handleFailure = (message) => {
-    modalStore.fail({ message });
-};
+}
 
 // Handle OTP sending
 const sendOtp = async () => {
     try {
-        if (!modalProps.value.phoneNumber) {
+        if (! modalProps.value.phoneNumber) {
             throw new Error('Numărul de telefon este obligatoriu')
         }
 
         isLoading.value = true;
         await startVerification(modalProps.value.phoneNumber);
-
         isCodeSent.value = true
 
         notify({
@@ -69,7 +61,6 @@ const sendOtp = async () => {
             text: err?.message || 'A apărut o eroare!',
             type: 'error',
         });
-        handleFailure('Eroare la trimiterea OTP.');
     } finally {
         isLoading.value = false;
     }
