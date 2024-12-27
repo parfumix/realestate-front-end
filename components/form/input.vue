@@ -63,7 +63,7 @@ const props = defineProps({
     default: false
   },
   inputClass: {
-    type: String,
+    type: [String, Array],
     default: ''
   },
   name: {
