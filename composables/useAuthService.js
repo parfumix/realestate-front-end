@@ -98,13 +98,14 @@ export const useAuthService = () => {
     return user.value?.role == 'authenticated' && user.value?.is_anonymous === false;
   }
 
-  const addPhoneNumber = async (phoneNumber) => {
+  const addPhoneNumber = async (phone_number, verified) => {
     try {
       const { data, error } = await supabase
         .from('phone_numbers')
         .insert({
           user_id: user.value?.id,
-          phone_number: phoneNumber,
+          phone_number,
+          verified,
         });
 
       if (error) {

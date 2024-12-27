@@ -1,7 +1,7 @@
 <template>
     <div id="phone">
         <div v-for="(phone, index) in phones" :key="index" class="flex flex-col mb-4">
-            <FormInput :id="`${index}-phone`" :disabled="phone.verified" :required="true" :input-class="[index > 0 ? 'pl-10' : '', phone.verified ? 'bg-gray-200' : '']" v-model="phone.phone_number" :name="`${name}-${index}`" :label="`${title} ${index+1}`" placeholder="+40 712 345 678" :error="errorMessages[index]">
+            <FormInput :id="`${index}-phone`" :disabled="phone.verified" :required="true" :input-class="[index > 0 ? 'pl-10' : '', phone.verified ? 'bg-gray-200' : '']" v-model="phone.phone_number" :name="`${name}-${index}`" :label="`${title} ${index== 0 ? '' : index+1}`" placeholder="+40 712 345 678" :error="errorMessages[index]">
                 <template #prefix>
                     <CircleX v-if="index > 0" @click="() => handleRemovePhoneNumber(index)" size="20" class="cursor-pointer text-red-600 ml-2" />
                 </template>
@@ -29,7 +29,7 @@ import OptPhoneModal from '@/components/auth-modals/otp-phone.vue';
 
 const modalStore = useModalStore();
 
-const { fetchPhoneNumbers } = useAuthService()
+const { fetchPhoneNumbers, addPhoneNumber } = useAuthService()
 
 const props = defineProps({
     name: String,
@@ -75,7 +75,10 @@ const openValidationModal = (index) => {
     if (isPhoneValid(index)) {
         modalStore.openModal(OptPhoneModal, {
             phoneNumber: phones.value[index].phone_number,
-        }, () => {
+        }, async() => {
+            await addPhoneNumber(phones.value[index].phone_number, true)
+            
+            // save phone number to database
             handleUpdatePhoneNumber(index, {
                 phone_number: phones.value[index].phone_number, 
                 verified: true
