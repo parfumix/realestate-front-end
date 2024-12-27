@@ -1,17 +1,14 @@
 <template>
     <div class="flex min-h-full flex-1 items-center justify-center px-4 py-12 sm:px-6 lg:px-8">
-        <div class="w-full max-w-sm space-y-10">
-            <form class="space-y-6" action="#" method="POST">
-                <div class="relative -space-y-px rounded-md shadow-sm">
-                    123
-                </div>
+        <div class="w-full max-w-sm flex justify-center">
+            <form class="space-y-6 w-full" v-if="isCodeSent" @submit.prevent>
+                <p class="text-center">{{ modalProps.phoneNumber }}</p>
+                <FormButton v-if="!isCodeSent" :class="['bg-blue-800 hover:bg-blue-700 w-full h-full text-lg']" text="Trimite OTP" @onClick="sendOtp" />
+            </form>
 
-
-                <div>
-                    <button type="submit" :disabled="isLoading"
-                        class="flex w-full justify-center rounded-md bg-blue-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600">Creează
-                        un cont</button>
-                </div>
+            <form class="space-y-6" v-if="!isCodeSent" @submit.prevent>
+                <CreateOtp v-model="code" :length="4" />
+                <FormButton :class="[code?.length < 4 ? 'bg-blue-400 hover:bg-blue-500' : 'bg-blue-800 hover:bg-blue-700', ' w-full h-full text-lg']" text="Valideaza" :disabled="code?.length<4" @onClick="validateOtp" />
             </form>
         </div>
     </div>
@@ -20,58 +17,80 @@
 <script setup>
 import { useModalStore } from '@/stores/modals';
 const modalStore = useModalStore();
-const { startVerification, validateCode } = useVerificationService()
+const { startVerification, validateCode } = useVerificationService();
 
 const { notify } = useNotification();
+const { modalProps } = storeToRefs(modalStore)
 
-const isLoading = ref(false)
+const isLoading = ref(false);
+const isCodeSent = ref(false);
+const code = ref('');
 
-const phoneNumber = ref(null)
-const code = ref(null)
+// Handle success action
+const handleSuccess = () => {
+    modalStore?.success({ message: 'Action succeeded!' });
+};
+
+// Handle failure action
+const handleFailure = () => {
+    modalStore?.fail({ message: 'Action failed!' });
+};
 
 const sendOtp = async () => {
     try {
-        isLoading.value = true
+        isLoading.value = true;
 
-        await startVerification(phoneNumber.value)
+        if (! modalProps.value.phoneNumber) {
+            throw new Error("Numărul de telefon este obligatoriu.");
+        }
+
+        await startVerification(modalProps.value.phoneNumber);
+
+        isCodeSent.value = true
+        handleSuccess()
 
         notify({
-            title: "Confirmă adresa de e-mail!",
-            text: "Te rugăm să îți verifici e-mailul și să confirmi adresa înainte de a te putea autentifica și accesa contul. Mulțumim!",
+            title: "OTP Trimite!",
+            text: "Codul OTP a fost trimis pe numărul de telefon specificat.",
         });
 
     } catch (err) {
         notify({
-            title: "..!",
+            title: "Eroare!",
             text: err?.message || "A apărut o eroare!",
             type: 'error'
         });
-    } finally {
-        isLoading.value = false
-    }
-}
 
-const validateOtp = async (code) => {
+        handleFailure()
+    } finally {
+        isLoading.value = false;
+    }
+};
+
+const validateOtp = async () => {
     try {
-        isLoading.value = true
+        isLoading.value = true;
 
-        await validateCode(phoneNumber.value, code)
+        if (!code.value || code.value?.length < 4) {
+            throw new Error("Codul OTP este obligatoriu.");
+        }
+
+        await validateCode(modalProps.value.phoneNumber, code.value);
 
         notify({
-            title: "Confirmă adresa de e-mail!",
-            text: "Te rugăm să îți verifici e-mailul și să confirmi adresa înainte de a te putea autentifica și accesa contul. Mulțumim!",
+            title: "Succes!",
+            text: "Codul OTP a fost verificat cu succes. Mulțumim!",
         });
 
-        modalStore.closeModal()
+        modalStore.closeModal();
     } catch (err) {
         notify({
-            title: "..!",
-            text: err?.message || "A apărut o eroare!",
+            title: "Eroare!",
+            text: err?.message || "Codul OTP este incorect sau a expirat!",
             type: 'error'
         });
     } finally {
-        isLoading.value = false
+        isLoading.value = false;
     }
 }
-
 </script>
