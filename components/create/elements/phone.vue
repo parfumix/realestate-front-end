@@ -52,8 +52,13 @@ const phoneSchema = yup.string()
   );
 
 // Field validation for form submission
-const { value } = useField(() => props.name, yup.string()
+const { value, errorMessage } = useField(() => props.name, yup.string()
     .required('Cel puțin un număr de telefon valid este necesar'))
+
+
+watch(() => errorMessage.value, newval => {
+    errorMessages[0] = newval
+})
 
 // Validate individual phone number
 const validatePhone = async (phoneNumber, index) => {
@@ -95,14 +100,16 @@ const handleUpdatePhoneNumber = async (index, newPhoneNumber) => {
 }
 
 const isLastPhoneValid = computed(() => {
-    const lastPhoneAdded = phones.value.length ? phones.value[phones.value.length - 1] : null
-    if(! lastPhoneAdded) return false
+    try {
+        const lastPhoneAdded = phones.value.length ? phones.value[phones.value.length - 1] : null
+        if(! lastPhoneAdded) return false
 
-    if(! lastPhoneAdded.verfied) {
+        if(! lastPhoneAdded.phone_number) throw new Error('Empty phone')
+        phoneSchema.validateSync(lastPhoneAdded.phone_number)
+        return true
+    } catch(err) {
         return false
     }
-
-    return true
 })
 
 watch(() => phones.value, async(newPhones) => {
@@ -125,7 +132,7 @@ const handleAddPhoneNumber = () => {
     if(phones.value?.length > 0) {
         if(! isLastPhoneValid.value) return
     }
-   
+
     silentAddPhone = true
     phones.value.push({
         phone_number: '',
