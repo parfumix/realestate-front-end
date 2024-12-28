@@ -1,10 +1,12 @@
 <template>
     <div id="phone">
-        <div v-for="(phone, index) in verifiedPhoneNumbers" :key="phone.id" class="flex flex-col mb-4">
-            <div class="flex items-center">
-                <FormCheckbox :id="`${index}-phone-verified`" v-model="value" :label="phone.phone_number" :error="errorMessage" />
-                <CircleX @click="() => handleRemovePhoneNumber(phone.phone_number, true)" size="20" class="cursor-pointer text-red-600 ml-2" />
+        <div class="flex flex-col items-center">
+            <div class="flex justify-start">
+                <FormCheckboxes :id="`phone-verified`" v-model="value" :options="verifiedPhoneNumbers" v-slot="slotProps">
+                    <CircleX @click="() => handleRemovePhoneNumber(slotProps.option.label, true)" size="20" class="cursor-pointer text-red-600 ml-2" />
+                </FormCheckboxes>
             </div>
+            <p class="inline-block mt-2 text-sm text-red-600" v-if="errorMessage">{{ errorMessage }}</p>
         </div>
 
         <div v-for="(phone, index) in unverifiedPhoneNumbers" :key="index" class="flex flex-col mb-4">
@@ -63,11 +65,18 @@ const phoneSchema = yup.string()
   );
 
 // Field validation for form submission
-const { value, errorMessage } = useField(() => props.name, yup.string()
-    .required('Cel puțin un număr de telefon valid este necesar'))
+const { value, errorMessage } = useField(() =>
+  props.name,
+  yup.array().of(yup.string().required()).min(1, "At least one item is required").required()
+);
 
 const verifiedPhoneNumbers = computed(() => {
-    return phones.value.filter(el => el.verified)
+    return phones.value.filter(el => el.verified).map(el => {
+        return {
+            value: el.id,
+            label: el.phone_number,
+        }
+    })
 })
 
 const unverifiedPhoneNumbers = computed(() => {

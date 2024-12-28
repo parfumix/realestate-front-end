@@ -11,8 +11,8 @@
           {{ option.label }}
         </label>
       </div>
+      <slot :index="index" :option="option" />
     </div>
-
   </fieldset>
 </template>
 
