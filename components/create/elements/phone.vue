@@ -1,6 +1,7 @@
 <template>
     <div id="phones">
         <div class="flex flex-col justify-center items-start">
+            <p class="block text-sm font-medium leading-6 text-gray-900 mb-2"><span class="text-red-600">*</span> Adaugă un numar de contact</p>
             <div class="flex justify-start">
                 <FormCheckboxes :id="`phone-verified`" v-model="value" :options="verifiedPhoneNumbers">
                     <template #label="{label}">
@@ -30,7 +31,7 @@
         </div>
 
         <div class="flex flex-col">
-            <p class="inline-block mt-2 text-sm text-gray-600" v-if="phones.length < ALLOW_MAX_PHONES && isLastPhoneValid" @click="handleAddPhoneNumber">Adaugă număr de telefon</p>
+            <p class="inline-block mt-2 text-sm text-gray-600 cursor-pointer" v-if="phones.length < ALLOW_MAX_PHONES && isLastPhoneValid" @click="handleAddPhoneNumber">Adaugă număr de telefon</p>
             <p class="inline-block mt-2 text-sm text-red-600" v-if="errorMessage">{{ errorMessage }}</p>
         </div>
     </div>
