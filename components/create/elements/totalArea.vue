@@ -1,5 +1,5 @@
 <template>
-    <FormInput id="totalArea" :required="true" :name="name" :label="title" placeholder="mp" v-model="value"
+    <FormInput id="area" :required="true" :name="name" :label="title" placeholder="mp" v-model="value"
         :error="errorMessage" />
 </template>
 

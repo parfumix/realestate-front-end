@@ -29,12 +29,16 @@
                     <CreateFormsCommercial v-if="values['propertyType']=='comercial'" :fieldsMeta="fieldsMeta" />
                     <CreateFormsLand v-if="values['propertyType']=='land'" :fieldsMeta="fieldsMeta" />
                   </div>
+
+                  <div class="mt-4 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-2">
+                    <CreateElementsPrice :title="fieldsMeta?.['price'].long" name="price" />
+                    <CreateElementsLocation :title="fieldsMeta['location'].long" :description="fieldsMeta['location'].description" name="location" />
+                  </div>
                 </Collapsible>
                 
                 <!-- Contact Details -->
                 <Collapsible :isOpened="true" title="Persoana de contact" class="mt-4 collapsible">
-                  <CreateElementsPrice class="mt-2" :title="fieldsMeta?.['price'].long" name="price" />
-                  <CreateElementsPhone class="mt-4" :title="fieldsMeta?.['phones'].long" name="phones" />
+                  <CreateElementsPhone :title="fieldsMeta?.['phones'].long" name="phones" />
                 </Collapsible>
 
                 <div class="mt-4">
@@ -69,10 +73,11 @@
   // when scroll to visible element shake it - x
   // use tone as dropdown to the same button - x
   // change characteristics & facilites based on property type - x
+  // adding opt phone number verification - x
 
-  // adding opt phone number verification
   // adding price & location fields -- location variable create in this component
   // adding location field in form with text pointing to the map
+
   // fix textarea
   // auto-generate facilities & characterhistics
   // once ai text generated hide generate with ai button until user start typing again
@@ -136,17 +141,11 @@
       long: "Număr de camere",
       description: "Numărul total de camere disponibile în proprietate.",
     },
-    totalArea: {
+    area: {
       required: true,
       short: "Sup. totală",
       long: "Suprafață totală",
       description: "Suprafața totală a proprietății, incluzând toate anexele, cum ar fi balcoane.",
-    },
-    surface: {
-      required: true,
-      short: "Sup. utilă",
-      long: "Suprafață utilă",
-      description: "Suprafața utilizabilă efectivă a spațiului, excluzând anexele.",
     },
     floor: {
       required: true,
@@ -204,8 +203,7 @@
       selectedFacilities: [],
 
       roomCount: '',
-      totalArea: '',
-      surface: '',
+      area: '',
       floor: '',
       balcony: '',
       parking: '',
