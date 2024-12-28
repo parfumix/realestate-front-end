@@ -1,12 +1,11 @@
 <template>
-    <div id="phone">
-        <div class="flex flex-col items-center">
+    <div id="phones">
+        <div class="flex flex-col justify-center items-start">
             <div class="flex justify-start">
                 <FormCheckboxes :id="`phone-verified`" v-model="value" :options="verifiedPhoneNumbers" v-slot="slotProps">
                     <CircleX @click="() => handleRemovePhoneNumber(slotProps.option.label, true)" size="20" class="cursor-pointer text-red-600 ml-2" />
                 </FormCheckboxes>
             </div>
-            <p class="inline-block mt-2 text-sm text-red-600" v-if="errorMessage">{{ errorMessage }}</p>
         </div>
 
         <div v-for="(phone, index) in unverifiedPhoneNumbers" :key="index" class="flex flex-col mb-4">
@@ -18,14 +17,17 @@
                 <template #actions>
                     <button :disabled="! isPhoneValid(index)" @click="() => openValidationModal(index)" type="button" class="relative -ml-px inline-flex items-center gap-x-1.5 rounded-r-md px-3 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
                         <BadgeCheck size="14" />
-                        Confirma
+                        Confirmă
                     </button>
                 </template>
 
             </FormInput>
         </div>
 
-        <p v-if="phones.length < ALLOW_MAX_PHONES && isLastPhoneValid" @click="handleAddPhoneNumber">Adauga numar de telefon</p>
+        <div class="flex flex-col">
+            <p class="inline-block mt-2 text-sm text-gray-600" v-if="phones.length < ALLOW_MAX_PHONES && isLastPhoneValid" @click="handleAddPhoneNumber">Adaugă număr de telefon</p>
+            <p class="inline-block mt-2 text-sm text-red-600" v-if="errorMessage">{{ errorMessage }}</p>
+        </div>
     </div>
 </template>
 
@@ -67,7 +69,7 @@ const phoneSchema = yup.string()
 // Field validation for form submission
 const { value, errorMessage } = useField(() =>
   props.name,
-  yup.array().of(yup.string().required()).min(1, "At least one item is required").required()
+  yup.array().of(yup.string().required()).min(1, "Este necesar cel puțin un număr de telefon").required()
 );
 
 const verifiedPhoneNumbers = computed(() => {
@@ -119,7 +121,7 @@ const isLastPhoneValid = computed(() => {
         const lastPhoneAdded = phones.value.length ? phones.value[phones.value.length - 1] : null
         if(! lastPhoneAdded) return false
 
-        if(! lastPhoneAdded.phone_number || !lastPhoneAdded.verified) throw new Error('Invalid phone')
+        if(! lastPhoneAdded.phone_number || !lastPhoneAdded.verified) throw new Error('Număr de telefon invalid')
         phoneSchema.validateSync(lastPhoneAdded.phone_number)
         return true
     } catch(err) {
@@ -160,7 +162,7 @@ const handleAddPhoneNumber = () => {
 const handleRemovePhoneNumber = async(phone, is_verified = false) => {
     try {
         if(is_verified) {
-            if(! confirm('Are you sure?')) {
+            if(! confirm('Sigur doriți să ștergeți numărul de telefon?')) {
                 return
             }
         }

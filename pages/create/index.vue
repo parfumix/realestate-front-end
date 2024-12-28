@@ -34,7 +34,7 @@
                 <!-- Contact Details -->
                 <Collapsible :isOpened="true" title="Persoana de contact" class="mt-4 collapsible">
                   <CreateElementsPrice class="mt-2" :title="fieldsMeta?.['price'].long" name="price" />
-                  <CreateElementsPhone class="mt-4" :title="fieldsMeta?.['phone'].long" name="phones" />
+                  <CreateElementsPhone class="mt-4" :title="fieldsMeta?.['phones'].long" name="phones" />
                 </Collapsible>
 
                 <div class="mt-4">
@@ -181,7 +181,7 @@
       long: "Prețul proprietății",
       description: "Costul proprietății, exprimat în moneda specificată.",
     },
-    phone: {
+    phones: {
       required: true,
       short: "Tel.",
       long: "Telefon",
