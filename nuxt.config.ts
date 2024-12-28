@@ -7,7 +7,8 @@ export default defineNuxtConfig({
     '@pinia/nuxt',
     '@nuxtjs/supabase',
     'nuxt-keen-slider',
-    'nuxt3-notifications'
+    'nuxt3-notifications',
+    '@nuxtjs/turnstile'
   ],
   runtimeConfig: {
     public: {
@@ -15,7 +16,6 @@ export default defineNuxtConfig({
     },
   },
   ssr: false,
-
   hooks: {
     'pages:extend'(pages) {
       pages.push({
@@ -39,6 +39,9 @@ export default defineNuxtConfig({
         meta: {key: 'index'}
       });
     },
+  },
+  turnstile: {
+    siteKey: process.env.TURNSTILE_SITE_KEY,
   },
   supabase: {
     // Options
