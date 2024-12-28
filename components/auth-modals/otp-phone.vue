@@ -14,7 +14,20 @@
             <form v-else class="space-y-6 w-full" @submit.prevent="validateOtp">
                 <p class="text-sm text-gray-700 text-center">La numărul indicat în decurs de cinci minute va veni un mesaj-SMS cu codul, necesar a fi introdus în cîmpul de mai jos.</p>
                 <CreateOtp class="flex justify-center" v-model="code" :length="CODE_LENGTH" />
-                <FormAlert message="Nu ai primit codul?" />
+
+                <!-- Try again in 30 seconds -->
+                <div class="text-center flex justify-center mt-2">
+                    <a 
+                        v-if="resendCounter === 0"  @click="sendOtp" 
+                        class="text-blue-600 text-sm underline decoration-dotted cursor-pointer" 
+                    >
+                        Trimite din nou
+                    </a>
+                    <p v-else class="text-gray-700">
+                        <FormAlert :message="`Poți trimite din nou în ${resendCounter} secunde.`" />
+                    </p>
+                </div>
+                    
                 <FormButton type="submit" :class="[code?.length < CODE_LENGTH ? 'bg-blue-400 hover:bg-blue-500' : 'bg-blue-800 hover:bg-blue-700', ' w-full h-[35px] text-lg']" text="Valideaza" :disabled="code?.length < CODE_LENGTH || isLoading" />
             </form>
         </div>
@@ -30,15 +43,33 @@ const { notify } = useNotification();
 const { modalProps } = storeToRefs(modalStore);
 
 const CODE_LENGTH = 4
+const RESEND_INTERVAL = 30; // 30 seconds
+const MAX_RETRIES = 3; // Maximum number of retries
 
 const isLoading = ref(false);
 const isCodeSent = ref(false);
 const code = ref('');
 
+let retries = 0
+const resendCounter = ref(0);
+let resendInterval = null;
+
 // Common success handler
 const handleSuccess = (message) => {
     modalStore.success({ message });
 }
+
+// Start the resend countdown
+const startResendCountdown = () => {
+  resendCounter.value = RESEND_INTERVAL;
+  resendInterval = setInterval(() => {
+    if (resendCounter.value > 0) {
+      resendCounter.value--;
+    } else {
+      clearInterval(resendInterval);
+    }
+  }, 1000);
+};
 
 // Handle OTP sending
 const sendOtp = async () => {
@@ -48,8 +79,14 @@ const sendOtp = async () => {
         }
 
         isLoading.value = true;
-        await startVerification(modalProps.value.phoneNumber);
+      
+        if(retries >= MAX_RETRIES) {
+            throw new Error('You have exceeded the maximum number of OTP requests. Please try again later.')
+        }        await startVerification(modalProps.value.phoneNumber)
         isCodeSent.value = true
+
+        startResendCountdown();
+        retries++
 
         notify({
             title: 'Succes!',
@@ -91,5 +128,12 @@ const validateOtp = async () => {
     } finally {
         isLoading.value = false;
     }
-};
+}
+
+// Clear the interval when the component is destroyed
+onUnmounted(() => {
+  if (resendInterval) {
+    clearInterval(resendInterval);
+  }
+});
 </script>

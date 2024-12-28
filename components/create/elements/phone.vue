@@ -1,19 +1,28 @@
 <template>
     <div id="phone">
-        <div v-for="(phone, index) in phones" :key="index" class="flex flex-col mb-4">
-            <FormInput :id="`${index}-phone`" :disabled="phone.verified" :required="true" :input-class="[phone.verified ? 'bg-gray-200' : '', index > 0 ? 'pl-10' : '']" v-model="phone.phone_number" :name="`${name}-${index}`" :label="`${title} ${index== 0 ? '' : index+1}`" placeholder="+40 712 345 678" :error="errorMessages[index]">
+        <div v-for="(phone, index) in verifiedPhoneNumbers" :key="phone.id" class="flex flex-col mb-4">
+            <div class="flex items-center">
+                <FormCheckbox :id="`${index}-phone-verified`" v-model="value" :label="phone.phone_number" :error="errorMessage" />
+                <CircleX @click="() => handleRemovePhoneNumber(phone.phone_number, true)" size="20" class="cursor-pointer text-red-600 ml-2" />
+            </div>
+        </div>
+
+        <div v-for="(phone, index) in unverifiedPhoneNumbers" :key="index" class="flex flex-col mb-4">
+            <FormInput :id="`${index}-phone`" :required="true" :input-class="`pl-10`" v-model="phone.phone_number" :name="`${name}-${index}`" :label="`${title} ${index== 0 ? '' : index+1}`" placeholder="+40 712 345 678" :error="errorMessages[index]">
                 <template #prefix>
-                    <CircleX v-if="index>0" @click="() => handleRemovePhoneNumber(phone.phone_number, index)" size="20" class="cursor-pointer text-red-600 ml-2" />
+                    <CircleX @click="() => handleRemovePhoneNumber(phone.phone_number)" size="20" class="cursor-pointer text-red-600 ml-2" />
                 </template>
+
                 <template #actions>
-                    <button v-if="! phone.verified" :disabled="!isPhoneValid(index)"  @click="() => openValidationModal(index)" type="button" class="relative -ml-px inline-flex items-center gap-x-1.5 rounded-r-md px-3 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
+                    <button :disabled="! isPhoneValid(index)" @click="() => openValidationModal(index)" type="button" class="relative -ml-px inline-flex items-center gap-x-1.5 rounded-r-md px-3 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
                         <BadgeCheck size="14" />
                         Confirma
                     </button>
                 </template>
-            </FormInput>
 
+            </FormInput>
         </div>
+
         <p v-if="phones.length < ALLOW_MAX_PHONES && isLastPhoneValid" @click="handleAddPhoneNumber">Adauga numar de telefon</p>
     </div>
 </template>
@@ -30,6 +39,8 @@ import OptPhoneModal from '@/components/auth-modals/otp-phone.vue';
 const modalStore = useModalStore();
 
 const { fetchPhoneNumbers, addPhoneNumber, deletePhoneNumber } = useAuthService()
+
+const { notify } = useNotification();
 
 const props = defineProps({
     name: String,
@@ -55,22 +66,17 @@ const phoneSchema = yup.string()
 const { value, errorMessage } = useField(() => props.name, yup.string()
     .required('Cel puțin un număr de telefon valid este necesar'))
 
+const verifiedPhoneNumbers = computed(() => {
+    return phones.value.filter(el => el.verified)
+})
 
-watch(() => errorMessage.value, newval => {
-    errorMessages[0] = newval
-}, { deep: true })
+const unverifiedPhoneNumbers = computed(() => {
+    return phones.value.filter(el => !el.verified)
+})
 
-// Validate individual phone number
-const validatePhone = async (phoneNumber, index) => {
-    try {
-        await phoneSchema.validate(phoneNumber)
-        errorMessages[index] = ''
-        return true
-    } catch (error) {
-        errorMessages[index] = error.message
-        return false
-    }
-}
+// watch(() => errorMessage.value, newval => {
+//     errorMessages[0] = newval
+// }, { deep: true })
 
 const isPhoneValid = (index) => {
     return !errorMessages[index] && phones.value[index]?.phone_number
@@ -82,6 +88,7 @@ const openValidationModal = (index) => {
             phoneNumber: phones.value[index].phone_number,
             dialogStyles: 'sm:w-full sm:max-w-xl h-[70%]'
         }, async() => {
+            // if confirmation is sucessfully than add phone number in database
             await addPhoneNumber(phones.value[index].phone_number, true)
 
             // save phone number to database
@@ -93,11 +100,11 @@ const openValidationModal = (index) => {
     }
 }
 
-const handleUpdatePhoneNumber = async (index, newPhoneNumber) => {
+const handleUpdatePhoneNumber = async (index, newObjectPhoneNumber) => {
     if (index < 0 || index >= phones.value.length)
         return;
 
-    phones.value[index] = newPhoneNumber;
+    phones.value[index] = newObjectPhoneNumber;
 }
 
 const isLastPhoneValid = computed(() => {
@@ -113,17 +120,18 @@ const isLastPhoneValid = computed(() => {
     }
 })
 
-watch(() => phones.value, async(newPhones) => {
+watch(() => unverifiedPhoneNumbers.value,(newPhones) => {
     if(silentAddPhone) return
 
-    // Validate each phone number
+    // Validate each phone numb er
     for (let i = 0; i < newPhones.length; i++) {
-        await validatePhone(newPhones[i].phone_number, i)
+        try {
+            phoneSchema.validateSync(newPhones[i].phone_number)
+            errorMessages[i] = ''
+        } catch(err) {
+            errorMessages[i] = err.message
+        }
     }
-
-    // Update form validation state
-    const verifiedPhones = newPhones.filter(phone => phone.verified)
-    value.value = verifiedPhones.length > 0 ? 'true' : ''
 }, { deep: true })
 
 const handleAddPhoneNumber = () => {
@@ -142,22 +150,44 @@ const handleAddPhoneNumber = () => {
     setTimeout(() => silentAddPhone = false)
 }
 
-const handleRemovePhoneNumber = async(phone, idx) => {
-    await deletePhoneNumber(phone)
+const handleRemovePhoneNumber = async(phone, is_verified = false) => {
+    try {
+        if(is_verified) {
+            if(! confirm('Are you sure?')) {
+                return
+            }
+        }
+       
+        const phoneIndex = phones.value.findLastIndex(el => el.phone_number == phone)
+        if(phoneIndex === -1) return
 
-    phones.value.splice(idx, 1)
-    delete errorMessages[idx]
+        // if phone number have generate ID that means is from database
+        if(phones.value?.[phoneIndex]?.id && is_verified) {
+            await deletePhoneNumber(phone)
+        }
 
-    if(! phones.value.length) {
-        handleAddPhoneNumber()
+        phones.value.splice(phoneIndex, 1)
+        delete errorMessages[phoneIndex]
+
+        if(! phones.value.length) {
+            handleAddPhoneNumber()
+        }
+    } catch(err) {
+        notify({
+            title: 'Eroare!',
+            text: err?.message || 'A apărut o eroare!',
+            type: 'error',
+        });
     }
+
 }
 
 onMounted(async() => {
     const phone_numbers = await fetchPhoneNumbers()
 
-    for(let { phone_number, verified } of phone_numbers) {
+    for(let { id, phone_number, verified } of phone_numbers) {
         phones.value.push({
+            id,
             phone_number,
             verified
         })
