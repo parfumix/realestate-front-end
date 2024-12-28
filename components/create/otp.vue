@@ -1,6 +1,4 @@
 <script setup>
-import { ref, computed } from 'vue'
-
 const props = defineProps({
   modelValue: {
     type: String,
@@ -33,6 +31,10 @@ const otpString = computed(() => otpValues.value.join(''))
 const focusInput = (index) => {
   inputRefs.value[index]?.focus()
 }
+
+onMounted(() => {
+  focusInput(0)
+})
 
 const emitChanges = () => {
   const value = otpString.value
