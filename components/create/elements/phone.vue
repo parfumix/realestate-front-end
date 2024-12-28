@@ -5,7 +5,7 @@
             <div class="flex justify-start">
                 <FormCheckboxes :id="`phone-verified`" v-model="value" :options="verifiedPhoneNumbers">
                     <template #label="{label}">
-                        {{ parsePhoneNumberFromString(label).formatNational() }}
+                        <p class="text-medium text-gray-800 font-bolder">{{ parsePhoneNumberFromString(label).formatNational() }}</p>
                     </template>
                     <template #default="{option}">
                         <CircleX @click="() => handleRemovePhoneNumber(option.label, true)" size="20" class="cursor-pointer text-red-600 ml-2" />
@@ -14,16 +14,15 @@
             </div>
         </div>
 
-        <div v-for="(phone, index) in unverifiedPhoneNumbers" :key="index" class="flex flex-col mb-4">
+        <div v-for="(phone, index) in unverifiedPhoneNumbers" :key="index" class="flex flex-col mb-4 mt-1">
             <FormInput :autofocus="true" :id="`${index}-phone`" :required="true" :input-class="`pl-10`" v-model="phone.phone_number" :name="`${name}-${index}`" placeholder="+40 712 345 678" :error="errorMessages[index]">
                 <template #prefix>
                     <CircleX @click="() => handleRemovePhoneNumber(phone.phone_number)" size="20" class="cursor-pointer text-red-600 ml-2" />
                 </template>
 
                 <template #actions>
-                    <button :disabled="! isPhoneValid(index)" @click="() => openValidationModal(index)" type="button" class="relative -ml-px inline-flex items-center gap-x-1.5 rounded-r-md px-3 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
-                        <BadgeCheck size="14" />
-                        Confirmă
+                    <button :disabled="! isPhoneValid(index)" @click="() => openValidationModal(index)" type="button" :class="[isPhoneValid(index) ? 'hover:bg-gray-50 text-gray-700' : 'hover:bg-gray-50 text-gray-400', 'relative ml-2 inline-flex items-center gap-x-1.5 rounded-md px-3 py-2 text-sm font-semibold ring-1 ring-inset ring-gray-300']">
+                        Confirmă SMS
                     </button>
                 </template>
 
