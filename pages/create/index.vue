@@ -34,7 +34,7 @@
                 <!-- Contact Details -->
                 <Collapsible :isOpened="true" title="Persoana de contact" class="mt-4 collapsible">
                   <CreateElementsPrice class="mt-2" :title="fieldsMeta?.['price'].long" name="price" />
-                  <CreateElementsPhone class="mt-4" :title="fieldsMeta?.['phone'].long" name="phone" />
+                  <CreateElementsPhone class="mt-4" :title="fieldsMeta?.['phone'].long" name="phones" />
                 </Collapsible>
 
                 <div class="mt-4">
@@ -70,23 +70,22 @@
   // use tone as dropdown to the same button - x
   // change characteristics & facilites based on property type - x
 
-  // adding moderation - https://chatgpt.com/share/6756fcb7-6464-8006-9453-d5f41b730e1e
+  // adding opt phone number verification
+  // adding price & location fields -- location variable create in this component
+  // adding location field in form with text pointing to the map
   // fix textarea
+  // auto-generate facilities & characterhistics
+  // once ai text generated hide generate with ai button until user start typing again
   // save & edit item
-  // allow to select text and apply AI changes
   // adding back-end API CRUD operations
 
-  // adding opt phone number verification https://chatgpt.com/share/6767432b-3a48-8006-a091-4544d72527cd
-  // adding price & location fields -- location variable create in this component
+  // allow to select text and apply AI changes
+  // adding moderation - https://chatgpt.com/share/6756fcb7-6464-8006-9453-d5f41b730e1e
   // adding scrolling buttons & shadow // https://css-scroll-shadows.vercel.app/?bgColor=ffffff&shadowColor=666666&pxSize=34
   // adding moderation text & photos (photos min width & height) https://chatgpt.com/c/6768165f-b1a8-8006-80d6-d41efbb92dec
-  // once ai text generated hide generate with ai button until user start typing again
-  // auto-generate facilities & characterhistics
-
   // https://shift.infinite.red/avoid-nightmares-nsfw-js-ab7b176978b1
   // make different color for generated description
   // for location show that map is on right side, autocomplete
-  // adding location field in form with text pointing to the map
   // hide sidebar if responsive mobile
   // adding cloudflare protection
   
@@ -215,7 +214,7 @@
       
       price: '',
 
-      phone: '',
+      phones: [],
       terms_and_conditions: false
   }
   
