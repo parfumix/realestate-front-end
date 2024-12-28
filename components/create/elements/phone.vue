@@ -10,7 +10,7 @@
         </div>
 
         <div v-for="(phone, index) in unverifiedPhoneNumbers" :key="index" class="flex flex-col mb-4">
-            <FormInput :id="`${index}-phone`" :required="true" :input-class="`pl-10`" v-model="phone.phone_number" :name="`${name}-${index}`" :label="`${title} ${index== 0 ? '' : index+1}`" placeholder="+40 712 345 678" :error="errorMessages[index]">
+            <FormInput :autofocus="true" :id="`${index}-phone`" :required="true" :input-class="`pl-10`" v-model="phone.phone_number" :name="`${name}-${index}`" :label="`${title} ${index== 0 ? '' : index+1}`" placeholder="+40 712 345 678" :error="errorMessages[index]">
                 <template #prefix>
                     <CircleX @click="() => handleRemovePhoneNumber(phone.phone_number)" size="20" class="cursor-pointer text-red-600 ml-2" />
                 </template>
@@ -83,37 +83,35 @@ const unverifiedPhoneNumbers = computed(() => {
     return phones.value.filter(el => !el.verified)
 })
 
-// watch(() => errorMessage.value, newval => {
-//     errorMessages[0] = newval
-// }, { deep: true })
-
 const isPhoneValid = (index) => {
-    return !errorMessages[index] && phones.value[index]?.phone_number
+    return !errorMessages[index] && unverifiedPhoneNumbers.value[index]?.phone_number
 }
 
 const openValidationModal = (index) => {
-    if (isPhoneValid(index)) {
+    const phone_number = unverifiedPhoneNumbers.value[index].phone_number
+    const total_items_same_number = phones.value.filter(el => el.phone_number == phone_number)
+    const phonesIndex = phones.value.findIndex(el => el.phone_number == phone_number)
+
+    if (isPhoneValid(index) && total_items_same_number.length <= 1) {
         modalStore.openModal(OptPhoneModal, {
-            phoneNumber: phones.value[index].phone_number,
+            phoneNumber: unverifiedPhoneNumbers.value[index].phone_number,
             dialogStyles: 'sm:w-full sm:max-w-xl h-[70%]'
         }, async() => {
-            // if confirmation is sucessfully than add phone number in database
-            await addPhoneNumber(phones.value[index].phone_number, true)
+            if (index < 0 || index >= unverifiedPhoneNumbers.value.length)
+                return;
 
-            // save phone number to database
-            handleUpdatePhoneNumber(index, {
-                phone_number: phones.value[index].phone_number, 
+            // if confirmation is sucessfully than add phone number in database
+            const { id: newId } = await addPhoneNumber(phone_number, true)
+
+            phones.value[phonesIndex] = {
+                id: newId,
+                phone_number: unverifiedPhoneNumbers.value[index].phone_number, 
                 verified: true
-            })
+            };
+
+            value.value.push(newId)
         })
     }
-}
-
-const handleUpdatePhoneNumber = async (index, newObjectPhoneNumber) => {
-    if (index < 0 || index >= phones.value.length)
-        return;
-
-    phones.value[index] = newObjectPhoneNumber;
 }
 
 const isLastPhoneValid = computed(() => {
@@ -173,6 +171,11 @@ const handleRemovePhoneNumber = async(phone, is_verified = false) => {
         // if phone number have generate ID that means is from database
         if(phones.value?.[phoneIndex]?.id && is_verified) {
             await deletePhoneNumber(phone)
+
+            const idIndex = value.value.indexOf(phones.value?.[phoneIndex]?.id);
+            if (idIndex !== -1) {
+                value.value.splice(idIndex, 1);
+            }
         }
 
         phones.value.splice(phoneIndex, 1)
