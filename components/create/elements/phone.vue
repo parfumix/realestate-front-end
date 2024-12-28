@@ -2,8 +2,13 @@
     <div id="phones">
         <div class="flex flex-col justify-center items-start">
             <div class="flex justify-start">
-                <FormCheckboxes :id="`phone-verified`" v-model="value" :options="verifiedPhoneNumbers" v-slot="slotProps">
-                    <CircleX @click="() => handleRemovePhoneNumber(slotProps.option.label, true)" size="20" class="cursor-pointer text-red-600 ml-2" />
+                <FormCheckboxes :id="`phone-verified`" v-model="value" :options="verifiedPhoneNumbers">
+                    <template #label="{label}">
+                        {{ parsePhoneNumberFromString(label).formatNational() }}
+                    </template>
+                    <template #default="{option}">
+                        <CircleX @click="() => handleRemovePhoneNumber(option.label, true)" size="20" class="cursor-pointer text-red-600 ml-2" />
+                    </template>
                 </FormCheckboxes>
             </div>
         </div>
@@ -39,6 +44,8 @@ import { BadgeCheck, CircleX } from "lucide-vue-next"
 
 import { useModalStore } from '@/stores/modals';
 import OptPhoneModal from '@/components/auth-modals/otp-phone.vue';
+
+import { parsePhoneNumberFromString } from 'libphonenumber-js';
 
 const modalStore = useModalStore();
 
@@ -205,6 +212,10 @@ onMounted(async() => {
             phone_number,
             verified
         })
+
+        if(verified) {
+            value.value.push(id)
+        }
     }
 
     // if no numbers trigger to add one phone number

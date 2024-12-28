@@ -8,7 +8,10 @@
       </div>
       <div class="ml-2 text-sm leading-6">
         <label :for="option.value" class="font-medium text-gray-900">
-          {{ option.label }}
+          <slot name="label" :label="option.label">
+            {{ option.label }}
+          </slot>
+          
         </label>
       </div>
       <slot :index="index" :option="option" />
