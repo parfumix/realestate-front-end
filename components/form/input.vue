@@ -1,7 +1,7 @@
 <template>
   <div>
     <label :for="id" class="block text-sm font-medium leading-6 text-gray-900">
-      <span v-if="required" class="text-red-600">*</span> {{ label }}
+      <span v-if="required && label" class="text-red-600">*</span> {{ label }}
     </label>
     <div class="mt-2 flex rounded-md shadow-sm">
       <div class="relative flex flex-grow items-stretch focus-within:z-10">

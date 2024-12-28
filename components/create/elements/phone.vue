@@ -15,7 +15,7 @@
         </div>
 
         <div v-for="(phone, index) in unverifiedPhoneNumbers" :key="index" class="flex flex-col mb-4">
-            <FormInput :autofocus="true" :id="`${index}-phone`" :required="true" :input-class="`pl-10`" v-model="phone.phone_number" :name="`${name}-${index}`" :label="`${title} ${index== 0 ? '' : index+1}`" placeholder="+40 712 345 678" :error="errorMessages[index]">
+            <FormInput :autofocus="true" :id="`${index}-phone`" :required="true" :input-class="`pl-10`" v-model="phone.phone_number" :name="`${name}-${index}`" placeholder="+40 712 345 678" :error="errorMessages[index]">
                 <template #prefix>
                     <CircleX @click="() => handleRemovePhoneNumber(phone.phone_number)" size="20" class="cursor-pointer text-red-600 ml-2" />
                 </template>
@@ -66,12 +66,11 @@ let silentAddPhone = false
 const phones = ref([])
 const errorMessages = reactive({})
 
-// Phone validation schema
 const phoneSchema = yup.string()
   .required('Numărul de telefon este obligatoriu')
   .matches(
-    /^(?:\+40\s?7\d{2}\s?\d{3}\s?\d{3}|\+373\s?\d{2,3}\s?\d{2}\s?\d{3})$/,
-    'Numărul de telefon trebuie să fie în format valid (+40 7XX XXX XXX sau +373 XXX XX XXX)'
+    /^\+?[1-9]\d{1,14}$/,
+    'Numărul de telefon trebuie să fie în format valid internațional (ex: +1234567890)'
   );
 
 // Field validation for form submission
