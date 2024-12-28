@@ -106,13 +106,13 @@ export const useAuthService = () => {
           user_id: user.value?.id,
           phone_number,
           verified,
-        });
+        }).select();
 
       if (error) {
         throw new Error(error.message);
       }
 
-      return data;
+      return data[0];
     } catch (error) {
       throw error;
     }

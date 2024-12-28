@@ -9,6 +9,7 @@
           <slot name="prefix"></slot>
         </div>
         <input
+          ref="inputRef"
           :type="type"
           :name="name"
           :disabled="disabled"
@@ -77,8 +78,14 @@ const props = defineProps({
   error: {
     type: String,
     default: ''
+  },
+  autofocus: {
+    type: Boolean,
+    default: false
   }
 })
+
+const inputRef = ref()
 
 const inputClass = computed(() => {
     return twMerge('scroll-my-12 block w-full rounded-md border-0 py-1.5 pr-10 sm:text-sm sm:leading-6 text-gray-900', props.inputClass);
@@ -88,6 +95,12 @@ const model = defineModel()
 const handleInput = value => {
   model.value = value
 }
+
+onMounted(() => {
+  if(props.autofocus === true) {
+    inputRef.value.focus()
+  }
+})
 
 </script>
 
