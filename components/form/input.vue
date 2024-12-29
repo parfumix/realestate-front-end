@@ -30,6 +30,8 @@
       </div>
       <slot name="actions"></slot>
     </div>
+
+    <slot />
     <p v-if="error" :id="`${name}-error`" class="mt-2 text-sm text-red-600">
       {{ error }}
     </p>
