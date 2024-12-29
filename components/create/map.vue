@@ -1,7 +1,6 @@
 <template>
     <div class="flex flex-col h-full relative">
-        <CreateMapSuggestions :id="props.id" v-model="address" @select="handleSelectSuggestion" />
-        <div id="map-item" class="relative" style="height: 100%; width: 100%;" />
+        <div :id="id" class="relative" style="height: 100%; width: 100%;" />
     </div>
 </template>
 
@@ -17,17 +16,11 @@ const props = defineProps({
     id: {
         type: String, 
         required: true
-    },
-    error: {
-        type: String, 
-        required: false,
-        default: null
     }
 })
 
 const locationStore = useLocationStore()
 const { location, isLoading } = storeToRefs(locationStore)
-const address = ref(location.value?.street);
 
 const DEFAULT_LAT = 44.4268
 const DEFAULT_LON = 26.1025
@@ -39,7 +32,7 @@ const initializeMap = async () => {
     const romaniaBounds = getRomanianBounds();
 
     // Initialize Leaflet map
-    map = L.map('map-item', {
+    map = L.map(props.id, {
         maxZoom: 18,
         minZoom: 6,
         zoomControl: false, // Disable default zoom control
@@ -100,10 +93,6 @@ const initializeMap = async () => {
     });
 };
 
-const handleSelectSuggestion = ({ lat, lon, county, street }) => {
-    location.value = { lat, lon, county, street }
-}
-
 watch(() => location.value, ({ lat, lon }) => {
     map.setView([lat, lon], 13);
     marker.setLatLng([lat, lon]);
@@ -118,9 +107,7 @@ const reverseGeocode = async (lat, lon) => {
         const data = await response.json();
 
         const { address: suggestedAddress, display_name } = data;
-        location.value = { lat: parseFloat(lat), long: parseFloat(lon), county: suggestedAddress?.county, street: display_name };
-
-        address.value = data.display_name;
+        location.value = { lat: parseFloat(lat), lon: parseFloat(lon), county: suggestedAddress?.county, street: display_name };
     } catch (error) {
         console.error('Error fetching reverse geocoding data:', error);
     } finally {
@@ -140,7 +127,6 @@ const detectUserLocation = async () => {
     navigator.geolocation.getCurrentPosition(
         async (position) => {
             const { latitude, longitude } = position.coords;
-
             await reverseGeocode(latitude, longitude);
 
             if (map) {

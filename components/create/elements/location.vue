@@ -22,6 +22,10 @@ const handleSelectSuggestion = ({ lat, lon, county, street }) => {
     location.value = { lat, lon, county, street }
 }
 
+watch(() => location.value, ({ street }) => {
+    value.value = street
+})
+
 const { value, errorMessage } = useField(() => props.name, yup
     .string()
     .required('Locația este obligatorie')
