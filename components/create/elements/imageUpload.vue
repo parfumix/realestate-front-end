@@ -1,13 +1,16 @@
 <template>
     <div>
         <FormFileUpload :required="true" id="images" :accept="'image/png, image/jpeg'" :multiple="true"
-            :maxFileSize="5 * 1024 * 1024" v-model="value" :error="errorMessage" />
+            :maxFileSize="5 * 1024 * 1024" :maxFiles="MAX_FILES" v-model="value" :error="errorMessage" />
     </div>
 </template>
 
 <script setup>
 import { useField } from 'vee-validate';
 import * as yup from 'yup'
+
+const MIN_FILES = 1
+const MAX_FILES = 3
 
 const props = defineProps({
     name: String,
@@ -26,6 +29,10 @@ const { value, errorMessage } = useField(() => props.name, yup
                 return value.file && value.file.size <= 5 * 1024 * 1024; // 5MB
             })
     )
-    .min(1, 'Este necesară cel puțin o imagine.')
+    .min(MIN_FILES, 'Este necesară cel puțin o imagine.')
+    .max(MAX_FILES, 'Este admis cel mult 10 imagini.')
+    .test('maxFiles', 'Sunt permise cel mult 10 imagini.', (files) => {
+        return files.length <= MAX_FILES;
+    })
     .required('Este necesară cel puțin o imagine.'));
 </script>

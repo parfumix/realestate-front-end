@@ -65,6 +65,10 @@ const props = defineProps({
     type: Number,
     default: 15 * 1024 * 1024, // 15MB
   },
+  maxFiles: {
+    type: Number,
+    default: 10
+  },
   acceptText: {
     type: String,
     default: 'Sunt permise doar fișierele PNG și JPEG',
@@ -89,7 +93,10 @@ const images = defineModel({ type: Array, default: [] })
 const handleFileChange = (event) => {
   const files = event.target.files
 
-  for (const file of files) {
+  const selectedFiles = Array.from(files);
+  const slicedFiles = selectedFiles.slice(0, props.maxFiles);
+
+  for (const file of slicedFiles) {
     if (file.size > props.maxFileSize) {
       alert(`${file.name} depășește dimensiunea maximă a fișierului de ${maxFileSize / 1024 / 1024} MB.`);
       continue
