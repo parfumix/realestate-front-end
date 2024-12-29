@@ -65,9 +65,9 @@ const searchAddress = async () => {
 
     try {
         isLoading.value = true;
-        const response = await fetch(
-            `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(modelValue.value)}&countrycodes=RO&format=json&addressdetails=1&limit=5`
-        );
+        const searchUrl = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(modelValue.value)}&countrycodes=RO&format=json&addressdetails=1&limit=5&extratags=1&class=place&type=[city|town|village]`;
+
+        const response = await fetch(searchUrl);
         const data = await response.json();
 
         suggestions.value = data;
