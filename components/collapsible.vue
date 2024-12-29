@@ -1,5 +1,5 @@
 <template>
-    <div class="rounded-lg mb-4 overflow-hidden" :data-opened="isOpen">
+    <div class="rounded-lg mb-4" :data-opened="isOpen">
         <button class="w-full text-left px-4 py-2 transition flex justify-between items-center" @click.stop.prevent="isOpen = !isOpen">
             <span class="text-base text-gray-800">{{ title }}</span>
             <span>

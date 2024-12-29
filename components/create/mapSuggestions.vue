@@ -1,17 +1,22 @@
 <template>
-    <div class="flex flex-col items-center p-4 absolute top-0 inset-0 z-[900] h-[50px]">
-        <div class="w-full relative rounded-md shadow-sm focus-within:ring-2 focus-within:ring-gray-500 focus-within:ring-offset-4">
-            <input :id="id" autocomplete="off" v-model="modelValue" @input="debouncedSearchAddress" class="border-0 rounded w-full p-2 pr-[40px] ring-1 ring-gray-400 focus:ring-0	focus-within:outline-0 focus-within:outline-none" placeholder="Introduceți locația exactă a adresei dumneavoastră.." />
-            <div v-if="isLoading" class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
-                <LoaderCircle class="animate-spin -ml-1 h-5 w-5 text-black" />
-            </div>
+    <div class="flex flex-col items-center absolute top-0 inset-0 z-[900]">
+        <div class="w-full rounded-md shadow-sm">
+            <FormInput :id="id" :name="id" autocomplete="off" :required="true" @input="debouncedSearchAddress"  :label="label" :placeholder="placeholder ?? 'Introduceți locația exactă a adresei dumneavoastră..'" v-model="modelValue" :error="errorMessage">
+                <template #rightMessage>
+                    <div v-if="isLoading" class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
+                        <LoaderCircle class="animate-spin -ml-1 h-5 w-5 text-black" />
+                    </div>
+                </template>
+
+                <template #default>
+                    <ul v-if="suggestions.length" class="border bg-white w-full mt-2 rounded shadow">
+                        <li v-for="(suggestion, index) in suggestions" :key="index" @click="selectSuggestion(suggestion)" class="p-2 cursor-pointer hover:bg-gray-200">
+                            {{ suggestion.display_name }}
+                        </li>
+                    </ul>
+                </template>
+            </FormInput>
         </div>
-        <ul v-if="suggestions.length" class="border bg-white w-full mt-2 rounded shadow">
-            <li v-for="(suggestion, index) in suggestions" :key="index" @click="selectSuggestion(suggestion)"
-                class="p-2 cursor-pointer hover:bg-gray-200">
-                {{ suggestion.display_name }}
-            </li>
-        </ul>
     </div>
 </template>
 
@@ -23,6 +28,21 @@ const props = defineProps({
     id: {
         type: String,
         required: true
+    },
+    label: {
+        type: String,
+        required: false,
+        default: null,
+    },
+    placeholder: {
+        type: String,
+        required: false,
+        default: null,
+    },
+    errorMessage: {
+        type: String,
+        required: false,
+        default: null,
     }
 })
 
@@ -49,6 +69,7 @@ const searchAddress = async () => {
             `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(modelValue.value)}&countrycodes=RO&format=json&addressdetails=1&limit=5`
         );
         const data = await response.json();
+
         suggestions.value = data;
     } catch (error) {
         console.error('Error fetching address suggestions:', error);

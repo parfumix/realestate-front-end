@@ -10,6 +10,10 @@ export const useLocationStore = defineStore('location', () => {
         localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(newVal))
     }
 
+    watch(() => location.value, (newVal) => {
+        setLocationToStorage(newVal)
+    })
+
     return {
         setLocationToStorage,
         isLoading,

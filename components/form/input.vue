@@ -24,9 +24,11 @@
           :aria-describedby="error ? `${name}-error` : null"
           @input="e => handleInput(e.target.value)"
         />
-        <div v-if="error" class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
-          <ExclamationCircleIcon class="h-5 w-5 text-red-500" aria-hidden="true" />
-        </div>
+        <slot name="rightMessage">
+          <div v-if="error" class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
+            <ExclamationCircleIcon class="h-5 w-5 text-red-500" aria-hidden="true" />
+          </div>
+        </slot>
       </div>
       <slot name="actions"></slot>
     </div>
@@ -46,7 +48,8 @@ import { twMerge } from 'tailwind-merge';
 const props = defineProps({
   label: {
     type: String,
-    required: true
+    required: false,
+    default: null
   },
   type: {
     type: String,
@@ -93,9 +96,13 @@ const inputClass = computed(() => {
     return twMerge('scroll-my-12 block w-full rounded-md border-0 py-1.5 pr-10 sm:text-sm sm:leading-6 text-gray-900', props.inputClass);
 })
 
+const emit = defineEmits(['input'])
+
 const model = defineModel()
+
 const handleInput = value => {
   model.value = value
+  emit('input', value)
 }
 
 onMounted(() => {

@@ -101,12 +101,13 @@ const initializeMap = async () => {
 };
 
 const handleSelectSuggestion = ({ lat, lon, county, street }) => {
-    // Move marker and map to the selected location
     location.value = { lat, lon, county, street }
+}
 
+watch(() => location.value, ({ lat, lon }) => {
     map.setView([lat, lon], 13);
     marker.setLatLng([lat, lon]);
-}
+})
 
 const reverseGeocode = async (lat, lon) => {
     try {
@@ -126,10 +127,6 @@ const reverseGeocode = async (lat, lon) => {
         isLoading.value = false
     }
 };
-
-watch(() => location.value, (newVal) => {
-    locationStore.setLocationToStorage(newVal)
-})
 
 const detectUserLocation = async () => {
     isLoading.value = true;
