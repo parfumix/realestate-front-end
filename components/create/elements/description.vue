@@ -52,6 +52,8 @@ const props = defineProps({
     title: String,
 });
 
+const emit = defineEmits(['applyeFields'])
+
 const { value, errorMessage } = useField(() => props.name, yup.string().required('Descrierea este obligatorie').min(100, 'Este nevoie de minim 100 de caractere').max(500, 'Maximum 500 de caractere'));
 
 const defaultTone = ref('professional')
@@ -117,6 +119,8 @@ const handleAutoGenerate = async () => {
             text: value.value,
             tone: defaultTone.value
         })
+
+        emit('applyeFields', data?.value?.fields || {})
         aiGeneratedDescription.value = data?.value.text
     } catch (err) {
         // show erro message
