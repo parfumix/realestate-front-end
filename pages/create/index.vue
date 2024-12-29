@@ -74,9 +74,8 @@
   // use tone as dropdown to the same button - x
   // change characteristics & facilites based on property type - x
   // adding opt phone number verification - x
-
-  // adding price & location fields -- location variable create in this component
-  // adding location field in form with text pointing to the map
+  // adding price & location fields -- location variable create in this component - x
+  // adding location field in form with text pointing to the map - x
 
   // fix textarea
   // auto-generate facilities & characterhistics
