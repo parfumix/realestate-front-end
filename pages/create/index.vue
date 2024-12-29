@@ -13,7 +13,7 @@
                 <CreateElementsFormType class="mt-4" :title="fieldsMeta['propertyType'].long" name="propertyType" />
                 <CreateElementsTransactionType class="mt-4" :title="fieldsMeta['transactionType'].long" name="transactionType" />
                 <FormAlert class="mt-4" message="Titlul anunțului se generează automat pe baza informațiilor furnizate." />
-                <CreateElementsDescription class="mt-4" :title="fieldsMeta['description'].long" name="description" />
+                <CreateElementsDescription class="mt-4" :title="fieldsMeta['description'].long" name="description" @applyeFields="handleApplyFields" />
                 <CreateElementsImageUpload class="mt-4" name="images" />
   
                 <!-- Facilities -->
@@ -77,19 +77,18 @@
   // adding price & location fields -- location variable create in this component - x
   // adding location field in form with text pointing to the map - x
 
-  // fix textarea
   // auto-generate facilities & characterhistics
+  // fix textarea
   // once ai text generated hide generate with ai button until user start typing again
   // save & edit item
   // adding back-end API CRUD operations
+  // make different color for generated description
 
   // allow to select text and apply AI changes
   // adding moderation - https://chatgpt.com/share/6756fcb7-6464-8006-9453-d5f41b730e1e
   // adding scrolling buttons & shadow // https://css-scroll-shadows.vercel.app/?bgColor=ffffff&shadowColor=666666&pxSize=34
   // adding moderation text & photos (photos min width & height) https://chatgpt.com/c/6768165f-b1a8-8006-80d6-d41efbb92dec
   // https://shift.infinite.red/avoid-nightmares-nsfw-js-ab7b176978b1
-  // make different color for generated description
-  // for location show that map is on right side, autocomplete
   // hide sidebar if responsive mobile
   // adding cloudflare protection
   
@@ -215,7 +214,7 @@
       terms_and_conditions: false
   }
   
-  const { handleSubmit, errors, isSubmitting, values } = useForm({ initialValues });
+  const { handleSubmit, errors, isSubmitting, values, setValues } = useForm({ initialValues });
   
   const getFieldStatus = (fieldName) => {
     if (errors.value[fieldName]) {
@@ -258,6 +257,10 @@
   const fieldStatuses = computed(() => {
     return getAllFieldStatuses()
   })
+
+  const handleApplyFields = fields => {
+    setValues(fields)
+  }
 
   const onSubmit = handleSubmit(async(values) => {
     console.log('Submitted:', values);
