@@ -53,7 +53,7 @@
           </form>
 
           <div class="h-[40px] px-6 mb-[5px]">
-            <FormButton :class="['bg-blue-800 hover:bg-blue-700 w-full h-full text-lg']" :disabled="isSubmitting" text="Publică" @onClick="onSubmit" />
+            <FormButton :class="['bg-blue-800 hover:bg-blue-700 w-full h-full text-lg']" :disabled="isSubmitting || isSendingRequest" text="Publică" @onClick="onSubmit" />
           </div>
         </div>
   
@@ -101,7 +101,10 @@
   )
   
   const router = useRouter()
-  
+
+  const { createProperty } = usePropertyService()
+  const { notify } = useNotification();
+
   // Field labels for real estate ads with short, long, and descriptive text
   const fieldsMeta = {
     propertyType: {
@@ -215,7 +218,8 @@
   }
   
   const { handleSubmit, errors, isSubmitting, values, setValues } = useForm({ initialValues });
-  
+  const isSendingRequest = ref(false)
+
   const getFieldStatus = (fieldName) => {
     if (errors.value[fieldName]) {
       return 'errored';
@@ -263,10 +267,26 @@
   }
 
   const onSubmit = handleSubmit(async(values) => {
-    console.log('Submitted:', values);
+    try {
+      console.log('Submitted:', values);
 
-    await delay(300)
-    router.push('create/success')
+      isSendingRequest.value = true
+      const response = await createProperty(values)
+
+      console.log(response)
+
+      await delay(300)
+      router.push('create/success')
+
+    } catch(err) {
+      notify({
+            title: 'Eroare!',
+            text: err?.message || 'A apărut o eroare!',
+            type: 'error',
+        });
+    } finally {
+      isSendingRequest.value = false
+    }
   }, async({ errors }) => {
     const orderedFields = Object.keys(initialValues)
     const requiredFields = getAllRequiredFields()
