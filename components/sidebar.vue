@@ -29,7 +29,8 @@
 
 <script setup>
 
-//https://preline.co//docs/sidebar.html
+// https://preline.co//docs/sidebar.html
+// https://tailwindui.com/components/application-ui/application-shells/multi-column#component-d447e3faf2d20feaf42f06c4cbbcd94a
 import { useNotificationsStore } from '@/stores/notifications';
 import { useModalStore } from '@/stores/modals';
 

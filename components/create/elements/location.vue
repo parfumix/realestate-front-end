@@ -1,6 +1,6 @@
 <template>
     <div class="relative">
-        <CreateMapSuggestions :id="props.name" :label="title" :placeholder="description" v-model="value" :errorMessage="errorMessage" @select="handleSelectSuggestion" />
+        <CreateMapSuggestions :id="props.name" :label="title" :placeholder="description" v-model="value.street" :errorMessage="errorMessage" @select="handleSelectSuggestion" />
     </div>
 </template>
 
@@ -18,21 +18,25 @@ const locationStore = useLocationStore()
 const { location } = storeToRefs(locationStore)
 
 const handleSelectSuggestion = ({ lat, lon, county, street }) => {
-    value.value = street
     location.value = { lat, lon, county, street }
 }
 
-watch(() => location.value, ({ street }) => {
-    value.value = street
+watch(() => location.value, ({ lat, lon, county, street }) => {
+    value.value = { lat, lon, county, street }
+    console.log(value.value)
 })
 
 const { value, errorMessage } = useField(() => props.name, yup
-    .string()
+    .object({
+        lat: yup.number().required(),
+        lon: yup.number().required(),
+        county: yup.string().optional(),
+        street: yup.string().optional(),
+    })
     .required('Locația este obligatorie')
-    .min(5, 'Locația trebuie să aibă cel puțin 5 caractere')
-    .max(100, 'Locația poate avea maximum 100 de caractere'));
+);
 
 onMounted(() => {
-    value.value = location.value?.street
+    value.value = location.value || { lat: null, lon: null, county: '', street: '' };
 })
 </script>
