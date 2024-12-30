@@ -23,7 +23,6 @@ const handleSelectSuggestion = ({ lat, lon, county, street }) => {
 
 watch(() => location.value, ({ lat, lon, county, street }) => {
     value.value = { lat, lon, county, street }
-    console.log(value.value)
 })
 
 const { value, errorMessage } = useField(() => props.name, yup
