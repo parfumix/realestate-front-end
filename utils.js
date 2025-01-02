@@ -147,3 +147,27 @@ export const launchConfetti = () => {
     origin: { x: 0.5, y: 0.5 },
   });
 }
+
+export const objectToFormData = (obj, form, namespace) => {
+  let fd = form || new FormData();
+  let formKey;
+  
+  for(let property in obj) {
+    if(obj.hasOwnProperty(property)) {
+      formKey = namespace ? namespace + '[' + property + ']' : property
+     
+      if(typeof obj[property] === 'object' && !(obj[property] instanceof File) && !Array.isArray(obj[property])) {
+        objectToFormData(obj[property], fd, property);
+      } else if(Array.isArray(obj[property])) {
+        obj[property].forEach((element, index) => {
+          const elKey = element instanceof File ? formKey : formKey + '[' + index + ']'
+          fd.append(elKey, element);
+        })
+      } else {
+        fd.append(formKey, obj[property]);
+      }
+    }
+  }
+  
+  return fd
+}

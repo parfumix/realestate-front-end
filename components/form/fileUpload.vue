@@ -82,6 +82,8 @@ const props = defineProps({
 // Generate a unique ID
 const generateUniqueId = () => `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
 
+const emit = defineEmits(['change'])
+
 // Reactive state for previews
 const previewImages = ref([])
 const galleryImages = ref([]);
@@ -119,10 +121,13 @@ const handleFileChange = (event) => {
       reader.readAsDataURL(file)
     }
 
+
     images.value = [...images.value, ...[
       { ...{ file }, ...{ id: uniqueId } }
     ]]
   }
+
+  emit('change', Array.from(files)) 
 }
 
 const openGallery = (index) => {

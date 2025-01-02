@@ -93,7 +93,7 @@
   // adding cloudflare protection
   
   import { useForm } from 'vee-validate'
-  import { delay, scrollToElement, setHead, shakeElement } from '../../utils'
+  import { delay, scrollToElement, setHead, shakeElement, objectToFormData } from '../../utils'
   
   setHead(
     'Listează-ți Proprietatea Gratuit', 
@@ -271,13 +271,13 @@
       console.log('Submitted:', values);
 
       isSendingRequest.value = true
-      const response = await createProperty(values)
+      const response = await createProperty(objectToFormData(values))
 
       console.log(response)
 
       await delay(300)
       router.push('create/success')
-
+      
     } catch(err) {
       notify({
             title: 'Eroare!',
