@@ -141,7 +141,7 @@
         setValues({
           propertyType, transactionType, description, images, selectedFacilities, roomCount, area, floor, price, location
         })
-
+        
       } catch(err) {
         console.log(err)
       }
@@ -151,6 +151,7 @@
     if (errors.value[fieldName]) {
       return 'errored';
     }
+
     const value = values[fieldName];
     if (value && value.length > 0) {
       return 'filled';
@@ -172,16 +173,16 @@
   
   const getAllFieldStatuses = () => {
     return getAllRequiredFields()
-    .filter(el => ! fieldsToBeExcludedFromTimeline().includes(el))
-    .map((field) => {
-      return {
-        id: field,
-        label: propertyFieldsMeta?.[field]?.['short'] || field,
-        description: propertyFieldsMeta?.[field]?.['description'] || field,
-        status: getFieldStatus(field),
-        error: errors.value?.[field]
-      };
-    });
+      .filter(el => ! fieldsToBeExcludedFromTimeline().includes(el))
+      .map((field) => {
+        return {
+          id: field,
+          label: propertyFieldsMeta?.[field]?.['short'] || field,
+          description: propertyFieldsMeta?.[field]?.['description'] || field,
+          status: getFieldStatus(field),
+          error: errors.value?.[field]
+        };
+      });
   };
   
   const fieldStatuses = computed(() => {
@@ -192,16 +193,23 @@
     setValues(fields)
   }
 
-  const handleSubmitProperty = () => {}
-  const handleUpdateProperty = () => {}
+  const handleSubmitProperty = async(values) => {
+    return await createProperty(objectToFormData(values))
+  }
+  const handleUpdateProperty = async(slug, values) => {
+    return await updateProperty(slug, objectToFormData(values))
+  }
 
   const onSubmit = handleSubmit(async(values) => {
     try {
       console.log('Submitted:', values);
 
       isSendingRequest.value = true
-      const data = await createProperty(objectToFormData(values))
 
+      const data = slug 
+        ? handleUpdateProperty(slug, values) 
+        : handleSubmitProperty(values)
+     
       console.log(data)
 
       await delay(300)
