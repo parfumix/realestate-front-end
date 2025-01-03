@@ -10,10 +10,10 @@
           <form @submit.prevent="onSubmit" class="no-scrollbar scrollShadow overflow-auto h-[calc(100vh-130px)] mt-[30px]">
             <div class="space-y-12 px-6 pb-4">
               <div class="border-b border-gray-900/10 pb-6">
-                <CreateElementsFormType class="mt-4" :title="fieldsMeta['propertyType'].long" name="propertyType" />
-                <CreateElementsTransactionType class="mt-4" :title="fieldsMeta['transactionType'].long" name="transactionType" />
+                <CreateElementsFormType class="mt-4" :title="propertyFieldsMeta['propertyType'].long" name="propertyType" />
+                <CreateElementsTransactionType class="mt-4" :title="propertyFieldsMeta['transactionType'].long" name="transactionType" />
                 <FormAlert class="mt-4" message="Titlul anunțului se generează automat pe baza informațiilor furnizate." />
-                <CreateElementsDescription class="mt-4" :title="fieldsMeta['description'].long" name="description" @applyeFields="handleApplyFields" />
+                <CreateElementsDescription class="mt-4" :title="propertyFieldsMeta['description'].long" name="description" @applyeFields="handleApplyGeneratedDescription" />
                 <CreateElementsImageUpload class="mt-4" name="images" />
   
                 <!-- Facilities -->
@@ -24,21 +24,21 @@
                 <!-- Rooms and Details -->
                 <Collapsible :isOpened="true" title="Caracteristici" class="mt-4 collapsible">
                   <div class="mt-4 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-2">
-                    <CreateFormsApartment v-if="values['propertyType']=='apartment'" :fieldsMeta="fieldsMeta" />
-                    <CreateFormsHouse v-if="values['propertyType']=='home'" :fieldsMeta="fieldsMeta" />
-                    <CreateFormsCommercial v-if="values['propertyType']=='comercial'" :fieldsMeta="fieldsMeta" />
-                    <CreateFormsLand v-if="values['propertyType']=='land'" :fieldsMeta="fieldsMeta" />
+                    <CreateFormsApartment v-if="values['propertyType']=='apartment'" :fieldsMeta="propertyFieldsMeta" />
+                    <CreateFormsHouse v-if="values['propertyType']=='home'" :fieldsMeta="propertyFieldsMeta" />
+                    <CreateFormsCommercial v-if="values['propertyType']=='comercial'" :fieldsMeta="propertyFieldsMeta" />
+                    <CreateFormsLand v-if="values['propertyType']=='land'" :fieldsMeta="propertyFieldsMeta" />
                   </div>
 
                   <div class="mt-4 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-2">
-                    <CreateElementsPrice :title="fieldsMeta?.['price'].long" name="price" />
-                    <CreateElementsLocation :title="fieldsMeta['location'].long" :description="fieldsMeta['location'].description" name="location" />
+                    <CreateElementsPrice :title="propertyFieldsMeta?.['price'].long" name="price" />
+                    <CreateElementsLocation :title="propertyFieldsMeta['location'].long" :description="propertyFieldsMeta['location'].description" name="location" />
                   </div>
                 </Collapsible>
                 
                 <!-- Contact Details -->
                 <Collapsible :isOpened="true" title="Persoana de contact" class="mt-4 collapsible">
-                  <CreateElementsPhone :title="fieldsMeta?.['phones'].long" name="phones" />
+                  <CreateElementsPhone :title="propertyFieldsMeta?.['phones'].long" name="phones" />
                 </Collapsible>
 
                 <div class="mt-4">
@@ -46,7 +46,7 @@
                 </div>
   
                 <div class="mt-4 flex justify-center">
-                  <CreateElementsTermsAndConditions :title="fieldsMeta['terms_and_conditions'].long" name="terms_and_conditions" />
+                  <CreateElementsTermsAndConditions :title="propertyFieldsMeta['terms_and_conditions'].long" name="terms_and_conditions" />
                 </div>
               </div>
             </div>
@@ -63,7 +63,7 @@
       </div>
   
       <div class="lg:w-1/2">
-        <CreateElementsLocationMap :title="fieldsMeta['location'].long" :description="fieldsMeta['location'].description" name="location" />
+        <CreateElementsLocationMap :title="propertyFieldsMeta['location'].long" :description="propertyFieldsMeta['location'].description" name="location" />
       </div>
     </main>
   </template>
@@ -94,7 +94,7 @@
   // adding cloudflare protection
   
   import { useForm } from 'vee-validate'
-  import { delay, scrollToElement, setHead, shakeElement, objectToFormData } from '../../utils'
+  import { delay, scrollToElement, setHead, shakeElement, objectToFormData, propertyFieldsMeta } from '../../utils'
   
   setHead(
     'Listează-ți Proprietatea Gratuit', 
@@ -102,130 +102,13 @@
   )
   
   const router = useRouter()
+  const route = useRoute()
 
-  const { createProperty } = usePropertyService()
+  const { slug } = route.query
+
+  const { createProperty, updateProperty, getPropertyBySlug } = usePropertyService()
   const { notify } = useNotification();
 
-  // Field labels for real estate ads with short, long, and descriptive text
-  const fieldsMeta = {
-    propertyType: {
-      required: true,
-      short: "Tip propr.",
-      long: "Tipul de proprietate",
-      description: "Categoria de proprietate, cum ar fi apartament, casă, teren, sau altceva.",
-    },
-    transactionType: {
-      required: true,
-      short: "Tip tranz.",
-      long: "Tipul de tranzacție",
-      description: "Tipul de tranzacție dorită, cum ar fi vânzare, închiriere sau schimb.",
-    },
-    description: {
-      required: true,
-      short: "Descr.",
-      long: "Descriere",
-      description: "Un text detaliat care evidențiază caracteristicile și avantajele proprietății.",
-    },
-    selectedFacilities: {
-      short: "Facilități",
-      long: "Facilități",
-      description: "Lista facilităților disponibile, cum ar fi lift, piscină, parcare subterană.",
-    },
-    images: {
-      required: true,
-      short: "Img.",
-      long: "Imagini",
-      description: "Fotografii sau imagini ale proprietății pentru o prezentare vizuală mai clară.",
-    },
-    roomCount: {
-      required: true,
-      short: "Nr. camere",
-      long: "Număr de camere",
-      description: "Numărul total de camere disponibile în proprietate.",
-    },
-    area: {
-      required: true,
-      short: "Sup. totală",
-      long: "Suprafață totală",
-      description: "Suprafața totală a proprietății, incluzând toate anexele, cum ar fi balcoane.",
-    },
-    floor: {
-      required: true,
-      short: "Etaj",
-      long: "Etaj",
-      description: "Nivelul etajului unde se află proprietatea (ex: parter, etaj 1, mansardă).",
-    },
-    balcony: {
-      short: "Balcon",
-      long: "Balcon/lojie",
-      description: "Detalii despre balcoane sau lojiile incluse, cum ar fi dimensiunea sau numărul acestora.",
-    },
-    parking: {
-      short: "Parcare",
-      long: "Loc de parcare",
-      description: "Informații despre disponibilitatea și tipul locului de parcare.",
-    },
-    apartmentCondition: {
-      short: "Stare ap.",
-      long: "Starea apartamentului",
-      description: "Starea actuală a apartamentului, cum ar fi renovat, mobilat, semifinisat.",
-    },
-    location: {
-      required: true,
-      short: "Loc.",
-      long: "Locație",
-      description: "Adresa sau locația utilizată pentru a identifica poziția sau punctul de contact."
-    },
-    price: {
-      required: true,
-      short: "Preț",
-      long: "Prețul proprietății",
-      description: "Costul proprietății, exprimat în moneda specificată.",
-    },
-    phones: {
-      required: true,
-      short: "Tel.",
-      long: "Telefon",
-      description: "Numărul de telefon pentru contact direct.",
-    },
-    terms_and_conditions: {
-      required: true,
-      short: "T&C",
-      long: "Am citit și sunt de acord cu",
-      description: "Termeni și condiții pentru utilizarea serviciului.",
-    },
-  };
-
-  // use for initial values when rapid testing
-  const generateRandomValues = () => {
-    return {
-      propertyType: 'apartment', // Randomized between 'apartment', 'comercial', 'commercial', 'land'
-      transactionType: 'sell', // Randomized between 'sell', 'rent'
-      description: 'Modern apartment with panoramic windows and smart home system, located in a prime area. Ideal for professionals and families.',
-
-      images: ['https://example.com/image1.jpg', 'https://example.com/image2.jpg'], // Simulated image URLs
-      selectedFacilities: [
-        'panoramic_windows',
-        'smart_home_system',
-        'autonomous_heating',
-        'internet',
-        'playground',
-      ],
-
-      roomCount: 3, // Random value between 1 and 5
-      area: 75, // Random value between 20 and 500
-      floor: 5, // Random value between 0 and 25
-      balcony: 2, // Random value between 1 and 4
-      parking: 'garage', // Random value from parkingOptions: 'open', 'garage', 'covered', 'underground'
-      apartmentCondition: 'euro-renovation', // Random value from apartmentConditionOptions
-      location: 'Constanța', // Randomized location
-
-      price: 95000, // Random value between 50 and 1,000,000 (in appropriate currency units)
-      phones: ['+40 123 456 789', '+40 987 654 321'], // Randomized phone numbers
-      terms_and_conditions: true // Kept as true
-    }
-  }
-  
   const initialValues = {
       propertyType: 'apartment',
       transactionType: 'sell',
@@ -247,9 +130,22 @@
       phones: [],
       terms_and_conditions: false
   }
-  
+
   const { handleSubmit, errors, isSubmitting, values, setValues } = useForm({ initialValues });
   const isSendingRequest = ref(false)
+
+  if(slug) {
+      try {
+        const { property_type: propertyType, transaction_type: transactionType, description, images, facilities: selectedFacilities, area, floor, room_count: roomCount, price, location } = await getPropertyBySlug(slug)
+
+        setValues({
+          propertyType, transactionType, description, images, selectedFacilities, roomCount, area, floor, price, location
+        })
+
+      } catch(err) {
+        console.log(err)
+      }
+  }
 
   const getFieldStatus = (fieldName) => {
     if (errors.value[fieldName]) {
@@ -266,7 +162,7 @@
     const orderedFields = Object.keys(initialValues)
 
     return Object.keys(values).filter(fieldName => {
-      return fieldsMeta[fieldName]?.required || false
+      return propertyFieldsMeta[fieldName]?.required || false
     }).sort((a, b) => orderedFields.indexOf(a) - orderedFields.indexOf(b));
   }
   
@@ -274,15 +170,14 @@
     return ['propertyType', 'transactionType', 'terms_and_conditions']
   }
   
-  // Utility function to get all fields and statuses
   const getAllFieldStatuses = () => {
     return getAllRequiredFields()
     .filter(el => ! fieldsToBeExcludedFromTimeline().includes(el))
     .map((field) => {
       return {
         id: field,
-        label: fieldsMeta?.[field]?.['short'] || field,
-        description: fieldsMeta?.[field]?.['description'] || field,
+        label: propertyFieldsMeta?.[field]?.['short'] || field,
+        description: propertyFieldsMeta?.[field]?.['description'] || field,
         status: getFieldStatus(field),
         error: errors.value?.[field]
       };
@@ -293,18 +188,21 @@
     return getAllFieldStatuses()
   })
 
-  const handleApplyFields = fields => {
+  const handleApplyGeneratedDescription = fields => {
     setValues(fields)
   }
+
+  const handleSubmitProperty = () => {}
+  const handleUpdateProperty = () => {}
 
   const onSubmit = handleSubmit(async(values) => {
     try {
       console.log('Submitted:', values);
 
       isSendingRequest.value = true
-      const response = await createProperty(objectToFormData(values))
+      const data = await createProperty(objectToFormData(values))
 
-      console.log(response)
+      console.log(data)
 
       await delay(300)
       router.push('create/success')

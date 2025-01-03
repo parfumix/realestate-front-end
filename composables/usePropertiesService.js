@@ -10,7 +10,7 @@ export const usePropertyService = () => {
 
             if (error.value) throw new Error(error.value?.data?.message || 'Failed to fetch properties');
 
-            return data;
+            return data?.value?.data;
         } catch (error) {
             throw error;
         }
@@ -23,8 +23,7 @@ export const usePropertyService = () => {
             });
 
             if (error.value) throw new Error(error.value?.data?.message || 'Failed to fetch property');
-
-            return data;
+            return data.value?.data;
         } catch (error) {
             throw error;
         }
@@ -39,7 +38,7 @@ export const usePropertyService = () => {
 
             if (error.value) throw new Error(error.value?.data?.message || 'Failed to create property');
 
-            return data;
+            return data?.value.data;
         } catch (error) {
             throw error;
         }
@@ -54,7 +53,7 @@ export const usePropertyService = () => {
 
             if (error.value) throw new Error(error.value?.data?.message || 'Failed to update property');
 
-            return data;
+            return data?.value?.data;
         } catch (error) {
             throw error;
         }
@@ -68,7 +67,7 @@ export const usePropertyService = () => {
 
             if (error.value) throw new Error(error.value?.data?.message || 'Failed to delete property');
 
-            return data;
+            return data?.value?.data;
         } catch (error) {
             throw error;
         }

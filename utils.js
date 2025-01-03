@@ -6,7 +6,7 @@ export const getRomanianBounds = (flat = false) => {
     ]
 }
 
-  export const removeEmptyValues = (obj) => {
+export const removeEmptyValues = (obj) => {
     if(! obj) return {}
     
     Object.keys(obj).forEach((key) => {
@@ -31,7 +31,7 @@ export const calculateTravelTime = (distanceMeters, mode = 'walking') => {
   const travelTimeHours = distanceKm / speed;
 
   return Math.round(travelTimeHours * 60); // Convert to minutes and round off
-};
+}
 
 export const setHead = (title = '', meta = []) => {
   useHead({
@@ -44,14 +44,8 @@ export const setHead = (title = '', meta = []) => {
       },
     ],
   });
-};
+}
 
-/**
- * Splits an array into chunks of a specified size.
- * @param {Array} array - The array to split.
- * @param {number} size - The size of each chunk.
- * @returns {Array} - An array of chunks.
- */
 export const chunkArray = (array, size) => {
   if (!Array.isArray(array)) {
       throw new TypeError("First argument must be an array.");
@@ -81,7 +75,7 @@ export const distributeArray = (array, groups) => {
   }
 
   return result;
-};
+}
 
 export const delay = (ms) => {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -170,4 +164,122 @@ export const objectToFormData = (obj, form, namespace) => {
   }
   
   return fd
+}
+
+export const generatePropertyRandomValues = () => {
+  return {
+    propertyType: 'apartment', // Randomized between 'apartment', 'comercial', 'commercial', 'land'
+    transactionType: 'sell', // Randomized between 'sell', 'rent'
+    description: 'Modern apartment with panoramic windows and smart home system, located in a prime area. Ideal for professionals and families.',
+
+    images: ['https://example.com/image1.jpg', 'https://example.com/image2.jpg'], // Simulated image URLs
+    selectedFacilities: [
+      'panoramic_windows',
+      'smart_home_system',
+      'autonomous_heating',
+      'internet',
+      'playground',
+    ],
+
+    roomCount: 3, // Random value between 1 and 5
+    area: 75, // Random value between 20 and 500
+    floor: 5, // Random value between 0 and 25
+    balcony: 2, // Random value between 1 and 4
+    parking: 'garage', // Random value from parkingOptions: 'open', 'garage', 'covered', 'underground'
+    apartmentCondition: 'euro-renovation', // Random value from apartmentConditionOptions
+    location: 'Constanța', // Randomized location
+
+    price: 95000, // Random value between 50 and 1,000,000 (in appropriate currency units)
+    phones: ['+40 123 456 789', '+40 987 654 321'], // Randomized phone numbers
+    terms_and_conditions: true // Kept as true
+  }
+}
+
+export const propertyFieldsMeta = {
+  propertyType: {
+    required: true,
+    short: "Tip propr.",
+    long: "Tipul de proprietate",
+    description: "Categoria de proprietate, cum ar fi apartament, casă, teren, sau altceva.",
+  },
+  transactionType: {
+    required: true,
+    short: "Tip tranz.",
+    long: "Tipul de tranzacție",
+    description: "Tipul de tranzacție dorită, cum ar fi vânzare, închiriere sau schimb.",
+  },
+  description: {
+    required: true,
+    short: "Descr.",
+    long: "Descriere",
+    description: "Un text detaliat care evidențiază caracteristicile și avantajele proprietății.",
+  },
+  selectedFacilities: {
+    short: "Facilități",
+    long: "Facilități",
+    description: "Lista facilităților disponibile, cum ar fi lift, piscină, parcare subterană.",
+  },
+  images: {
+    required: true,
+    short: "Img.",
+    long: "Imagini",
+    description: "Fotografii sau imagini ale proprietății pentru o prezentare vizuală mai clară.",
+  },
+  roomCount: {
+    required: true,
+    short: "Nr. camere",
+    long: "Număr de camere",
+    description: "Numărul total de camere disponibile în proprietate.",
+  },
+  area: {
+    required: true,
+    short: "Sup. totală",
+    long: "Suprafață totală",
+    description: "Suprafața totală a proprietății, incluzând toate anexele, cum ar fi balcoane.",
+  },
+  floor: {
+    required: true,
+    short: "Etaj",
+    long: "Etaj",
+    description: "Nivelul etajului unde se află proprietatea (ex: parter, etaj 1, mansardă).",
+  },
+  balcony: {
+    short: "Balcon",
+    long: "Balcon/lojie",
+    description: "Detalii despre balcoane sau lojiile incluse, cum ar fi dimensiunea sau numărul acestora.",
+  },
+  parking: {
+    short: "Parcare",
+    long: "Loc de parcare",
+    description: "Informații despre disponibilitatea și tipul locului de parcare.",
+  },
+  apartmentCondition: {
+    short: "Stare ap.",
+    long: "Starea apartamentului",
+    description: "Starea actuală a apartamentului, cum ar fi renovat, mobilat, semifinisat.",
+  },
+  location: {
+    required: true,
+    short: "Loc.",
+    long: "Locație",
+    description: "Adresa sau locația utilizată pentru a identifica poziția sau punctul de contact."
+  },
+  price: {
+    required: true,
+    short: "Preț",
+    long: "Prețul proprietății",
+    description: "Costul proprietății, exprimat în moneda specificată.",
+  },
+  phones: {
+    required: true,
+    short: "Tel.",
+    long: "Telefon",
+    description: "Numărul de telefon pentru contact direct.",
+  },
+  terms_and_conditions: {
+    required: true,
+    short: "T&C",
+    long: "Am citit și sunt de acord cu",
+    description: "Termeni și condiții pentru utilizarea serviciului.",
+  },
 }
