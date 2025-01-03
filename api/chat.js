@@ -2,7 +2,7 @@ import { useCustomFetch } from '~/composables/useCustomFetch'
 
 const query = async (q = null, filters = null, mapFilters = null, offset = null, isMovingMap = null) => {
    // Start with the base URL
-   let url = 'query';
+   let url = 'properties/query';
 
    // Initialize an array to store query parameters
    const queryParams = [];
@@ -28,7 +28,7 @@ const query = async (q = null, filters = null, mapFilters = null, offset = null,
 };
 
 const requestDetails = async(propertyId, query) => {
-  const { data, error } = await useCustomFetch(`details/${propertyId}`, {
+  const { data, error } = await useCustomFetch(`properties/details/${propertyId}`, {
     method: 'POST',
     body: JSON.stringify({ q: query }),
     headers: {
@@ -39,7 +39,7 @@ const requestDetails = async(propertyId, query) => {
 }
 
 const fetchItemBySlug = async(slug) => {
-  const { data, error } = await useCustomFetch(`property/${slug}`);
+  const { data, error } = await useCustomFetch(`properties/${slug}`);
   return { data, error }
 }
 
