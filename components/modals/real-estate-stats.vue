@@ -5,7 +5,7 @@
       <p><strong>Area:</strong> {{ item.area }} m²</p>
       <p><strong>Rooms:</strong> {{ item.room_count }}</p>
       <p><strong>Floor:</strong> {{ item.floor }}</p>
-      <p><strong>Location:</strong> {{ item.street }}</p>
+      <p><strong>Location:</strong> {{ item.location }}</p>
     </div>
 
     <div v-if="item.meta?.facilities?.length > 0" class="mt-6">

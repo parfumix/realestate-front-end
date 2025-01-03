@@ -47,7 +47,7 @@ const handleSelectTab = (tab, amenities = null) => {
   }
 
 const propertyTitle = computed(() => {
-  const { room_count, area, price, street } = item.value;
-  return `${room_count} camere, ${area} mp - ${price} EUR - ${street}`;
+  const { room_count, area, price, location } = item.value;
+  return `${room_count} camere, ${area} mp - ${price} EUR - ${location}`;
 });
 </script>
