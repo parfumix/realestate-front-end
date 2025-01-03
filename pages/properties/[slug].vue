@@ -1,5 +1,5 @@
 <template>
-    <main class="flex flex-row space-x-2 ml-20">
+    <main v-if="! publishedSuccessfully" class="flex flex-row space-x-2 ml-20">
       <div class="lg:w-1/2 md:w-full md:mx-auto flex">
         <div class="w-5/6">
           <div class="p-6 h-[20px]">
@@ -65,6 +65,9 @@
       <div class="lg:w-1/2">
         <CreateElementsLocationMap :title="propertyFieldsMeta['location'].long" :description="propertyFieldsMeta['location'].description" name="location" />
       </div>
+    </main>
+    <main v-else class="flex flex-row space-x-2 ml-20">
+      <CreateSuccess />
     </main>
   </template>
   
@@ -147,6 +150,7 @@
 
   const { handleSubmit, errors, isSubmitting, values, setValues } = useForm({ initialValues });
   const isSendingRequest = ref(false)
+  const publishedSuccesfully = ref(false)
 
   if(isEditMode.value) {
       try {
@@ -220,19 +224,13 @@
 
   const onSubmit = handleSubmit(async(values) => {
     try {
-      console.log('Submitted:', values);
-
       isSendingRequest.value = true
 
       const data = slug 
         ? handleUpdateProperty(slug, values) 
         : handleSubmitProperty(values)
      
-      console.log(data)
-
-      await delay(300)
-      router.push('create/success')
-      
+      publishedSuccesfully.value = true
     } catch(err) {
       notify({
             title: 'Eroare!',
