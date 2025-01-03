@@ -97,9 +97,8 @@
   // adding cloudflare protection
   
   import { useForm } from 'vee-validate'
-  import { delay, scrollToElement, shakeElement, objectToFormData, propertyFieldsMeta } from '../../utils'
+  import { scrollToElement, shakeElement, objectToFormData, propertyFieldsMeta } from '../../utils'
   
-  const router = useRouter()
   const route = useRoute()
 
   const isEditMode = computed(() => route.params.slug !== 'new');
@@ -150,7 +149,7 @@
 
   const { handleSubmit, errors, isSubmitting, values, setValues } = useForm({ initialValues });
   const isSendingRequest = ref(false)
-  const publishedSuccesfully = ref(false)
+  const publishedSuccessfully = ref(false)
 
   if(isEditMode.value) {
       try {
@@ -226,11 +225,11 @@
     try {
       isSendingRequest.value = true
 
-      const data = slug 
-        ? handleUpdateProperty(slug, values) 
+      const data = isEditMode.value
+        ? handleUpdateProperty(route.params.slug, values) 
         : handleSubmitProperty(values)
      
-      publishedSuccesfully.value = true
+        publishedSuccessfully.value = true
     } catch(err) {
       notify({
             title: 'Eroare!',

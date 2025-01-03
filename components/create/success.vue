@@ -43,14 +43,14 @@ const items = [
     {
         name: 'Adaugă o proprietate nouă',
         description: 'Continuă să adaugi alte proprietăți gratuit!',
-        href: '/create',
+        href: '/properties/new',
         iconColor: 'bg-pink-500',
         icon: MegaphoneIcon,
     },
     {
         name: 'Vizualizează anunțurile tale',
         description: 'Vezi toate anunțurile publicate și gestionează-le cu ușurință.',
-        href: '/view-listings',
+        href: '/properties',
         iconColor: 'bg-purple-500',
         icon: CommandLineIcon,
     },
