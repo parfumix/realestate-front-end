@@ -232,7 +232,7 @@ function updateMarkers(clusterData) {
 
       markersCluster.addLayer(marker);
     } else {
-      const { price, internal_id: id, meta } = feature.properties;
+      const { price, internal_id: id, images } = feature.properties;
       const coordinateKey = `${lat},${lng}`;
 
       if (!coordinateMap.has(coordinateKey)) {
@@ -240,7 +240,7 @@ function updateMarkers(clusterData) {
       }
 
       // Preload marker image if `image_url` exists
-      preloadImage(meta?.images?.[0]);
+      preloadImage(images?.[0]);
 
       const marker = L.marker([lat, lng], {
         icon: createPriceIcon(price),

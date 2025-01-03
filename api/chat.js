@@ -27,8 +27,8 @@ const query = async (q = null, filters = null, mapFilters = null, offset = null,
   return { data, error };
 };
 
-const requestDetails = async(propertyId, query) => {
-  const { data, error } = await useCustomFetch(`properties/details/${propertyId}`, {
+const requestDetails = async(slug, query) => {
+  const { data, error } = await useCustomFetch(`properties/details/${slug}`, {
     method: 'POST',
     body: JSON.stringify({ q: query }),
     headers: {

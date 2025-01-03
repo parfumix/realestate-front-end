@@ -12,7 +12,7 @@
           <ModalsRealEstateActions />
 
           <div class="overflow-y-auto max-h-[calc(100vh-200px)] pb-[20px]">
-            <ModalsRealEstateGallerySlider :items="item?.meta?.images" />
+            <ModalsRealEstateGallerySlider :items="item?.images" />
             <ModalsRealEstateStats :item="item" />
             <ModalsRealEstateDescription :item="item" />
           </div>

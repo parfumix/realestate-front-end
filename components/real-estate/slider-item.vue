@@ -5,7 +5,7 @@
           <p class="text-sm font-bold text-gray-900">{{ $currencyFormat(item.price) }}</p>
           <p class="text-[11px] font-normal text-gray-900" v-if="item.area && item.price">{{ parseFloat(item?.price / parseFloat(new String(item?.area).match(/\d+(\.\d+)?/))).toFixed(0) }} EUR<span class="text-gray-800"> / m2</span></p>
         </div>
-        <img class="h-[5.5rem] w-[5.5rem] flex-shrink-0 rounded-xl cursor-pointer" :src="item?.meta?.images?.[0]" alt="" />
+        <img class="h-[5.5rem] w-[5.5rem] flex-shrink-0 rounded-xl cursor-pointer" :src="item?.images?.[0]" alt="" />
       </div>
 </template>
 

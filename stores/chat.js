@@ -175,10 +175,10 @@ export const useChatStore = defineStore('chatStore', () => {
         }
     };
 
-    const handleRequestDetails = async (propertyId, q) => {
+    const handleRequestDetails = async (slug, q) => {
         try {
             isQueryLoadingProperty.value = true;
-            const { data, error } = await requestDetails(propertyId, q);
+            const { data, error } = await requestDetails(slug, q);
             if (error.value) throw new Error(error.value);
             return data.value?.data;
         } catch (err) {
