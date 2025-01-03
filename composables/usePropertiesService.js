@@ -16,9 +16,9 @@ export const usePropertyService = () => {
         }
     };
 
-    const getPropertyBySlug = async (slug) => {
+    const getPropertyById = async (id) => {
         try {
-            const { data, error } = await useCustomFetch(`/properties/${slug}`, {
+            const { data, error } = await useCustomFetch(`/properties/${id}`, {
                 method: 'GET',
             });
 
@@ -75,7 +75,7 @@ export const usePropertyService = () => {
 
     return {
         getAllProperties,
-        getPropertyBySlug,
+        getPropertyById,
         createProperty,
         updateProperty,
         deletePropertyBySlug,

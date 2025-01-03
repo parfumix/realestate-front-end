@@ -101,7 +101,7 @@
   
   const route = useRoute()
 
-  const isEditMode = computed(() => route.params.slug !== 'new');
+  const isEditMode = computed(() => route.params.id !== 'new');
   let property = reactive({})
 
   useHead(() => ({
@@ -117,12 +117,11 @@
       },
     ],
   }));
-  
 
   const heading = computed(() => isEditMode.value ? property?.title : 'Vindeți o proprietate?')
   const subheading = computed(() => isEditMode.value ? 'Actualizează și rafinează informațiile despre proprietăți cu ușurință.' : 'Urmează paşii, e mai simplu ca niciodată.')
 
-  const { createProperty, updateProperty, getPropertyBySlug } = usePropertyService()
+  const { createProperty, updateProperty, getPropertyById } = usePropertyService()
   const { notify } = useNotification();
 
   const initialValues = {
@@ -153,14 +152,14 @@
 
   if(isEditMode.value) {
       try {
-        property = await getPropertyBySlug(route.params.slug)
+        property = await getPropertyById(route.params.id)
 
         const { 
           property_type: propertyType, transaction_type: transactionType, description, facilities: selectedFacilities, area, floor, room_count: roomCount, price, location
          } = property
 
         setValues({
-          propertyType, transactionType, description, selectedFacilities, roomCount, area, floor, price, location
+          propertyType, transactionType, description, roomCount, area, floor, price, location
         })
         
       } catch(err) {
@@ -226,7 +225,7 @@
       isSendingRequest.value = true
 
       const data = isEditMode.value
-        ? handleUpdateProperty(route.params.slug, values) 
+        ? handleUpdateProperty(route.params.id, values) 
         : handleSubmitProperty(values)
      
         publishedSuccessfully.value = true
