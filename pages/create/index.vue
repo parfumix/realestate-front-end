@@ -77,13 +77,14 @@
   // adding price & location fields -- location variable create in this component - x
   // adding location field in form with text pointing to the map - x
 
-  // auto-generate facilities & characterhistics
+  // adding back-end API CRUD operations
+  
   // fix textarea
   // once ai text generated hide generate with ai button until user start typing again
   // save & edit item
-  // adding back-end API CRUD operations
   // make different color for generated description
 
+  // auto-generate facilities & characterhistics
   // allow to select text and apply AI changes
   // adding moderation - https://chatgpt.com/share/6756fcb7-6464-8006-9453-d5f41b730e1e
   // adding scrolling buttons & shadow // https://css-scroll-shadows.vercel.app/?bgColor=ffffff&shadowColor=666666&pxSize=34
@@ -194,11 +195,41 @@
       description: "Termeni și condiții pentru utilizarea serviciului.",
     },
   };
+
+  // use for initial values when rapid testing
+  const generateRandomValues = () => {
+    return {
+      propertyType: 'apartment', // Randomized between 'apartment', 'comercial', 'commercial', 'land'
+      transactionType: 'sell', // Randomized between 'sell', 'rent'
+      description: 'Modern apartment with panoramic windows and smart home system, located in a prime area. Ideal for professionals and families.',
+
+      images: ['https://example.com/image1.jpg', 'https://example.com/image2.jpg'], // Simulated image URLs
+      selectedFacilities: [
+        'panoramic_windows',
+        'smart_home_system',
+        'autonomous_heating',
+        'internet',
+        'playground',
+      ],
+
+      roomCount: 3, // Random value between 1 and 5
+      area: 75, // Random value between 20 and 500
+      floor: 5, // Random value between 0 and 25
+      balcony: 2, // Random value between 1 and 4
+      parking: 'garage', // Random value from parkingOptions: 'open', 'garage', 'covered', 'underground'
+      apartmentCondition: 'euro-renovation', // Random value from apartmentConditionOptions
+      location: 'Constanța', // Randomized location
+
+      price: 95000, // Random value between 50 and 1,000,000 (in appropriate currency units)
+      phones: ['+40 123 456 789', '+40 987 654 321'], // Randomized phone numbers
+      terms_and_conditions: true // Kept as true
+    }
+  }
   
   const initialValues = {
       propertyType: 'apartment',
       transactionType: 'sell',
-      description: 'Apartament modern situat în inima orașului, perfect pentru cei care doresc să îmbine confortul cu accesibilitatea. Cu un design contemporan și finisaje de calitate, această locuință este ideală pentru familii sau tineri profesioniști.',
+      description: '',
 
       images: [],
       selectedFacilities: [],
