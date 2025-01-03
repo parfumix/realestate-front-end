@@ -3,8 +3,8 @@
       <div class="lg:w-1/2 md:w-full md:mx-auto flex">
         <div class="w-5/6">
           <div class="p-6 h-[20px]">
-            <h1 class="text-xl font-semibold text-gray-900">Vindeți o proprietate?</h1>
-            <p class="mt-1 text-sm text-gray-600">Urmează paşii, e mai simplu ca niciodată.</p>
+            <h1 class="text-xl font-semibold text-gray-900">{{ heading }}</h1>
+            <p class="mt-1 text-sm text-gray-600">{{ subheading }}</p>
           </div>
   
           <form @submit.prevent="onSubmit" class="no-scrollbar scrollShadow overflow-auto h-[calc(100vh-130px)] mt-[30px]">
@@ -94,17 +94,31 @@
   // adding cloudflare protection
   
   import { useForm } from 'vee-validate'
-  import { delay, scrollToElement, setHead, shakeElement, objectToFormData, propertyFieldsMeta } from '../../utils'
-  
-  setHead(
-    'Listează-ți Proprietatea Gratuit', 
-    'Adaugă anunțul tău imobiliar în câteva minute! Prezintă-ți proprietatea unui public larg de cumpărători și chiriași. Platformă ușor de utilizat pentru vânzare, închiriere sau leasing.'
-  )
+  import { delay, scrollToElement, shakeElement, objectToFormData, propertyFieldsMeta } from '../../utils'
   
   const router = useRouter()
   const route = useRoute()
 
-  const { slug } = route.query
+  const isEditMode = computed(() => route.params.slug !== 'new');
+  let property = reactive({})
+
+  useHead(() => ({
+    title: isEditMode.value
+      ? property.title
+      : 'Listează-ți Proprietatea Gratuit',
+    meta: [
+      {
+        name: 'description',
+        content: isEditMode.value
+          ? 'Actualizează și rafinează informațiile despre proprietăți cu ușurință.'
+          : 'Adaugă anunțul tău imobiliar în câteva minute! Prezintă-ți proprietatea unui public larg de cumpărători și chiriași. Platformă ușor de utilizat pentru vânzare, închiriere sau leasing.',
+      },
+    ],
+  }));
+  
+
+  const heading = computed(() => isEditMode.value ? property?.title : 'Vindeți o proprietate?')
+  const subheading = computed(() => isEditMode.value ? 'Actualizează și rafinează informațiile despre proprietăți cu ușurință.' : 'Urmează paşii, e mai simplu ca niciodată.')
 
   const { createProperty, updateProperty, getPropertyBySlug } = usePropertyService()
   const { notify } = useNotification();
@@ -134,12 +148,16 @@
   const { handleSubmit, errors, isSubmitting, values, setValues } = useForm({ initialValues });
   const isSendingRequest = ref(false)
 
-  if(slug) {
+  if(isEditMode.value) {
       try {
-        const { property_type: propertyType, transaction_type: transactionType, description, images, facilities: selectedFacilities, area, floor, room_count: roomCount, price, location } = await getPropertyBySlug(slug)
+        property = await getPropertyBySlug(route.params.slug)
+
+        const { 
+          property_type: propertyType, transaction_type: transactionType, description, facilities: selectedFacilities, area, floor, room_count: roomCount, price, location
+         } = property
 
         setValues({
-          propertyType, transactionType, description, images, selectedFacilities, roomCount, area, floor, price, location
+          propertyType, transactionType, description, selectedFacilities, roomCount, area, floor, price, location
         })
         
       } catch(err) {
@@ -235,12 +253,6 @@
       shakeElement(errorsOnSubmit[0])
     }
   });
-  
-  // // Fetch data on mounted
-  // onMounted(async () => {
-  //   const data = await fetchData();
-  //   resetForm({ values: data });
-  // });
   </script>
   
   <style>
