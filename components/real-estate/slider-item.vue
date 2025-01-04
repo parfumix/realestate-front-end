@@ -1,7 +1,7 @@
 <template>
     <div class="flex fw-full h-full items-start justify-start px-2 pt-2 pb-1">
         <div class="flex-1 items-center justify-center">
-          <p class="text-xs font-medium text-gray-900 pb-1 px-1 hover:underline cursor-pointer h-[55px]" :title="item?.title">{{ (item?.title || '').substring(36, item?.title) + '…' }}</p>
+          <p class="text-xs font-medium text-gray-900 pb-1 px-1 hover:underline cursor-pointer h-[55px]" :title="item?.title">{{ (item?.title || '').ing(36, item?.title) + '…' }}</p>
           <p class="text-sm font-bold text-gray-900">{{ $currencyFormat(item.price) }}</p>
           <p class="text-[11px] font-normal text-gray-900" v-if="item.area && item.price">{{ parseFloat(item?.price / parseFloat(new String(item?.area).match(/\d+(\.\d+)?/))).toFixed(0) }} EUR<span class="text-gray-800"> / m2</span></p>
         </div>

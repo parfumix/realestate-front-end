@@ -283,3 +283,10 @@ export const propertyFieldsMeta = {
     description: "Termeni și condiții pentru utilizarea serviciului.",
   },
 }
+
+export const truncateString = (str, maxLength) => {
+  if (str.length > maxLength) {
+    return str.slice(0, maxLength) + "...";
+  }
+  return str;
+}

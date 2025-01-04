@@ -4,7 +4,7 @@
         <div class="w-5/6">
           <div class="p-6 h-[20px]">
             <h1 class="text-xl font-semibold text-gray-900">{{ heading }}</h1>
-            <p class="mt-1 text-sm text-gray-600">{{ subheading }}</p>
+            <p class="mt-1 text-sm text-gray-600" v-if="! isEditMode">{{ subheading }}</p>
           </div>
   
           <form @submit.prevent="onSubmit" class="no-scrollbar scrollShadow overflow-auto h-[calc(100vh-130px)] mt-[30px]">
@@ -119,7 +119,7 @@
   }));
 
   const heading = computed(() => isEditMode.value ? property?.title : 'Vindeți o proprietate?')
-  const subheading = computed(() => isEditMode.value ? 'Actualizează și rafinează informațiile despre proprietăți cu ușurință.' : 'Urmează paşii, e mai simplu ca niciodată.')
+  const subheading = computed(() => 'Urmează paşii, e mai simplu ca niciodată.')
 
   const { createProperty, updateProperty, getPropertyById } = usePropertyService()
   const { notify } = useNotification();
@@ -216,8 +216,8 @@
   const handleSubmitProperty = async(values) => {
     return await createProperty(objectToFormData(values))
   }
-  const handleUpdateProperty = async(slug, values) => {
-    return await updateProperty(slug, objectToFormData(values))
+  const handleUpdateProperty = async(id, values) => {
+    return await updateProperty(id, objectToFormData(values))
   }
 
   const onSubmit = handleSubmit(async(values) => {
