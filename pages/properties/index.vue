@@ -2,11 +2,12 @@
   <div class="px-4 sm:px-6 lg:px-8 ml-[110px] mr-[40px] mt-[20px]">
     <div class="sm:flex sm:items-center">
       <div class="sm:flex-auto">
+        <House />
         <h1 class="text-base font-semibold leading-6 text-gray-900">Properties</h1>
-        <p class="mt-2 text-sm text-gray-700">A list of all the users in your account including their name, title, email and role.</p>
+        <p class="text-sm text-gray-700 mt-1">Manage your properties.</p>
       </div>
       <div class="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
-        <button type="button" class="block rounded-md bg-blue-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600">Add user</button>
+        <button type="button" class="block rounded-md bg-blue-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600">Add property</button>
       </div>
     </div>
     <div class="mt-8 flow-root">
@@ -59,6 +60,8 @@
 </template>
   
   <script setup>
+  import { House } from "lucide-vue-next"
+
   import { truncateString } from '../../utils';
   
   const { getAllProperties, deletePropertyById } = usePropertyService();
