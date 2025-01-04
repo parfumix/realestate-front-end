@@ -14,9 +14,7 @@ const OverlappingMarkerSpiderfier = window.OverlappingMarkerSpiderfier;
 
 const filterStore = useFilterStore()
 const { activeMessage, mapZoom, mapBbox } = storeToRefs(filterStore)
-import { getRomanianBounds } from '../utils'
-
-import { useThrottle } from '~/composables/useThrottle';
+import { getRomanianBounds, useThrottle } from '../utils'
 
 const chatStore = useChatStore()
 const { mapItems, triggeredRefreshMap, hoveredItem } = storeToRefs(chatStore)
