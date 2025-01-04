@@ -38,11 +38,6 @@ const requestDetails = async(uuid, query) => {
   return { data, error }
 }
 
-const fetchItemBySlug = async(slug) => {
-  const { data, error } = await useCustomFetch(`properties/${slug}`);
-  return { data, error }
-}
-
 export {
-  query, requestDetails, fetchItemBySlug
+  query, requestDetails
 }
