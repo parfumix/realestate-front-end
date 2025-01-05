@@ -69,6 +69,70 @@ const props = defineProps({
   },
 })
 
+// https://chatgpt.com/g/g-p-6760b02a9c488191abc8e3b939171d32-imai-ro/c/677ac586-d914-8006-8ef0-935d08267bbe
+const prompts = [
+  {
+    "category": "General Search",
+    "prompts": [
+      "Arată-mi apartamente de vânzare în București sub 150.000 euro.",
+      "Caut o casă cu trei dormitoare în Cluj-Napoca, cu grădină.",
+      "Ce opțiuni de închiriere sunt disponibile în centrul Timișoarei sub 400 euro/lună?",
+      "Vreau un apartament cu două camere în Constanța, aproape de plajă.",
+      "Găsește proprietăți cu minimum 100 mp în Iași."
+    ]
+  },
+  {
+    "category": "Feature-Specific Search",
+    "prompts": [
+      "Caut case cu piscină și cel puțin patru dormitoare în Brașov.",
+      "Arată-mi apartamente cu terasă și vedere panoramică în Sibiu.",
+      "Există proprietăți cu panouri solare și eficiență energetică în Oradea?",
+      "Caut o casă cu birou pentru telemuncă în Craiova.",
+      "Găsește apartamente cu loc de parcare în centrul Aradului."
+    ]
+  },
+  {
+    "category": "Location-Based Search",
+    "prompts": [
+      "Ce proprietăți sunt disponibile aproape de Parcul Herăstrău în București?",
+      "Vreau un apartament închiriabil aproape de transportul public din Cluj-Napoca.",
+      "Există case într-un cartier liniștit în Ploiești?",
+      "Găsește apartamente prietenoase cu animalele de companie în Târgu Mureș.",
+      "Ce case sunt disponibile aproape de școli bune în Galați?"
+    ]
+  },
+  {
+    "category": "Budget and Investment Focused",
+    "prompts": [
+      "Am un buget de 200.000 euro. Ce proprietăți sunt disponibile în Brașov?",
+      "Găsește proprietăți cu potențial bun de investiție în Iași.",
+      "Există apartamente sub 80.000 euro în Constanța?",
+      "Arată-mi proprietăți de lux în centrul Clujului.",
+      "Ce case sunt disponibile în București, cu preț redus recent?"
+    ]
+  },
+  {
+    "category": "Lifestyle Searches",
+    "prompts": [
+      "Găsește apartamente eco-friendly cu multă lumină naturală în Sibiu.",
+      "Vreau o cabană la munte cu șemineu în apropiere de Brașov.",
+      "Există apartamente în stil industrial în Cluj-Napoca?",
+      "Caut un penthouse de lux în Timișoara cu vedere spre oraș.",
+      "Arată-mi case prietenoase pentru familii, cu loc de joacă, în Pitești."
+    ]
+  },
+  {
+    "category": "Combination Searches",
+    "prompts": [
+      "Găsește o casă cu patru dormitoare în Brașov, aproape de pădure, sub 300.000 euro.",
+      "Arată-mi apartamente cu două băi, balcon și acces la sală de sport în București.",
+      "Vreau o casă cu minimum cinci camere, curte mare, într-un cartier rezidențial din Cluj-Napoca.",
+      "Ce apartamente sunt disponibile în Constanța, aproape de plajă, cu loc de parcare, sub 500 euro/lună?",
+      "Caut case în București, într-o zonă liniștită, cu grădină și preț între 150.000 și 250.000 euro."
+    ]
+  }
+]
+
 const scrollContainer = ref(null);
 
 const emit = defineEmits(['submit'])
