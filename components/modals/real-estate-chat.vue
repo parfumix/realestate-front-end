@@ -40,8 +40,7 @@ import { useChatStore } from '@/stores/chat';
 const chatStore = useChatStore()
 const { isQueryLoadingProperty } = storeToRefs(chatStore)
 
-const { insertMessage } = useUserMessages()
-const { user } = useAuthService()
+const { sendMessage } = useMessagesService();
 
 const props = defineProps({
     item: {
@@ -112,8 +111,8 @@ const handleSendMessage = async(message) => {
 
         emit('select', amenities ? 'map' : 'general', amenities)
 
-        insertMessage(
-            user.value?.id, props.item.id, props.item.id, trimmedMessage, 'user'
+        sendMessage(
+            props.item.id, props.item.id, trimmedMessage, 'user'
         )
   } catch(err) {
     chatStore.handlePushMessage(props.item.id, {

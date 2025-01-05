@@ -58,6 +58,8 @@ const modalStore = useModalStore();
 const route = useRoute();
 const router = useRouter();
 
+const { sendMessage } = useMessagesService();
+
 const currentPageType = ref(null)
 let dataLoaded = false
 
@@ -79,8 +81,6 @@ const {
 
 const { isModalVisible } = storeToRefs(modalStore)
 const { activeMessage, mapZoom, mapBbox } = storeToRefs(filterStore)
-
-const { insertMessage } = useUserMessages()
 
 watch(() => isModalVisible.value, newval => {
   if(! newval) chatStore.handleResetItem()
@@ -164,8 +164,8 @@ const handleSendMessage = async (message) => {
 
     filterStore.setActiveMesasge(trimmedMessage)
 
-    insertMessage(
-      user.value?.id, null, 'default', trimmedMessage, 'user', parsedFilters
+    sendMessage(
+      null, 'default', trimmedMessage, 'user', parsedFilters
     )
 
   } catch(err) {
