@@ -63,8 +63,6 @@ import { truncateString } from '../../utils';
 const { getAllProperties, deletePropertyById } = usePropertyService();
 const properties = ref([]);
 
-const router = useRouter()
-
 const menuItems = [
   {
     tag: "button",
