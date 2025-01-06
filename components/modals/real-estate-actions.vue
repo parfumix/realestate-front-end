@@ -58,7 +58,7 @@ const handleTogglFavorite = async() => {
     }
 
     return isFavorited
-        ? await removeFavorite(user.value.id, item.value.id)
-        : await addFavorite(user.value.id, item.value.id);
+        ? await removeFavorite(item.value.id)
+        : await addFavorite(item.value.id);
 }
 </script>
