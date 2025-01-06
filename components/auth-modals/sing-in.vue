@@ -40,6 +40,7 @@
 import RegisterModal from '@/components/auth-modals/register.vue';
 import { useModalStore } from '@/stores/modals';
 
+// https://preline.co/examples/forms-authentication.html
 const email = ref('')
 const password = ref('')
 const modalStore = useModalStore();

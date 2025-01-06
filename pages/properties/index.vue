@@ -1,5 +1,5 @@
 <template>
-  <div class="px-4 sm:px-6 lg:px-8 ml-[20px] sm:mr-[20px] sm:ml-[110px] sm:mr-[40px] mt-[20px]">
+  <div style="height: calc(100vh - 20px);" class="px-4 sm:px-6 lg:px-8 ml-[20px] sm:mr-[20px] sm:ml-[110px] sm:mr-[40px] mt-[20px]">
     <div class="sm:flex sm:items-center">
       <div class="sm:flex-1 sm:flex-row sm:items-center">
         <div class="sm:flex-auto">
@@ -14,14 +14,13 @@
       </div>
     </div>
     <div class="mt-8 flow-root">
-      <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+      <div class="-mx-4 -my-2 h-full sm:-mx-6 lg:-mx-8">
         <div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
-          <table class="min-w-full divide-y divide-gray-300">
+          <table class="min-w-full h-full divide-y divide-gray-300">
             <thead>
               <tr>
-                <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">Name</th>
+                <th scope="col" class="py-3.5 px-4 w-32 text-left text-sm font-semibold text-gray-900 sm:pl-0"></th>
                 <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Title</th>
-                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Role</th>
                 <th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-0">
                   <span class="sr-only">Edit</span>
                 </th>
@@ -29,29 +28,25 @@
             </thead>
             <tbody class="divide-y divide-gray-200 bg-white">
               <tr v-for="property in properties" :key="property?.id">
-                <td class="whitespace-nowrap py-5 pl-4 pr-3 text-sm sm:pl-0">
+                <td class="whitespace-nowrap py-3 px-4 text-sm sm:pl-0 w-24">
                   <div class="flex items-center">
-                    <div class="h-11 w-11 flex-shrink-0">
+                    <div class="h-24 w-24 flex-shrink-0">
                       <NuxtLink :to="`/properties/${property?.id}`">
-                        <img class="h-11 w-11 rounded-full" :src="property?.images[0]" alt="" />
+                        <img class="h-24 w-24 rounded-lg" :src="property?.images[0]" alt="" />
                       </NuxtLink>
                     </div>
                   </div>
                 </td>
-                <td class="whitespace-nowrap px-3 py-5 text-sm text-gray-500">
-                  <div class="text-gray-900">
+                <td class="whitespace-nowrap px-3 py-3 text-sm text-gray-500">
+                  <div class="text-medium font-bold text-gray-900">
                     <NuxtLink :to="`/properties/${property?.id}`">
                       {{ property?.title }}
                     </NuxtLink>
                   </div>
                   <div class="mt-1 text-gray-500">{{ truncateString(property?.description, 90) }}</div>
                 </td>
-                <td class="whitespace-nowrap px-3 py-5 text-sm text-gray-500">{{ property?.role }}</td>
-                <td class="relative whitespace-nowrap py-5 pl-3 pr-4 text-right text-sm font-medium sm:pr-0">
-                  <NuxtLink :to="`/properties/${property?.id}`" class="rounded-md bg-white px-2.5 py-1.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
-                    View property
-                  </NuxtLink>
-                  <FormButton @click="handleDelete(property?.id)">Delete</FormButton>
+                <td class="relative whitespace-nowrap py-3 pl-3 pr-4 text-right text-sm font-medium sm:pr-0">
+                  <FormOptionsMenu srText="Open the dropdown" :items="menuItems" :element="property" />
                 </td>
               </tr>
             </tbody>
@@ -67,6 +62,18 @@ import { truncateString } from '../../utils';
 
 const { getAllProperties, deletePropertyById } = usePropertyService();
 const properties = ref([]);
+
+const router = useRouter()
+
+const menuItems = [
+  {
+    tag: "button",
+    label: "Delete",
+    onClick: ({ id }) => {
+      handleDelete(id)
+    },
+  },
+];
 
 // Fetch properties on component mount
 try {
