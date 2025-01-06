@@ -79,8 +79,7 @@
   // adding opt phone number verification - x
   // adding price & location fields -- location variable create in this component - x
   // adding location field in form with text pointing to the map - x
-
-  // adding back-end API CRUD operations
+  // adding back-end API CRUD operations - x
   
   // fix textarea
   // once ai text generated hide generate with ai button until user start typing again
@@ -118,6 +117,8 @@
     ],
   }));
 
+
+
   const heading = computed(() => isEditMode.value ? property?.title : 'Vindeți o proprietate?')
   const subheading = computed(() => 'Urmează paşii, e mai simplu ca niciodată.')
 
@@ -146,7 +147,7 @@
       terms_and_conditions: false
   }
 
-  const { handleSubmit, errors, isSubmitting, values, setValues } = useForm({ initialValues });
+  const { handleSubmit, errors, isSubmitting, values, setValues, resetForm } = useForm({ initialValues });
   const isSendingRequest = ref(false)
   const publishedSuccessfully = ref(false)
 
@@ -249,6 +250,10 @@
       shakeElement(errorsOnSubmit[0])
     }
   });
+
+  watch(() => route.params, ({ id: newId }) => {
+    if(newId == 'new') resetForm()
+  }, { deep: true })
   </script>
   
   <style>
