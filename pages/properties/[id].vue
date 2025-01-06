@@ -81,9 +81,7 @@
   // adding location field in form with text pointing to the map - x
   // adding back-end API CRUD operations - x
   
-  // fix textarea
   // once ai text generated hide generate with ai button until user start typing again
-  // save & edit item
   // make different color for generated description
 
   // auto-generate facilities & characterhistics
@@ -116,8 +114,6 @@
       },
     ],
   }));
-
-
 
   const heading = computed(() => isEditMode.value ? property?.title : 'Vindeți o proprietate?')
   const subheading = computed(() => 'Urmează paşii, e mai simplu ca niciodată.')
@@ -211,7 +207,7 @@
   })
 
   const handleApplyGeneratedDescription = fields => {
-    setValues(fields)
+    //setValues(fields)
   }
 
   const handleSubmitProperty = async(values) => {

@@ -17,10 +17,10 @@
                     <div class="flex items-center">
                     <div class="mr-4 flex items-center space-x-4">
                         <p @click="handleDiscard" v-if="aiGeneratedDescription?.length && !isAiDescriptionGenerating" class="flex items-center cursor-pointer text-sm">
-                        <Trash size="14" class="mr-1 text-red-800" /> Renunță
+                            <Trash size="14" class="mr-1 text-red-800" /> Renunță
                         </p>
                         <p @click="handleApply" v-if="aiGeneratedDescription?.length && !isAiDescriptionGenerating" class="flex items-center cursor-pointer text-sm">
-                        <Check size="14" class="mr-1 text-green-800" /> Aplică
+                            <Check size="14" class="mr-1 text-green-800" /> Aplică
                         </p>
                     </div>
 
