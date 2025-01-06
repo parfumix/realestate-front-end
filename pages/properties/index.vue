@@ -9,7 +9,7 @@
       </div>
       <div class="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
         <NuxtLink :to="`/properties/new`" class="rounded-md bg-white px-2.5 py-1.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
-            Add property
+          Add property
         </NuxtLink>
       </div>
     </div>
@@ -27,13 +27,16 @@
               </tr>
             </thead>
             <tbody class="divide-y divide-gray-200 bg-white">
-              <tr v-for="property in properties" :key="property?.id">
+              <tr v-for="(property, index) in properties" :key="property?.id">
                 <td class="whitespace-nowrap py-3 px-4 text-sm sm:pl-0 w-24">
                   <div class="flex items-center">
                     <div class="h-24 w-24 flex-shrink-0">
-                      <NuxtLink :to="`/properties/${property?.id}`">
-                        <img class="h-24 w-24 rounded-lg" :src="property?.images[0]" alt="" />
-                      </NuxtLink>
+                        <img
+                          class="h-24 w-24 rounded-lg"
+                          :src="property?.images[0]"
+                          alt=""
+                          @click="openGallery(index)"
+                        />
                     </div>
                   </div>
                 </td>
@@ -54,31 +57,62 @@
         </div>
       </div>
     </div>
+
+    <!-- VueGallery Component -->
+    <VueGallery
+      :options="galleryOptions"
+      :images="galleryImages"
+      :index="galleryIndex"
+      @close="closeGallery"
+    />
   </div>
 </template>
-  
+
 <script setup>
 import { truncateString } from '../../utils';
+import VueGallery from 'vue-gallery';
 
 const { getAllProperties, deletePropertyById } = usePropertyService();
 const properties = ref([]);
+const galleryImages = ref([]);
+const galleryIndex = ref(null);
+
+const route = useRoute()
 
 const menuItems = [
   {
     tag: "button",
     label: "Delete",
     onClick: ({ id }) => {
-      handleDelete(id)
+      handleDelete(id);
     },
   },
 ];
 
+const isLoaded = ref(false)
 // Fetch properties on component mount
-try {
-  properties.value = await getAllProperties();
-} catch (error) {
-  console.error('Error fetching properties:', error);
+const fetchItems = async() => {
+  try {
+    properties.value = await getAllProperties();
+    galleryImages.value = properties.value.map((property) => property?.images).flat();
+
+    isLoaded.value = true
+  } catch (error) {
+    console.error('Error fetching properties:', error);
+  }
 }
+
+onMounted(async() => {
+  if(! isLoaded.value) {
+    await fetchItems()
+  }
+})
+
+watch(() => route.fullPath, async(newRoute) => {
+  if(! isLoaded.value) {
+    await fetchItems()
+  }
+})
 
 // Handle property deletion
 const handleDelete = async (id) => {
@@ -88,8 +122,30 @@ const handleDelete = async (id) => {
   try {
     await deletePropertyById(id);
     properties.value = properties.value.filter((property) => property?.id !== id);
+    galleryImages.value = properties.value.map((property) => property?.images).flat();
   } catch (error) {
     console.error('Error deleting property:', error);
   }
-}
+};
+
+// Gallery options
+const galleryOptions = {
+  onslide: function (index, slide) {
+    const img = slide.getElementsByTagName('img')[0];
+    if (img) {
+      img.style.maxWidth = '80%';
+      img.style.maxHeight = '80%';
+    }
+  },
+};
+
+// Open gallery at a specific index
+const openGallery = (index) => {
+  galleryIndex.value = index;
+};
+
+// Close gallery
+const closeGallery = () => {
+  galleryIndex.value = null;
+};
 </script>

@@ -205,7 +205,6 @@ const handleRemovePhoneNumber = async(phone, is_verified = false) => {
 onMounted(async() => {
     const phone_numbers = await fetchPhoneNumbers()
 
-
     for(let { id, phone_number, verified } of phone_numbers) {
         phones.value.push({
             id,
