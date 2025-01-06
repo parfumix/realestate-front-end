@@ -49,7 +49,7 @@ import { parsePhoneNumberFromString } from 'libphonenumber-js';
 
 const modalStore = useModalStore();
 
-const { fetchPhoneNumbers, addPhoneNumber, deletePhoneNumber } = useAuthService()
+const { fetchPhoneNumbers, addPhoneNumber, deletePhoneNumber } = useVerificationService()
 
 const { notify } = useNotification();
 
@@ -204,6 +204,7 @@ const handleRemovePhoneNumber = async(phone, is_verified = false) => {
 
 onMounted(async() => {
     const phone_numbers = await fetchPhoneNumbers()
+
 
     for(let { id, phone_number, verified } of phone_numbers) {
         phones.value.push({

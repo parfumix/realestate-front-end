@@ -98,79 +98,6 @@ export const useAuthService = () => {
     return user.value?.role == 'authenticated' && user.value?.is_anonymous === false;
   }
 
-  const addPhoneNumber = async (phone_number, verified) => {
-    try {
-      const { data, error } = await supabase
-        .from('phone_numbers')
-        .insert({
-          user_id: user.value?.id,
-          phone_number,
-          verified,
-        }).select();
-
-      if (error) {
-        throw new Error(error.message);
-      }
-
-      return data[0];
-    } catch (error) {
-      throw error;
-    }
-  }
-
-  const confirmPhoneNumber = async (phoneNumber) => {
-    try {
-      const { data, error } = await supabase
-        .from('phone_numbers')
-        .update({ verified: true })
-        .eq('user_id', user.value?.id)
-        .eq('phone_number', phoneNumber);
-
-      if (error) {
-        throw new Error(error.message);
-      }
-
-      return data;
-    } catch (error) {
-      throw error;
-    }
-  }
-
-  const deletePhoneNumber = async (phoneNumber) => {
-    try {
-      const { data, error } = await supabase
-        .from('phone_numbers')
-        .delete()
-        .eq('user_id', user.value?.id)
-        .eq('phone_number', phoneNumber);
-
-      if (error) {
-        throw new Error(error.message);
-      }
-
-      return data;
-    } catch (error) {
-      throw error;
-    }
-  }
-
-  const fetchPhoneNumbers = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('phone_numbers')
-        .select('*')
-        .eq('user_id', user.value?.id);
-
-      if (error) {
-        throw new Error(error.message);
-      }
-
-      return data;
-    } catch (error) {
-      throw error;
-    }
-  }
-
   return {
     user,
     isAuthenticated,
@@ -180,10 +107,5 @@ export const useAuthService = () => {
     logoutUser,
     loginUser,
     convertAnonymousToRealUser,
-
-    fetchPhoneNumbers,
-    addPhoneNumber,
-    confirmPhoneNumber,
-    deletePhoneNumber,
   }
 };
