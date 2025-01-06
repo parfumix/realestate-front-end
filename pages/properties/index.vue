@@ -1,13 +1,16 @@
 <template>
-  <div class="px-4 sm:px-6 lg:px-8 ml-[110px] mr-[40px] mt-[20px]">
+  <div class="px-4 sm:px-6 lg:px-8 ml-[20px] sm:mr-[20px] sm:ml-[110px] sm:mr-[40px] mt-[20px]">
     <div class="sm:flex sm:items-center">
-      <div class="sm:flex-auto">
-        <House />
-        <h1 class="text-base font-semibold leading-6 text-gray-900">Properties</h1>
-        <p class="text-sm text-gray-700 mt-1">Manage your properties.</p>
+      <div class="sm:flex-1 sm:flex-row sm:items-center">
+        <div class="sm:flex-auto">
+          <h1 class="text-base font-semibold leading-6 text-gray-900">Properties</h1>
+          <p class="text-sm text-gray-700 mt-1">Manage your properties.</p>
+        </div>
       </div>
       <div class="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
-        <button type="button" class="block rounded-md bg-blue-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600">Add property</button>
+        <NuxtLink :to="`/properties/new`" class="rounded-md bg-white px-2.5 py-1.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
+            Add property
+        </NuxtLink>
       </div>
     </div>
     <div class="mt-8 flow-root">
@@ -59,34 +62,29 @@
   </div>
 </template>
   
-  <script setup>
-  import { House } from "lucide-vue-next"
+<script setup>
+import { truncateString } from '../../utils';
 
-  import { truncateString } from '../../utils';
-  
-  const { getAllProperties, deletePropertyById } = usePropertyService();
-  const properties = ref([]);
-  
-  // Fetch properties on component mount
-  onMounted(async () => {
-    try {
-      properties.value = await getAllProperties();
-    } catch (error) {
-      console.error('Error fetching properties:', error);
-    }
-  });
-  
-  // Handle property deletion
-  const handleDelete = async (id) => {
-    const confirmed = window.confirm('Are you sure you want to delete this property?');
-    if (!confirmed) return;
-  
-    try {
-      await deletePropertyById(id);
-      properties.value = properties.value.filter((property) => property?.id !== id);
-    } catch (error) {
-      console.error('Error deleting property:', error);
-    }
-  };
-  </script>
-  
+const { getAllProperties, deletePropertyById } = usePropertyService();
+const properties = ref([]);
+
+// Fetch properties on component mount
+try {
+  properties.value = await getAllProperties();
+} catch (error) {
+  console.error('Error fetching properties:', error);
+}
+
+// Handle property deletion
+const handleDelete = async (id) => {
+  const confirmed = window.confirm('Are you sure you want to delete this property?');
+  if (!confirmed) return;
+
+  try {
+    await deletePropertyById(id);
+    properties.value = properties.value.filter((property) => property?.id !== id);
+  } catch (error) {
+    console.error('Error deleting property:', error);
+  }
+}
+</script>
