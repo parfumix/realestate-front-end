@@ -1,7 +1,7 @@
 <template>
     <div class="flex flex-col items-center absolute top-0 inset-0 z-[900]">
         <div class="w-full rounded-md shadow-sm">
-            <FormInput :id="id" :name="id" autocomplete="off" :required="true" @input="debouncedSearchAddress"  :label="label" :placeholder="placeholder ?? 'Introduceți locația exactă a adresei dumneavoastră..'" v-model="modelValue" :error="errorMessage">
+            <FormInput :id="id" :name="id" autocomplete="off" :required="true" @input="debouncedSearchAddress" :label="label" :placeholder="placeholder ?? 'Introduceți locația exactă a adresei dumneavoastră..'" v-model="modelValue" :error="errorMessage">
                 <template #rightMessage>
                     <div v-if="isLoading" class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
                         <LoaderCircle class="animate-spin -ml-1 h-5 w-5 text-black" />
@@ -84,7 +84,7 @@ const selectSuggestion = (suggestion) => {
     // Update selected location and map
     const { lat, lon, address: suggestedAddress, display_name } = suggestion;
 
-    emit('select', { lat: parseFloat(lat), lon: parseFloat(lon), county: suggestedAddress?.county, street: display_name })
+    emit('select', { lat: parseFloat(lat), lon: parseFloat(lon), county: suggestedAddress?.county ?? suggestedAddress?.city, street: display_name })
 
     // Clear suggestions
     modelValue.value = suggestion.display_name;
