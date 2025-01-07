@@ -58,7 +58,6 @@
       </div>
     </div>
 
-    <!-- VueGallery Component -->
     <VueGallery
       :options="galleryOptions"
       :images="galleryImages"
@@ -109,9 +108,7 @@ onMounted(async() => {
 })
 
 watch(() => route.fullPath, async(newRoute) => {
-  if(! isLoaded.value) {
     await fetchItems()
-  }
 })
 
 // Handle property deletion
