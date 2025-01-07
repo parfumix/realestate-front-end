@@ -81,6 +81,9 @@
   // adding location field in form with text pointing to the map - x
   // adding back-end API CRUD operations - x
   
+  // edit photos
+  // edit phones
+  // free form location
   // once ai text generated hide generate with ai button until user start typing again
   // make different color for generated description
 
