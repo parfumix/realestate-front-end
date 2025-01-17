@@ -7,7 +7,7 @@
     <div class="flex max-w-7xl mx-auto w-full justify-center items-center px-4 sm:px-6 lg:px-8 mt-2 relative" style="height: calc(100vh - 67px);">
       <RealEstateList :defaultView="defaultView" v-if="defaultView==chatStore.TYPE_LIST_HYBRID || currentPageType=='saved'" class="sm:w-5/12" />
 
-      <Chat v-if="currentPageType!='saved'" :defaultView="defaultView" @submit="handleSendMessage" :isLoading="isQueryLoading" :messages="defaultThreadMessages" :class="{'sm:w-5/12': defaultView!=chatStore.TYPE_LIST_HYBRID, 'absolute h-6 z-[100] bottom-5': defaultView==chatStore.TYPE_LIST_HYBRID}">
+      <Chat v-if="currentPageType!='saved'" :defaultView="defaultView" @submit="handleSendMessage" @resetActiveMessage="handleResetActiveMessage" :isLoading="isQueryLoading" :messages="defaultThreadMessages" :class="{'sm:w-5/12': defaultView!=chatStore.TYPE_LIST_HYBRID, 'absolute h-6 z-[100] bottom-5': defaultView==chatStore.TYPE_LIST_HYBRID}">
         <template v-if="defaultView!=chatStore.TYPE_LIST_HYBRID" #header>
           <div class="bg-blue-500 text-white py-2 px-4 rounded-t-lg flex items-center">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5"><path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 5.25h.008v.008H12v-.008Z" />
@@ -65,8 +65,6 @@ let dataLoaded = false
 
 import { getRomanianBounds, setHead } from '../utils'
 
-const { user } = useAuthService()
-
 let defaultView = ref(
   localStorage.getItem('defaultView') ?? 'list'
 )
@@ -123,7 +121,7 @@ const handleFetchItems = async(trimmedMessage = null, appliedFilters = null, map
 
 const handleApplyFilters = async() => {
   // if user manually set filters, than we should omit user query and search through properties using just filters
-  handleFetchItems(null, filterStore.activeFilters, { zoom: mapZoom.value, bbox: mapBbox.value })
+  handleFetchItems(activeMessage.value, filterStore.activeFilters, { zoom: mapZoom.value, bbox: mapBbox.value })
 }
 
 const handleSwitchView = async(mode) => {
@@ -137,6 +135,11 @@ const handleSelectPrompt = async(prompt) => {
   await handleSendMessage(prompt)
 }
 
+const handleResetActiveMessage = () => {
+  filterStore.resetActiveMessage()
+  handleFetchItems(null, filterStore.activeFilters, { zoom: mapZoom.value, bbox: mapBbox.value })
+}
+
 const handleSendMessage = async (message) => {
   try {
     let trimmedMessage = message.trim()
@@ -148,7 +151,7 @@ const handleSendMessage = async (message) => {
 
     // we're usign all romanian bbox because search can contain new locations so we need to clusterize items by whole country
     const mapFilters = { zoom: 6, bbox: getRomanianBounds(true) }
-    const { reply, items, filters, prompts = [] } = await handleFetchItems(trimmedMessage, filterStore.activeFilters, mapFilters)
+    const { reply, items, filters, prompts = [] } = await handleFetchItems(trimmedMessage, null, mapFilters)
     if(! items) throw new Error('No results found for' + trimmedMessage)
     
     chatStore.handleSetPromptsByThread('default', prompts)
