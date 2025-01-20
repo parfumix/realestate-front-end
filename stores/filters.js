@@ -115,6 +115,7 @@ export const useFilterStore = defineStore('filtersStore', () => {
 
   // by default trying to reach localStorage filters, if not accesible than use default filters
   let activeMessage = ref(null)
+  let parsequery = ref(null)
   let activeFilters = reactive(JSON.parse(localStorage.getItem('defaultFilters')) ?? defaultFilters);
 
   let mapZoom = ref(parseInt(localStorage.getItem('mapZoom') ?? 7))
@@ -156,7 +157,9 @@ export const useFilterStore = defineStore('filtersStore', () => {
   }
 
   const resetActiveFilters = () => {
-    activeFilters = defaultFilters
+    for (const [key, value] of Object.entries(defaultFilters)) {
+      activeFilters[key] = value
+    }
   }
 
   const handleToggleFilter = (type, value) => {
@@ -198,6 +201,7 @@ export const useFilterStore = defineStore('filtersStore', () => {
     filters,
     activeFilters,
     activeMessage,
+    parsequery,
 
     mapZoom,
     mapBbox,
