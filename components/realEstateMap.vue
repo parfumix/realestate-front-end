@@ -1,7 +1,7 @@
 <template>
   <div style="width: 100%; height: 100%;">
     <div id="map" v-show="[chatStore.TYPE_MAP_ITEMS, chatStore.TYPE_LIST_HYBRID].includes(defaultView) || currentPageType=='saved'" style="width: 100%; height: 100%;" />
-    <Teleport v-if="selectedItem" :to="`.popup-content-${selectedItem.internal_id}`">
+    <Teleport v-if="selectedItem" :to="`.popup-content-${selectedItem.id}`">
       <RealEstateListItem :renderedInMap="true" :item="selectedItem" :hideBookmark="true" />
     </Teleport>
   </div>
@@ -230,7 +230,7 @@ function updateMarkers(clusterData) {
 
       markersCluster.addLayer(marker);
     } else {
-      const { price, internal_id: id, images } = feature.properties;
+      const { price, id, images } = feature.properties;
       const coordinateKey = `${lat},${lng}`;
 
       if (!coordinateMap.has(coordinateKey)) {
@@ -320,13 +320,13 @@ function createPriceIcon(price, divClassName = 'bg-white', textClassName = 'text
   });
 }
 
-watch(() => hoveredItem.value, (internal_id) => {
-  if (!map || !internal_id) return;
+watch(() => hoveredItem.value, (id) => {
+  if (!map || !id) return;
 
   markersCluster.eachLayer((marker) => {
     if(! marker.options?.feature?.id) return
 
-    if (marker.options.feature.internal_id === internal_id) {
+    if (marker.options.feature.id === id) {
       marker.setIcon(createPriceIcon(marker.options.feature.price, 'bg-black', 'text-gray-100'));
     } else {
       marker.setIcon(createPriceIcon(marker.options.feature.price));
