@@ -67,7 +67,7 @@
             <div>
               <MenuButton
                 class="group inline-flex justify-center text-sm font-medium text-gray-700 hover:text-gray-900">
-                Sortează
+                {{ activeSortingTitle || 'Sortează' }}
                 <ChevronDownIcon class="-mr-1 ml-1 h-5 w-5 flex-shrink-0 text-gray-400 group-hover:text-gray-500"
                   aria-hidden="true" />
               </MenuButton>
@@ -165,7 +165,7 @@ const emit = defineEmits(['applyFilters'])
 
 // Use the Pinia filter store
 const filterStore = useFilterStore()
-const { activeSorting, hasFiltersChanged, activeFilters } = storeToRefs(filterStore)
+const { activeSorting, hasFiltersChanged, activeFilters, parsequery, activeSortingTitle } = storeToRefs(filterStore)
 
 const renderActiveFilters = (menuFilters, section) => {
   const sliceItems = (sectionId) => {

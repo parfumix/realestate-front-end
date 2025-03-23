@@ -12,6 +12,11 @@ export const useFilterStore = defineStore('filtersStore', () => {
 
   const activeSorting = ref('newest_listings')
 
+  const activeSortingTitle = computed(() => {
+    let foundElement = sortOptions.value.find(el => el.id == activeSorting.value)
+    return foundElement?.['name'] || defaultValue
+  })
+
   const handleSortOption = (option) => {
     activeSorting.value = option
     hasFiltersChanged.value = true
@@ -126,6 +131,8 @@ export const useFilterStore = defineStore('filtersStore', () => {
     Object.keys(activeFilters).length === 0
       ? localStorage.removeItem('defaultFilters')
       : localStorage.setItem('defaultFilters', JSON.stringify(activeFilters))
+
+    localStorage.setItem('activeSorting', activeSorting.value)
   })
 
   const setActiveFilter = (filterName, value) => {
@@ -195,6 +202,7 @@ export const useFilterStore = defineStore('filtersStore', () => {
   return {
     open,
     sortOptions,
+    activeSortingTitle,
     activeSorting,
     hasFiltersChanged,
 
