@@ -1,6 +1,6 @@
 import { useCustomFetch } from '~/composables/useCustomFetch'
 
-const query = async (q = null, filters = null, mapFilters = null, offset = null, isMovingMap = null) => {
+const query = async (q = null, filters = null, mapFilters = null, offset = null, isMovingMap = null, parsequery = null, activeSorting = null) => {
    // Start with the base URL
    let url = 'properties/query';
 
@@ -18,7 +18,7 @@ const query = async (q = null, filters = null, mapFilters = null, offset = null,
 
   const { data, error } = await useCustomFetch(url, {
     method: 'POST',
-    body: JSON.stringify({ q, filters, mapFilters }),
+    body: JSON.stringify({ q, filters, mapFilters, parsequery, activeSorting }),
     headers: {
       'Content-Type': 'application/json',
     },
