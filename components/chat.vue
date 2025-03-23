@@ -48,7 +48,7 @@
         </div>
       </div>
       <ul
-        v-if="suggestions.length > 0"
+        v-if="suggestions.length > 0 && defaultView==chatStore.TYPE_LIST_HYBRID"
         class="absolute no-scrollbar bottom-full left-0 w-full bg-white border max-h-48 overflow-y-auto z-10 mb-.5"
       >
         <li
