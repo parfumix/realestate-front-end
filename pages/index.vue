@@ -5,6 +5,7 @@
     <Heading v-if="currentPageType=='saved'" class="w-full h-[53px]" />
 
     <div class="flex max-w-7xl mx-auto w-full justify-center items-center px-4 sm:px-6 lg:px-8 mt-2 relative" style="height: calc(100vh - 67px);">
+      <!-- it's for saved page only -->
       <RealEstateList :defaultView="defaultView" v-if="defaultView==chatStore.TYPE_LIST_HYBRID || currentPageType=='saved'" class="sm:w-5/12" />
 
       <Chat v-if="currentPageType!='saved'" :defaultView="defaultView" @submit="handleSendMessage" @resetActiveMessage="handleResetActiveMessage" :isLoading="isQueryLoading" :messages="defaultThreadMessages" :class="{'sm:w-5/12': defaultView!=chatStore.TYPE_LIST_HYBRID, 'absolute h-6 z-[100] bottom-5': defaultView==chatStore.TYPE_LIST_HYBRID}">
@@ -78,7 +79,7 @@ const {
  } = storeToRefs(chatStore)
 
 const { isModalVisible } = storeToRefs(modalStore)
-const { activeMessage, mapZoom, mapBbox } = storeToRefs(filterStore)
+const { activeMessage, mapZoom, mapBbox, hasFiltersChanged, parsequery, activeSorting } = storeToRefs(filterStore)
 
 watch(() => isModalVisible.value, newval => {
   if(! newval) chatStore.handleResetItem()
