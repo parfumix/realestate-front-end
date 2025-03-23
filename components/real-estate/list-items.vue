@@ -26,7 +26,7 @@ const props = defineProps({
 })
 
 const filterStore = useFilterStore()
-const { activeMessage, mapZoom, mapBbox, activeFilters } = storeToRefs(filterStore)
+const { activeMessage, mapZoom, mapBbox, activeFilters, parsequery, activeSorting } = storeToRefs(filterStore)
 
 const ITEMS_PER_PAGE = 12
 
@@ -42,7 +42,7 @@ const itemsPerPage = ITEMS_PER_PAGE  // Define items per page or fetch it from t
 const route = useRoute();
 const currentPageType = route.name
 
-watch(() => activeFilters, () => {
+watch(() => [activeFilters, activeSorting], () => {
     offset.value = ITEMS_PER_PAGE
     noMoreValues.value = false
 }, { deep: true })
@@ -67,7 +67,7 @@ const handleScroll = async() => {
               null, {only_saved: true}, { zoom: mapZoom.value, bbox: mapBbox.value }, offset.value
             )
           : await chatStore.handleQuery(
-              activeMessage.value, filterStore.activeFilters, { zoom: mapZoom.value, bbox: mapBbox.value }, offset.value
+              activeMessage.value, filterStore.activeFilters, { zoom: mapZoom.value, bbox: mapBbox.value }, offset.value, null, parsequery.value, activeSorting.value
             )
 
       if(! items.length) {
@@ -80,7 +80,7 @@ const handleScroll = async() => {
       chatStore.handlePushItems({ items })
 
     } catch(err) {
-      
+      //
     } finally {
       isLoading.value = false
       isScrollingDown.value = false
