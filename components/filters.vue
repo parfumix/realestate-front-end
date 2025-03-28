@@ -212,6 +212,7 @@ const renderActiveFilters = (menuFilters, section) => {
 
 const handleResetFilterGroup = filterGroupId => {
   filterStore.setActiveFilter(filterGroupId, null)
+  parsequery.value = false
 
   hasFiltersChanged.value = true
   if(filterGroupId == 'location') {

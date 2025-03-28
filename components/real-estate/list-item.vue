@@ -17,6 +17,33 @@
             <p class="text-sm font-bold text-gray-900 text-left">{{ $currencyFormat(item.price) }}</p>
             <p class="text-[11px] font-normal text-gray-900 text-left" v-if="item.area && item.price">{{ parseFloat(item?.price / parseFloat(new String(item?.area).match(/\d+(\.\d+)?/))).toFixed(0) }} EUR<span class="text-gray-800"> / m2</span></p>
         </div>
+
+        <!-- Debug Metadata Section -->
+        <div class="px-3 py-2 mt-1 bg-gray-100 text-xs border-t border-gray-200" v-if="showDebugInfo">
+            <div class="overflow-auto max-h-64">
+                <p class="font-semibold text-gray-700 mb-1">Debug Info:</p>
+                
+                <!-- Property Data -->
+                <p><span class="font-medium">ID:</span> {{ item.id }}</p>
+                <p><span class="font-medium">Title:</span> {{ item.title }}</p>
+                <p><span class="font-medium">Property Type:</span> {{ item.property_type }}</p>
+                <p><span class="font-medium">Transaction Type:</span> {{ item.transaction_type }}</p>
+                <p><span class="font-medium">Price:</span> {{ item.price }}</p>
+                <p><span class="font-medium">Area:</span> {{ item.area }} m²</p>
+                <p><span class="font-medium">Floor:</span> {{ item.floor || 'N/A' }}</p>
+                <p><span class="font-medium">Rooms:</span> {{ item.room_count || 'N/A' }}</p>
+                <p><span class="font-medium">Location:</span> {{ item.location }}</p>
+                
+                <p class="mt-1 text-right">
+                    <button @click="showDebugInfo = false" class="text-blue-600 hover:underline">Hide Debug</button>
+                </p>
+            </div>
+        </div>
+        <div v-else class="px-3 py-1">
+            <p class="text-right">
+                <button @click="showDebugInfo = true" class="text-xs text-gray-500 hover:text-gray-700">Show Debug</button>
+            </p>
+        </div>
     </li>
 </template>
 
@@ -25,7 +52,7 @@ import { useModalStore } from '@/stores/modals';
 import SignInModal from '@/components/auth-modals/sing-in.vue';
 
 const modalStore = useModalStore();
-const chatStore = useChatStore();
+const itemsStore = useItemsStore();
 
 const router = useRouter()
 const route = useRoute();
@@ -34,6 +61,9 @@ const { removeFavorite, addFavorite } = useFavoritesService()
 const { user, isAuthenticated } = useAuthService()
 
 const currentPageType = route.name
+
+// Debug info toggle
+const showDebugInfo = ref(false);
 
 const props = defineProps({
     item: {
@@ -61,8 +91,8 @@ const handleSelect = () => {
 }
 
 const handleHoverItem = (item = null) => {
-    if( props.renderedInMap || defaultView.value != chatStore.TYPE_LIST_HYBRID) return
-    chatStore.handleHoverItem(item)
+    if( props.renderedInMap || defaultView.value != itemsStore.TYPE_LIST_HYBRID) return
+    itemsStore.handleHoverItem(item)
 }
 
 const handleTogglFavorite = async() => {
@@ -74,10 +104,10 @@ const handleTogglFavorite = async() => {
     const isFavorited = props.item.is_favorited
 
     if(currentPageType == 'saved') {
-        chatStore.handleTriggerRefreshMap(true)
-        chatStore.handleRemoveItem(props.item.id)
+        itemsStore.handleTriggerRefreshMap(true)
+        itemsStore.handleRemoveItem(props.item.id)
     } else {
-        chatStore.handleUpdateItem(props.item.id, {
+        itemsStore.handleUpdateItem(props.item.id, {
             is_favorited: !isFavorited
         })
     }

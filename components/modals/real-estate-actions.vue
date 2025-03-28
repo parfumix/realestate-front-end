@@ -22,8 +22,9 @@ import { ro } from 'date-fns/locale'
 import SignInModal from '@/components/auth-modals/sing-in.vue';
 const { isAuthenticated } = useAuthService()
 
-const chatStore = useChatStore()
-const { selectedItem: item } = storeToRefs(chatStore)
+const itemsStore = useItemsStore()
+
+const { selectedItem: item } = storeToRefs(itemsStore)
 
 const modalStore = useModalStore();
 const { user } = useAuthService()
@@ -49,10 +50,10 @@ const handleTogglFavorite = async() => {
     const isFavorited = item.value.is_favorited
 
     if(currentPageType == 'saved') {
-        chatStore.handleTriggerRefreshMap(true)
-        chatStore.handleRemoveItem(item.value.id)
+        itemsStore.handleTriggerRefreshMap(true)
+        itemsStore.handleRemoveItem(item.value.id)
     } else {
-        chatStore.handleUpdateItem(item.value.id, {
+        itemsStore.handleUpdateItem(item.value.id, {
             is_favorited: !isFavorited
         })
     }

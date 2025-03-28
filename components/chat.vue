@@ -1,10 +1,10 @@
 <template>
-  <div :class="[{'h-full': defaultView!=chatStore.TYPE_LIST_HYBRID}, 'sm:max-w-xl w-full bg-white shadow-xs rounded-lg flex flex-col']">
+  <div :class="[{'h-full': defaultView!=itemsStore.TYPE_LIST_HYBRID}, 'sm:max-w-xl w-full bg-white shadow-xs rounded-lg flex flex-col']">
     <!-- Header -->
     <slot name="header"></slot>
 
     <!-- Chat Window -->
-    <div :class="{'flex-1 p-4 overflow-y-auto': defaultView!=chatStore.TYPE_LIST_HYBRID, 'hidden': defaultView==chatStore.TYPE_LIST_HYBRID}" ref="scrollContainer">
+    <div :class="{'flex-1 p-4 overflow-y-auto': defaultView!=itemsStore.TYPE_LIST_HYBRID, 'hidden': defaultView==itemsStore.TYPE_LIST_HYBRID}" ref="scrollContainer">
       <div class="space-y-4">
         <div v-for="(message, index) in messages" :key="index" class="flex">
           <div v-if="message.sender === 'user'" class="ml-auto relative">
@@ -48,7 +48,7 @@
         </div>
       </div>
       <ul
-        v-if="suggestions.length > 0 && defaultView==chatStore.TYPE_LIST_HYBRID"
+        v-if="suggestions.length > 0 && defaultView==itemsStore.TYPE_LIST_HYBRID"
         class="absolute no-scrollbar bottom-full left-0 w-full bg-white border max-h-48 overflow-y-auto z-10 mb-.5"
       >
         <li
@@ -135,7 +135,7 @@ const prompts = [
 const scrollContainer = ref(null);
 const emit = defineEmits(['submit', 'resetActiveMessage']);
 
-const chatStore = useChatStore();
+const itemsStore = useItemsStore()
 
 const handleClickOutside = () => {
   suggestions.value = []

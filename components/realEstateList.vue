@@ -8,8 +8,8 @@
 </template>
 
 <script setup>
-const chatStore = useChatStore()
-const { items, isItemsLoaded } = storeToRefs(chatStore)
+const itemsStore = useItemsStore()
+const { items, isItemsLoaded } = storeToRefs(itemsStore)
 
 const props = defineProps({
   defaultView: {

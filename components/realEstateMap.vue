@@ -1,6 +1,6 @@
 <template>
   <div style="width: 100%; height: 100%;">
-    <div id="map" v-show="[chatStore.TYPE_MAP_ITEMS, chatStore.TYPE_LIST_HYBRID].includes(defaultView) || currentPageType=='saved'" style="width: 100%; height: 100%;" />
+    <div id="map" v-show="[itemsStore.TYPE_MAP_ITEMS, itemsStore.TYPE_LIST_HYBRID].includes(defaultView) || currentPageType=='saved'" style="width: 100%; height: 100%;" />
     <Teleport v-if="selectedItem" :to="`.popup-content-${selectedItem.id}`">
       <RealEstateListItem :renderedInMap="true" :item="selectedItem" :hideBookmark="true" />
     </Teleport>
@@ -16,8 +16,9 @@ const filterStore = useFilterStore()
 const { activeMessage, mapZoom, mapBbox } = storeToRefs(filterStore)
 import { getRomanianBounds, useThrottle } from '../utils'
 
-const chatStore = useChatStore()
-const { mapItems, triggeredRefreshMap, hoveredItem } = storeToRefs(chatStore)
+const itemsStore = useItemsStore()
+
+const { mapItems, triggeredRefreshMap, hoveredItem } = storeToRefs(itemsStore)
 
 const { $currencyFormat } = useNuxtApp();
 
@@ -337,12 +338,12 @@ watch(() => hoveredItem.value, (id) => {
 watch(() => triggeredRefreshMap.value, async(newVal) => {
   if(newVal === true) {
     await fetchClusters()
-    chatStore.handleTriggerRefreshMap(false)
+    itemsStore.handleTriggerRefreshMap(false)
   }
 })
 
 watch(() => props.defaultView, (newView) => {
-  const isAllowedToInitilizeMap = [chatStore.TYPE_MAP_ITEMS, chatStore.TYPE_LIST_HYBRID].includes(newView) || currentPageType.value == 'saved'
+  const isAllowedToInitilizeMap = [itemsStore.TYPE_MAP_ITEMS, itemsStore.TYPE_LIST_HYBRID].includes(newView) || currentPageType.value == 'saved'
 
   if (isAllowedToInitilizeMap && !map) {
     nextTick(async() => {
