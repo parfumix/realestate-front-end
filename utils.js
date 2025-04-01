@@ -6,6 +6,69 @@ export const getRomanianBounds = (flat = false) => {
     ]
 }
 
+export const calculateCombinedBboxAndZoom = (selectedLocations) => {
+  // Table of cities and their bounding boxes
+  const citiesBboxes = {
+    "bucuresti": [25.9699, 44.3615, 26.2684, 44.5449],
+    "cluj-napoca": [23.5225, 46.7325, 23.6343, 46.8123],
+    "iasi": [27.5306, 47.1167, 27.6667, 47.2000],
+    "timisoara": [21.1702, 45.7211, 21.2800, 45.8000],
+    "constanta": [28.5900, 44.1500, 28.7000, 44.2200],
+    "brasov": [25.5500, 45.6200, 25.6700, 45.7000],
+    "sibiu": [24.1000, 45.7500, 24.2000, 45.8500],
+    "ploiesti": [25.9800, 44.9000, 26.0500, 45.0000],
+    "craiova": [23.7500, 44.2800, 23.9000, 44.3500],
+    "oradea": [21.9000, 47.0000, 22.0000, 47.1000],
+};
+
+  // Initialize the bounding box with extreme values
+  let combinedBbox = [Infinity, Infinity, -Infinity, -Infinity]; // [min_lon, min_lat, max_lon, max_lat]
+
+  // The margin in kilometers to add to each side of the bounding box
+  const marginKm = 2; 
+
+  // Calculate the combined bounding box
+  selectedLocations.forEach((location) => {
+    if (citiesBboxes[location]) {
+      const bbox = citiesBboxes[location];
+      combinedBbox[0] = Math.min(combinedBbox[0], bbox[0]); // Min longitude (west)
+      combinedBbox[1] = Math.min(combinedBbox[1], bbox[1]); // Min latitude (south)
+      combinedBbox[2] = Math.max(combinedBbox[2], bbox[2]); // Max longitude (east)
+      combinedBbox[3] = Math.max(combinedBbox[3], bbox[3]); // Max latitude (north)
+    }
+  });
+
+  // Add a margin to each side of the bbox
+  const KM_TO_DEG_LAT = marginKm / 111; // ~1 km in degrees latitude
+  const lat = (combinedBbox[1] + combinedBbox[3]) / 2; // Approximate center latitude
+  const KM_TO_DEG_LON = marginKm / (111 * Math.cos(lat * (Math.PI / 180))); // Adjust longitude margin by latitude
+
+  combinedBbox[0] -= KM_TO_DEG_LON; // Add margin to west
+  combinedBbox[1] -= KM_TO_DEG_LAT; // Add margin to south
+  combinedBbox[2] += KM_TO_DEG_LON; // Add margin to east
+  combinedBbox[3] += KM_TO_DEG_LAT; // Add margin to north
+
+  // Calculate zoom level based on bounding box dimensions
+  function calculateZoom(bbox) {
+    const WORLD_SIZE = 256; // Base tile size in pixels
+    const MAX_ZOOM = 18;
+
+    const width = Math.abs(bbox[2] - bbox[0]); // Longitude range
+    const height = Math.abs(bbox[3] - bbox[1]); // Latitude range
+
+    // Approximate zoom calculation
+    const latZoom = Math.log2(WORLD_SIZE / height) + 1;
+    const lonZoom = Math.log2(WORLD_SIZE / width) + 1;
+
+    // Use the smaller of the two zoom levels to ensure the bbox fits
+    return Math.min(MAX_ZOOM, Math.floor(Math.min(latZoom, lonZoom)));
+  }
+
+  const newZoom = calculateZoom(combinedBbox);
+
+  return { combinedBbox, newZoom };
+}
+
 export const removeEmptyValues = (obj) => {
     if(! obj) return {}
     
