@@ -107,7 +107,7 @@ const handleFetchItems = async(trimmedMessage = null, appliedFilters = null, map
   const filtersCopy = { ...appliedFilters }; 
   const mapFiltersCopy = { ...mapFilters }; 
 
-  const { reply, items = null, map: { items: mapItems, latlngs }, filters, prompts = [] } = 
+  const { reply, items = null, map: { items: mapItems = [], latlngs = [] } = {}, filters, prompts = [] } = 
     await itemsStore.handleFetchItems(trimmedMessage, filtersCopy, mapFiltersCopy, null, parsequery, activeSorting) 
 
     itemsStore.handleResetItems()
