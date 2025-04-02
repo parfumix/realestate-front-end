@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { getRomanianBounds } from '~/utils';
+import { getRomanianBounds, calculateCombinedBboxAndZoom } from '~/utils';
 
 export const useFilterStore = defineStore('filtersStore', () => {
   const open = ref(false);
@@ -103,11 +103,6 @@ export const useFilterStore = defineStore('filtersStore', () => {
     },
   ])
 
-  const hasFiltersChanged = ref(false)
-  const resetHasFiltersChanged = () => {
-    hasFiltersChanged.value = false
-  }
-
   const defaultFilters = {
     "property_type": [],
     "price": [],
@@ -126,6 +121,12 @@ export const useFilterStore = defineStore('filtersStore', () => {
   let mapZoom = ref(parseInt(localStorage.getItem('mapZoom') ?? 7))
   let mapBbox = ref(localStorage.getItem('mapBbox') ? JSON.parse(localStorage.getItem('mapBbox')) : null)
 
+
+  const hasFiltersChanged = ref(false)
+  const resetHasFiltersChanged = () => {
+    hasFiltersChanged.value = false
+  }
+
   // set filters to localStorage any time filters changes
   watch(() => hasFiltersChanged.value, () => {
     Object.keys(activeFilters).length === 0
@@ -134,6 +135,14 @@ export const useFilterStore = defineStore('filtersStore', () => {
 
     localStorage.setItem('activeSorting', activeSorting.value)
   })
+
+   // Watch for changes in location filters and recalculate bounds, I NEED THAT IF USER DECIDE TO HARDCDOE LOCATION AND WE NEED TO SET NEW BBOX TO HAVE A PROPER SEARCH IN BACK-END
+   watch(() => activeFilters.location, (newLocations) => {
+    if (newLocations && newLocations.length > 0) {
+      const { combinedBbox, newZoom } = calculateCombinedBboxAndZoom(newLocations);
+      setMapFilters(newZoom, combinedBbox);
+    }
+  }, { deep: true });
 
   const setActiveFilter = (filterName, value) => {
     if(! value) {
