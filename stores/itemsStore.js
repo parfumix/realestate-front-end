@@ -1,7 +1,7 @@
-// stores/itemsStore.js
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
-import { query, requestDetails } from '../api/chat';
+
+import { fetchItems, requestDetails } from '../api/items';
 import { removeEmptyValues } from '../utils';
 
 export const useItemsStore = defineStore('itemsStore', () => {
@@ -78,25 +78,29 @@ export const useItemsStore = defineStore('itemsStore', () => {
         if(newMapItems.length) mapItems.value = [...mapItems.value, ...newMapItems];
     };
 
-    // API interactions
-    const handleFetchItems = async (q = null, filters = null, mapFilters = null, offset = null, isMovingMap = null, parsequery = null, activeSorting = null) => {
+    const handleFetchItems = async (
+        q = null, filters = null, mapFilters = null, offset = null, parsequery = null, activeSorting = null
+    ) => {
         try {
             isQueryLoading.value = true;
 
-            const filteredFilters = removeEmptyValues(filters);
-            const filteredMapFilters = removeEmptyValues(mapFilters);
+            const viewMode = localStorage.getItem('defaultView') || TYPE_LIST_HYBRID
 
+            const filteredFilters = removeEmptyValues(filters);
             const haveAnyFilters = Object.keys(filteredFilters).length;
+
+            // We might want a separate loading state for map items
+            const filteredMapFilters = removeEmptyValues(mapFilters);
             const haveAnyMapFilters = Object.keys(filteredMapFilters).length;
 
-            const { data, error } = await query(
+            const { data, error } = await fetchItems(
                 q, 
                 haveAnyFilters ? filteredFilters : null,
                 haveAnyMapFilters ? filteredMapFilters : null,
                 offset,
-                isMovingMap,
                 parsequery,
-                activeSorting
+                activeSorting,
+                viewMode
             );
             
             if (error.value) throw new Error(error.value);
