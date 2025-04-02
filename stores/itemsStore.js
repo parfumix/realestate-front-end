@@ -20,6 +20,7 @@ export const useItemsStore = defineStore('itemsStore', () => {
     const mapItems = ref([]);
     const selectedItem = ref(null);
     const hoveredItem = ref(null);
+    const latlngs = ref([]);
 
     // Map refresh state
     const triggeredRefreshMap = ref(false);
@@ -77,6 +78,10 @@ export const useItemsStore = defineStore('itemsStore', () => {
         if(newItems.length) items.value = [...items.value, ...newItems];
         if(newMapItems.length) mapItems.value = [...mapItems.value, ...newMapItems];
     };
+
+    const handleSetLatLngs = (newVal) => {
+        latlngs.value = newVal
+    }
 
     const handleFetchItems = async (
         q = null, filters = null, mapFilters = null, offset = null, parsequery = null, activeSorting = null
@@ -142,6 +147,7 @@ export const useItemsStore = defineStore('itemsStore', () => {
         // Items
         items,
         mapItems,
+        latlngs,
         selectedItem,
         hoveredItem,
         handleUpdateItem,
@@ -153,6 +159,7 @@ export const useItemsStore = defineStore('itemsStore', () => {
         handlePushItem,
         handlePushItems,
         findItemBySlug,
+        handleSetLatLngs,
 
         // Loading states
         isQueryLoading,

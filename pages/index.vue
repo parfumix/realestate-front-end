@@ -107,11 +107,13 @@ const handleFetchItems = async(trimmedMessage = null, appliedFilters = null, map
   const filtersCopy = { ...appliedFilters }; 
   const mapFiltersCopy = { ...mapFilters }; 
 
-  const { reply, items = null, map: { items: mapItems }, filters, prompts = [] } = 
+  const { reply, items = null, map: { items: mapItems, latlngs }, filters, prompts = [] } = 
     await itemsStore.handleFetchItems(trimmedMessage, filtersCopy, mapFiltersCopy, null, parsequery, activeSorting) 
 
     itemsStore.handleResetItems()
     itemsStore.handlePushItems({ items, mapItems })
+
+    itemsStore.handleSetLatLngs(JSON.parse(JSON.stringify(latlngs)))
 
     return { reply, items, mapItems, filters, prompts }
 }
