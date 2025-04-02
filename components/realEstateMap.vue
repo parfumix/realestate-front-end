@@ -13,12 +13,12 @@ import "overlapping-marker-spiderfier-leaflet/dist/oms";
 const OverlappingMarkerSpiderfier = window.OverlappingMarkerSpiderfier;
 
 const filterStore = useFilterStore()
-const { activeMessage, mapZoom, mapBbox } = storeToRefs(filterStore)
+const { mapZoom, mapBbox } = storeToRefs(filterStore)
 import { getRomanianBounds, useThrottle } from '../utils'
 
 const itemsStore = useItemsStore()
 
-const { mapItems, triggeredRefreshMap, hoveredItem } = storeToRefs(itemsStore)
+const { mapItems, items, triggeredRefreshMap, hoveredItem } = storeToRefs(itemsStore)
 
 const { $currencyFormat } = useNuxtApp();
 
@@ -163,6 +163,28 @@ const initializeMap = async() => {
   map.on('moveend', fetchClustersThrottled);
 }
 
+const setNewLocationBasedOnItems = (items) => {
+  const newBounds = L.latLngBounds(); // Initialize bounds object
+
+  items.forEach(({ meta: { lat, lng } }) => {
+    newBounds.extend(L.latLng(lat, lng));
+  })
+
+  // Fit the map to the bounds of all markers
+  if(items.length && newBounds.isValid() && ! isMovingMap) {
+    isFetching = true
+
+    map.fitBounds(newBounds, { padding: [80, 80], animate: true } )
+    filterStore.setMapFilters(map.getZoom(), newBounds.toBBoxString().split(',').map(coord => parseFloat(coord)))
+
+    setTimeout(() => {
+      isFetching = false
+    }, 500)
+  } else {
+    isMovingMap = false
+  }
+}
+
 // Function to fetch clusters based on map bounds and zoom level
 async function fetchClusters() {
   if(isFetching) return
@@ -182,10 +204,7 @@ async function fetchClusters() {
 
   try {
     filterStore.setMapFilters(zoom, bbox)
-
-    currentPageType.value == 'saved'
-      ? emit('moveend', null, { only_saved: true }, { zoom: mapZoom.value, bbox: mapBbox.value })
-      : emit('moveend', activeMessage.value, filterStore.activeFilters, { zoom: mapZoom.value, bbox: mapBbox.value })
+    emit('moveend', { zoom: mapZoom.value, bbox: mapBbox.value })
   } catch (error) {
     console.error("Error during fetchClusters:", error);
   } finally {
@@ -197,7 +216,6 @@ async function fetchClusters() {
 function updateMarkers(clusterData) {
   markersCluster.clearLayers();
   spiderfier.clearMarkers();
-  const newBounds = L.latLngBounds(); // Initialize bounds object
 
   const coordinateMap = new Map();
 
@@ -214,8 +232,6 @@ function updateMarkers(clusterData) {
       console.warn("Invalid coordinates for marker:", feature);
       return; // Skip this marker if it has invalid coordinates
     }
-
-    newBounds.extend(L.latLng(lat, lng));
 
     if (feature.properties?.cluster) {
       const pointCount = feature.properties.point_count; // Number of markers in the cluster
@@ -271,19 +287,8 @@ function updateMarkers(clusterData) {
     }
   });
 
-  // Fit the map to the bounds of all markers
-  if(clusterData.length && newBounds.isValid() && ! isMovingMap) {
-      isFetching = true
+ 
 
-      map.fitBounds(newBounds, { padding: [50, 50], animate: true } )
-      filterStore.setMapFilters(map.getZoom(), newBounds.toBBoxString().split(',').map(coord => parseFloat(coord)))
-
-      setTimeout(() => {
-        isFetching = false
-      }, 500)
-    } else {
-      isMovingMap = false
-    }
 }
 
 // Helper function to create a dynamic icon based on the cluster count
@@ -352,6 +357,14 @@ watch(() => props.defaultView, (newView) => {
     });
   }
 }, { immediate: true });
+
+
+watch(() => items.value, (newVal) => {
+  if(! map) return
+  setTimeout(() => {
+    setNewLocationBasedOnItems(newVal);
+  })
+}, { deep: true, immediate: true })
 
 watch(() => mapItems.value, (newVal) => {
   if(! map) return
