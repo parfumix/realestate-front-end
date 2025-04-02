@@ -178,6 +178,7 @@ export const useFilterStore = defineStore('filtersStore', () => {
     }
   }
 
+  // TODO I think when chaning the filter I should reset bbox, because user intent to search whole country, 
   const handleToggleFilter = (type, value) => {
     activeMessage.value = null
 

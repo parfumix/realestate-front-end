@@ -123,11 +123,18 @@ const handleApplyFilters = async() => {
   handleFetchItems(activeMessage.value, filterStore.activeFilters, { zoom: mapZoom.value, bbox: mapBbox.value }, parsequery.value, activeSorting.value)
 }
 
-const handleSwitchView = async(mode) => {
-  if(defaultView.value == mode) return
-  
-  defaultView.value = mode
-  localStorage.setItem('defaultView', mode)
+const handleSwitchView = async(newViewMode) => {
+  const oldViewMode = defaultView.value
+  if(oldViewMode == newViewMode) return
+
+  defaultView.value = newViewMode
+  localStorage.setItem('defaultView', newViewMode)
+
+  if(newViewMode == itemsStore.TYPE_LIST_ITEMS) {
+    await handleFetchItems(activeMessage.value, filterStore.activeFilters, null, null, activeSorting.value)
+  } else if( oldViewMode == itemsStore.TYPE_LIST_ITEMS ) {
+    await handleFetchItems(activeMessage.value, filterStore.activeFilters, { zoom: 6, bbox: getRomanianBounds(true) }, null, activeSorting.value)
+  }
 }
 
 const handleSelectPrompt = async(prompt) => {
