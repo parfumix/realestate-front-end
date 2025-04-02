@@ -18,7 +18,7 @@ import { getRomanianBounds, useThrottle } from '../utils'
 
 const itemsStore = useItemsStore()
 
-const { mapItems, items, triggeredRefreshMap, hoveredItem } = storeToRefs(itemsStore)
+const { mapItems, items, latlngs, triggeredRefreshMap, hoveredItem } = storeToRefs(itemsStore)
 
 const { $currencyFormat } = useNuxtApp();
 
@@ -163,20 +163,26 @@ const initializeMap = async() => {
   map.on('moveend', fetchClustersThrottled);
 }
 
-const setNewLocationBasedOnItems = (items) => {
+const setNewLocationBasedOnItems = (latlngs) => {
   const newBounds = L.latLngBounds(); // Initialize bounds object
 
-  items.forEach(({ meta: { lat, lng } }) => {
+  latlngs.forEach((lat, lng) => {
     newBounds.extend(L.latLng(lat, lng));
   })
 
   // Fit the map to the bounds of all markers
-  if(items.length && newBounds.isValid() && ! isMovingMap) {
+  if(latlngs.length && newBounds.isValid() && !isMovingMap) {
     isFetching = true
 
-    map.fitBounds(newBounds, { padding: [80, 80], animate: true } )
-    filterStore.setMapFilters(map.getZoom(), newBounds.toBBoxString().split(',').map(coord => parseFloat(coord)))
+    map.fitBounds(newBounds, { padding: [80, 80], animate: true });
 
+ // Get the current bounds and convert to bbox format
+    const bounds = newBounds.toBBoxString().split(',').map(coord => parseFloat(coord));
+    const zoom = map.getZoom();
+    
+    // Update zoom and bbox in the store
+    filterStore.setMapFilters(zoom, bounds);
+    
     setTimeout(() => {
       isFetching = false
     }, 500)
@@ -286,9 +292,6 @@ function updateMarkers(clusterData) {
       markers[0].fire('click'); // Programmatically trigger a click event
     }
   });
-
- 
-
 }
 
 // Helper function to create a dynamic icon based on the cluster count
@@ -358,8 +361,7 @@ watch(() => props.defaultView, (newView) => {
   }
 }, { immediate: true });
 
-
-watch(() => items.value, (newVal) => {
+watch(() => latlngs.value, (newVal) => {
   if(! map) return
   setTimeout(() => {
     setNewLocationBasedOnItems(newVal);
