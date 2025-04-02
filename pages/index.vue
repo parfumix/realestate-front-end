@@ -64,12 +64,11 @@ const router = useRouter();
 const { sendMessage } = useMessagesService();
 
 const currentPageType = ref(null)
-let dataLoaded = false
 
 import { getRomanianBounds, setHead } from '../utils'
 
 let defaultView = ref(
-  localStorage.getItem('defaultView') ?? 'list'
+  localStorage.getItem('defaultView') ?? 'hybrid'
 )
 
 const openRealEstatePropertyModal = () => {
@@ -98,14 +97,8 @@ const defaultThreadPrompts = computed(() => {
 /**
  * In case of map while user moing map around, I have to keep items list as it is and just fetch new items from map
  */
-const handleMapFetchItems = async(trimmedMessage = null, appliedFilters = null, mapFilters = null) => {
-  const filtersCopy = { ...appliedFilters }; 
-  const mapFiltersCopy = { ...mapFilters }; 
-
-  const { map: { items: mapItems } } = await itemsStore.handleFetchItems(trimmedMessage, filtersCopy, mapFiltersCopy, null, 1)
-
-  itemsStore.handleResetItems(itemsStore.TYPE_MAP_ITEMS)
-  itemsStore.handlePushItems({ mapItems })
+const handleMapFetchItems = async(mapFilters) => {
+  return handleFetchItems(activeMessage.value, filterStore.activeFilters, mapFilters, parsequery.value, activeSorting.value)
 }
 
 const handleFetchItems = async(trimmedMessage = null, appliedFilters = null, mapFilters = null, parsequery = null, activeSorting = null) => {
@@ -115,12 +108,12 @@ const handleFetchItems = async(trimmedMessage = null, appliedFilters = null, map
   const mapFiltersCopy = { ...mapFilters }; 
 
   const { reply, items = null, map: { items: mapItems }, filters, prompts = [] } = 
-    await itemsStore.handleFetchItems(trimmedMessage, filtersCopy, mapFiltersCopy, null, null, parsequery, activeSorting) 
+    await itemsStore.handleFetchItems(trimmedMessage, filtersCopy, mapFiltersCopy, null, parsequery, activeSorting) 
 
     itemsStore.handleResetItems()
     itemsStore.handlePushItems({ items, mapItems })
 
-  return { reply, items, mapItems, filters, prompts }
+    return { reply, items, mapItems, filters, prompts }
 }
 
 const handleApplyFilters = async() => {
@@ -214,12 +207,10 @@ watch(() => route.params.slug, async(newSlug) => {
 watch(() => route.name, async(currentPageName) => {
   currentPageType.value = currentPageName
 
-  if(currentPageName == 'saved') handleFetchItems(null, { only_saved: true }, null)
+  // if(currentPageName == 'saved') handleFetchItems(null, { only_saved: true }, null)
 
   if(currentPageName == 'index') {
-    if(dataLoaded) return
     await handleFetchItems(activeMessage.value, filterStore.activeFilters, { zoom: 6, bbox: getRomanianBounds(true) }, null, activeSorting.value)
-    dataLoaded = true
   }
 }, { immediate: true })
 </script>
