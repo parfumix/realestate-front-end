@@ -14,7 +14,7 @@ export const useFilterStore = defineStore('filtersStore', () => {
 
   const activeSortingTitle = computed(() => {
     let foundElement = sortOptions.value.find(el => el.id == activeSorting.value)
-    return foundElement?.['name'] || defaultValue
+    return foundElement?.['name'] || 'Sortează'
   })
 
   const handleSortOption = (option) => {
@@ -107,7 +107,7 @@ export const useFilterStore = defineStore('filtersStore', () => {
     "property_type": [],
     "price": [],
     "room_count": [],
-    "area:": [],
+    "area": [],
     "floor": [],
     "location": [],
     "transaction_type": [],
@@ -116,7 +116,19 @@ export const useFilterStore = defineStore('filtersStore', () => {
   // by default trying to reach localStorage filters, if not accesible than use default filters
   let activeMessage = ref(null)
   let parsequery = ref(null)
-  let activeFilters = reactive(JSON.parse(localStorage.getItem('defaultFilters')) ?? defaultFilters);
+
+  // Initialize activeFilters with safe fallback
+  const savedFilters = (() => {
+    try {
+      const saved = localStorage.getItem('defaultFilters');
+      return saved ? JSON.parse(saved) : null;
+    } catch (e) {
+      console.error('Error parsing saved filters:', e);
+      return null;
+    }
+  })();
+
+  const activeFilters = reactive(savedFilters || {...defaultFilters});
 
   let mapZoom = ref(parseInt(localStorage.getItem('mapZoom') ?? 7))
   let mapBbox = ref(localStorage.getItem('mapBbox') ? JSON.parse(localStorage.getItem('mapBbox')) : null)
@@ -128,12 +140,19 @@ export const useFilterStore = defineStore('filtersStore', () => {
 
   // set filters to localStorage any time filters changes
   watch(() => hasFiltersChanged.value, () => {
-    Object.keys(activeFilters).length === 0
-      ? localStorage.removeItem('defaultFilters')
-      : localStorage.setItem('defaultFilters', JSON.stringify(activeFilters))
-
-    localStorage.setItem('activeSorting', activeSorting.value)
-  })
+    if (hasFiltersChanged.value) {
+      try {
+        if (Object.keys(activeFilters).length === 0) {
+          localStorage.removeItem('defaultFilters');
+        } else {
+          localStorage.setItem('defaultFilters', JSON.stringify(activeFilters));
+        }
+        localStorage.setItem('activeSorting', activeSorting.value);
+      } catch (e) {
+        console.error('Error saving filters to localStorage:', e);
+      }
+    }
+  });
 
   const setActiveFilter = (filterName, value) => {
     if(! value) {
@@ -144,12 +163,16 @@ export const useFilterStore = defineStore('filtersStore', () => {
   }
 
   const setMapFilters = (zoom = 6, bbox = null) => {
-    mapZoom.value = zoom
-    mapBbox.value = bbox
-
-    localStorage.setItem('mapZoom', parseInt(zoom))
-    localStorage.setItem('mapBbox', JSON.stringify(bbox))
-  }
+    try {
+      mapZoom.value = zoom;
+      mapBbox.value = bbox;
+  
+      localStorage.setItem('mapZoom', String(parseInt(zoom)));
+      localStorage.setItem('mapBbox', JSON.stringify(bbox));
+    } catch (e) {
+      console.error('Error saving map filters:', e);
+    }
+  };
 
   const resetMapFilters = () => {
     setMapFilters(null, null)
