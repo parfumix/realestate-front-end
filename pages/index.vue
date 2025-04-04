@@ -133,7 +133,7 @@ const handleSwitchView = async(newViewMode) => {
   if(newViewMode == itemsStore.TYPE_LIST_ITEMS) {
     await handleFetchItems(activeMessage.value, filterStore.activeFilters, null, null, activeSorting.value)
   } else if( oldViewMode == itemsStore.TYPE_LIST_ITEMS ) {
-    await handleFetchItems(activeMessage.value, filterStore.activeFilters, { zoom: 6, bbox: getRomanianBounds(true) }, null, activeSorting.value)
+    await handleFetchItems(activeMessage.value, filterStore.activeFilters, { zoom: mapZoom.value, bbox: mapBbox.value }, null, activeSorting.value)
   }
 }
 
