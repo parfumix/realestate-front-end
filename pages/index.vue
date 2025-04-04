@@ -154,7 +154,7 @@ const handleSendMessage = async (message) => {
 
     // we're usign all romanian bbox because search can contain new locations so we need to clusterize items by whole country
     const mapFilters = { zoom: 6, bbox: getRomanianBounds(true) }
-    const { reply, items, filters, prompts = [] } = await handleFetchItems(trimmedMessage, null, mapFilters)
+    const { reply, items, filters, prompts = [] } = await handleFetchItems(trimmedMessage, null, mapFilters, true)
     if(! items) throw new Error('No results found for' + trimmedMessage)
     
     chatStore.handleSetPromptsByThread('default', prompts)
