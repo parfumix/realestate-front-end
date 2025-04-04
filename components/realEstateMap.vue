@@ -41,7 +41,7 @@ const route = useRoute();
 const currentPageType = ref(route.name)
 
 let selectedItem = ref(null);
-const fetchClustersOnMoveEndThrottled = useThrottle(fetchClustersOnMoveEnd, 700);
+const handleMapMoveEndThrottled = useThrottle(handleMapMoveEnd, 700);
 
 const handleSelectCurrentItem = (item) => {
   selectedItem.value = item;
@@ -160,7 +160,7 @@ const initializeMap = async() => {
     .catch(error => console.error('Error loading Romania GeoJSON:', error));
 
   // Fetch clusters initially and whenever the map view changes
-  map.on('moveend', fetchClustersOnMoveEndThrottled);
+  map.on('moveend', handleMapMoveEndThrottled);
 }
 
 const setNewLocationBasedOnItems = (latlngs) => {
@@ -192,8 +192,8 @@ const setNewLocationBasedOnItems = (latlngs) => {
 }
 
 // Function to fetch clusters based on map bounds and zoom level
-async function fetchClustersOnMoveEnd() {
-  if(isProcessingRequest) return
+async function handleMapMoveEnd() {
+  if (isProcessingRequest) return;
 
   isProgrammaticMapMovement = true
   isProcessingRequest = true
@@ -212,7 +212,7 @@ async function fetchClustersOnMoveEnd() {
     filterStore.setMapFilters(zoom, bbox)
     emit('moveend', { zoom: mapZoom.value, bbox: mapBbox.value })
   } catch (error) {
-    console.error("Error during fetchClustersOnMoveEnd:", error);
+    console.error("Error during handleMapMoveEnd:", error);
   } finally {
     isProcessingRequest = false
   }
@@ -345,7 +345,7 @@ watch(() => hoveredItem.value, (id) => {
 
 watch(() => triggeredRefreshMap.value, async(newVal) => {
   if(newVal === true) {
-    await fetchClustersOnMoveEnd()
+    await handleMapMoveEnd()
     itemsStore.handleTriggerRefreshMap(false)
   }
 })
