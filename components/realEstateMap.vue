@@ -34,14 +34,14 @@ let map;
 let spiderfier;
 let markersCluster;
 
-let isFetching = false
-let isMovingMap = true
+let isFetchingManually = false
+let isMovingMapManually = true
 
 const route = useRoute();
 const currentPageType = ref(route.name)
 
 let selectedItem = ref(null);
-const fetchClustersThrottled = useThrottle(fetchClusters, 700);
+const fetchClustersOnMoveEndThrottled = useThrottle(fetchClustersOnMoveEnd, 700);
 
 const handleSelectCurrentItem = (item) => {
   selectedItem.value = item;
@@ -160,7 +160,7 @@ const initializeMap = async() => {
     .catch(error => console.error('Error loading Romania GeoJSON:', error));
 
   // Fetch clusters initially and whenever the map view changes
-  map.on('moveend', fetchClustersThrottled);
+  map.on('moveend', fetchClustersOnMoveEndThrottled);
 }
 
 const setNewLocationBasedOnItems = (latlngs) => {
@@ -171,8 +171,8 @@ const setNewLocationBasedOnItems = (latlngs) => {
   })
 
   // Fit the map to the bounds of all markers
-  if(latlngs.length && newBounds.isValid() && !isMovingMap) {
-    isFetching = true
+  if(latlngs.length && newBounds.isValid() && !isMovingMapManually) {
+    isFetchingManually = true
 
     map.fitBounds(newBounds, { padding: [80, 80], animate: true });
 
@@ -184,19 +184,19 @@ const setNewLocationBasedOnItems = (latlngs) => {
     filterStore.setMapFilters(zoom, bounds);
     
     setTimeout(() => {
-      isFetching = false
+      isFetchingManually = false
     }, 500)
   } else {
-    isMovingMap = false
+    isMovingMapManually = false
   }
 }
 
 // Function to fetch clusters based on map bounds and zoom level
-async function fetchClusters() {
-  if(isFetching) return
+async function fetchClustersOnMoveEnd() {
+  if(isFetchingManually) return
 
-  isMovingMap = true
-  isFetching = true
+  isMovingMapManually = true
+  isFetchingManually = true
 
   const bounds = map.getBounds();
   const zoom = map.getZoom();
@@ -212,9 +212,9 @@ async function fetchClusters() {
     filterStore.setMapFilters(zoom, bbox)
     emit('moveend', { zoom: mapZoom.value, bbox: mapBbox.value })
   } catch (error) {
-    console.error("Error during fetchClusters:", error);
+    console.error("Error during fetchClustersOnMoveEnd:", error);
   } finally {
-    isFetching = false
+    isFetchingManually = false
   }
 }
 
@@ -345,7 +345,7 @@ watch(() => hoveredItem.value, (id) => {
 
 watch(() => triggeredRefreshMap.value, async(newVal) => {
   if(newVal === true) {
-    await fetchClusters()
+    await fetchClustersOnMoveEnd()
     itemsStore.handleTriggerRefreshMap(false)
   }
 })
