@@ -176,7 +176,7 @@ const setNewLocationBasedOnItems = (latlngs) => {
 
     map.fitBounds(newBounds, { padding: [80, 80], animate: true });
 
- // Get the current bounds and convert to bbox format
+    // Get the current bounds and convert to bbox format
     const bounds = newBounds.toBBoxString().split(',').map(coord => parseFloat(coord));
     const zoom = map.getZoom();
     
