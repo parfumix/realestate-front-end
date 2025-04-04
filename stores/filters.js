@@ -121,7 +121,6 @@ export const useFilterStore = defineStore('filtersStore', () => {
   let mapZoom = ref(parseInt(localStorage.getItem('mapZoom') ?? 7))
   let mapBbox = ref(localStorage.getItem('mapBbox') ? JSON.parse(localStorage.getItem('mapBbox')) : null)
 
-
   const hasFiltersChanged = ref(false)
   const resetHasFiltersChanged = () => {
     hasFiltersChanged.value = false
@@ -135,14 +134,6 @@ export const useFilterStore = defineStore('filtersStore', () => {
 
     localStorage.setItem('activeSorting', activeSorting.value)
   })
-
-   // Watch for changes in location filters and recalculate bounds, I NEED THAT IF USER DECIDE TO HARDCDOE LOCATION AND WE NEED TO SET NEW BBOX TO HAVE A PROPER SEARCH IN BACK-END
-   watch(() => activeFilters.location, (newLocations) => {
-    if (newLocations && newLocations.length > 0) {
-      const { combinedBbox, newZoom } = calculateCombinedBboxAndZoom(newLocations);
-      setMapFilters(newZoom, combinedBbox);
-    }
-  }, { deep: true });
 
   const setActiveFilter = (filterName, value) => {
     if(! value) {
@@ -177,33 +168,70 @@ export const useFilterStore = defineStore('filtersStore', () => {
       activeFilters[key] = value
     }
   }
-
-  // TODO I think when chaning the filter I should reset bbox, because user intent to search whole country, 
   const handleToggleFilter = (type, value) => {
-    activeMessage.value = null
-
-    let beforeLocations = []
-    let afterLocations = []
-    if(type == 'location') beforeLocations = [...activeFilters?.['location'] ?? []]
-
-    let valueIndex = activeFilters?.[type]?.findIndex(el => el == value);
-
-    if (valueIndex >= 0) {
-      // Remove the value if it exists
-      activeFilters?.[type].splice(valueIndex, 1);
-    } else {
-      // Add the value if it does not exist
-      activeFilters[type] = activeFilters?.[type] ? [...activeFilters?.[type], value] : [value]
+    // Reset active search query
+    activeMessage.value = null;
+    
+    // Special handling for location filters
+    const isLocationFilter = type === 'location';
+    const beforeLocations = isLocationFilter ? [...(activeFilters?.[type] || [])] : [];
+    
+    // Ensure filter type exists in activeFilters
+    if (!activeFilters[type]) {
+      activeFilters[type] = [];
     }
+    
+    try {
+      // Find if value already exists
+      const valueIndex = activeFilters[type].findIndex(el => el === value);
+      
+      if (valueIndex >= 0) {
+        // Remove value (toggle off)
+        activeFilters[type].splice(valueIndex, 1);
+        
+        // Clean up empty arrays
+        if (activeFilters[type].length === 0) {
+          delete activeFilters[type];
+        }
+      } else {
+        // Add value (toggle on)
+        activeFilters[type] = [...activeFilters[type], value];
+      }
+      
+      // Get updated locations after changes
+      const afterLocations = activeFilters?.location || [];
+      
+      // Reset map bounds logic
+      if (isLocationFilter) {
+        // If all location filters were removed, reset to Romania bounds
+        if (beforeLocations.length && afterLocations.length === 0) {
+          setMapFilters(6, getRomanianBounds(true));
+        } 
 
-    if(type == 'location') afterLocations = [...activeFilters?.['location'] ?? []]
-
-    if(beforeLocations.length && !afterLocations.length) {
-      setMapFilters(6, getRomanianBounds(true))
+        // If location filters changed, update the map to show these locations
+        else if (JSON.stringify(beforeLocations) !== JSON.stringify(afterLocations) && afterLocations.length > 0) {
+          const { combinedBbox, newZoom } = calculateCombinedBboxAndZoom(afterLocations);
+          setMapFilters(newZoom, combinedBbox);
+        }
+      } else {
+        // For non-location filters:
+        if (afterLocations.length > 0) {
+          // If locations exist, recalculate bounds for those locations
+          const { combinedBbox, newZoom } = calculateCombinedBboxAndZoom(afterLocations);
+          setMapFilters(newZoom, combinedBbox);
+        } else {
+          // If no location filters, reset to Romania bounds
+          setMapFilters(6, getRomanianBounds(true));
+        }
+      }
+      
+      // Signal that filters have changed to trigger data refresh
+      hasFiltersChanged.value = true;
+    } catch (error) {
+      console.error(`Error toggling filter ${type}:${value}`, error);
+      // Optionally show a user-friendly error message
     }
-
-    hasFiltersChanged.value = true
-  }
+  };
 
   const toggleOpen = () => {
     open.value = !open.value;
