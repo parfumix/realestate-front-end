@@ -155,8 +155,8 @@ export const useFilterStore = defineStore('filtersStore', () => {
   });
 
   const setActiveFilter = (filterName, value) => {
-    if(! value) {
-      delete activeFilters[filterName]
+    if (!value) {
+      delete activeFilters[filterName];
     } else {
       activeFilters[filterName] = value;
     }
@@ -187,10 +187,17 @@ export const useFilterStore = defineStore('filtersStore', () => {
   }
 
   const resetActiveFilters = () => {
-    for (const [key, value] of Object.entries(defaultFilters)) {
-      activeFilters[key] = value
-    }
+    // First clear all existing filters
+    Object.keys(activeFilters).forEach(key => {
+      delete activeFilters[key];
+    });
+    
+    // Then repopulate with default values
+    Object.entries(defaultFilters).forEach(([key, value]) => {
+      activeFilters[key] = Array.isArray(value) ? [...value] : value;
+    });
   }
+
   const handleToggleFilter = (type, value) => {
     // Reset active search query
     activeMessage.value = null;
