@@ -19,7 +19,7 @@ const fetchItems = async (q = null, filters = null, mapFilters = null, offset = 
 
   const { data, error } = await useCustomFetch(url, {
     method: 'POST',
-    body: JSON.stringify({ q, filters, mapFilters, parsequery, activeSorting: activeSorting ?? null }),
+    body: JSON.stringify({ q, filters, mapFilters, parsequery, activeSorting }),
     headers: {
       'Content-Type': 'application/json',
     },

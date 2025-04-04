@@ -155,10 +155,10 @@ export const useItemsStore = defineStore('itemsStore', () => {
           const { 
             mapZoom, mapBbox, activeFilters, activeMessage, parsequery, activeSorting
            } = storeToRefs(filterStore);
-          
+
           const { items } = await handleFetchItems(
             activeMessage.value, activeFilters.value, { zoom: mapZoom.value, bbox: mapBbox.value }, 
-            paginationOffset.value, null, parsequery.value, activeSorting.value || 'newest_listings' 
+            paginationOffset.value, parsequery.value, activeSorting.value 
           );
       
           if (! items.length) {
