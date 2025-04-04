@@ -26,31 +26,22 @@ const props = defineProps({
 })
 
 const filterStore = useFilterStore()
-const { activeMessage, mapZoom, mapBbox, activeFilters, parsequery, activeSorting } = storeToRefs(filterStore)
-
-const ITEMS_PER_PAGE = 12
+const {  activeFilters, activeSorting } = storeToRefs(filterStore)
 
 const itemsStore = useItemsStore()
-const scrollable = ref(null)
-const isLoading = ref(false)
-const isScrollingDown = ref(false)
-const noMoreValues = ref(props.items.length < ITEMS_PER_PAGE)
+const { isScrollingDown, noMoreValues } = storeToRefs(itemsStore)
 
-const offset = ref(ITEMS_PER_PAGE)  // Track the offset for pagination
-const itemsPerPage = ITEMS_PER_PAGE  // Define items per page or fetch it from the store if dynamic
+const scrollable = ref(null)
 
 const route = useRoute();
 const currentPageType = route.name
 
 watch(() => [activeFilters, activeSorting], () => {
-    offset.value = ITEMS_PER_PAGE
-    noMoreValues.value = false
+    itemsStore.resetPagination();
 }, { deep: true })
 
 // Function to handle scroll event
 const handleScroll = async() => {
-  if(isLoading.value == true || noMoreValues.value == true) return
-
   // Get the scroll position and height inside the div
   const scrollPosition = scrollable.value.scrollTop;
   const scrollHeight = scrollable.value.scrollHeight;
@@ -58,33 +49,7 @@ const handleScroll = async() => {
 
   // Check if the user has scrolled to the bottom of the div
   if (scrollHeight - scrollPosition <= clientHeight + 1) {
-    try {
-      isLoading.value = true
-      isScrollingDown.value = true
-
-      const { items } = currentPageType == 'saved'
-          ? await itemsStore.handleFetchItems(
-              null, {only_saved: true}, { zoom: mapZoom.value, bbox: mapBbox.value }, offset.value
-            )
-          : await itemsStore.handleFetchItems(
-              activeMessage.value, filterStore.activeFilters, { zoom: mapZoom.value, bbox: mapBbox.value }, offset.value, null, parsequery.value, activeSorting.value
-            )
-
-      if(! items.length) {
-        noMoreValues.value = true
-        isLoading.value = false
-        return
-      }
-
-      offset.value += itemsPerPage
-      itemsStore.handlePushItems({ items })
-
-    } catch(err) {
-      //
-    } finally {
-      isLoading.value = false
-      isScrollingDown.value = false
-    }
+    await itemsStore.loadMoreItems();
   }
 }
 

@@ -22,6 +22,12 @@ export const useItemsStore = defineStore('itemsStore', () => {
     const hoveredItem = ref(null);
     const latlngs = ref([]);
 
+    const paginationOffset = ref(12); // Initial offset
+    const isLoadingMore = ref(false);
+    const isScrollingDown = ref(false);
+    const noMoreValues = ref(false);
+    const ITEMS_PER_PAGE = 12;
+
     // Map refresh state
     const triggeredRefreshMap = ref(false);
     const handleTriggerRefreshMap = (mode = true) => {
@@ -133,6 +139,46 @@ export const useItemsStore = defineStore('itemsStore', () => {
         }
     };
 
+    const resetPagination = () => {
+        paginationOffset.value = ITEMS_PER_PAGE;
+        noMoreValues.value = false;
+    };
+
+    const loadMoreItems = async () => {
+        if (isLoadingMore.value || noMoreValues.value) return false;
+        
+        try {
+          isLoadingMore.value = true;
+          isScrollingDown.value = true;
+          
+          const filterStore = useFilterStore();
+          const { 
+            mapZoom, mapBbox, activeFilters, activeMessage, parsequery, activeSorting
+           } = storeToRefs(filterStore);
+          
+          const { items } = await handleFetchItems(
+            activeMessage.value, activeFilters.value, { zoom: mapZoom.value, bbox: mapBbox.value }, 
+            paginationOffset.value, null, parsequery.value, activeSorting.value
+          );
+      
+          if (! items.length) {
+            noMoreValues.value = true;
+            return false;
+          }
+      
+          paginationOffset.value += ITEMS_PER_PAGE;
+          handlePushItems({ items });
+
+          return true;
+        } catch (err) {
+          console.error('Error loading more items:', err);
+          return false;
+        } finally {
+          isLoadingMore.value = false;
+          isScrollingDown.value = false;
+        }
+    };
+
     // Return items-related functionality
     return {
         // Constants
@@ -169,5 +215,14 @@ export const useItemsStore = defineStore('itemsStore', () => {
         // API interactions
         handleFetchItems,
         handleRequestDetails,
+
+        // loading more pagination state
+        paginationOffset,
+        isLoadingMore,
+        isScrollingDown,
+        noMoreValues,
+        ITEMS_PER_PAGE,
+        resetPagination,
+        loadMoreItems,
     };
 });

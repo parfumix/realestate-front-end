@@ -3,7 +3,7 @@
     <div v-if="items.length && isItemsLoaded" class="h-full">
       <RealEstateListItems class="flex flex-col justify-between h-full" :defaultView="defaultView" :items="items" />
     </div>
-    <EmptyResults v-else="!items.length" class="w-full h-full flex flex-col justify-center items-center" />
+    <EmptyResults v-else class="w-full h-full flex flex-col justify-center items-center" />
   </div>
 </template>
 
