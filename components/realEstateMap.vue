@@ -34,8 +34,8 @@ let map;
 let spiderfier;
 let markersCluster;
 
-let isFetchingManually = false
-let isMovingMapManually = true
+let isProcessingRequest = false
+let isProgrammaticMapMovement = true
 
 const route = useRoute();
 const currentPageType = ref(route.name)
@@ -171,8 +171,8 @@ const setNewLocationBasedOnItems = (latlngs) => {
   })
 
   // Fit the map to the bounds of all markers
-  if(latlngs.length && newBounds.isValid() && !isMovingMapManually) {
-    isFetchingManually = true
+  if(latlngs.length && newBounds.isValid() && !isProgrammaticMapMovement) {
+    isProcessingRequest = true
 
     map.fitBounds(newBounds, { padding: [80, 80], animate: true });
 
@@ -184,19 +184,19 @@ const setNewLocationBasedOnItems = (latlngs) => {
     filterStore.setMapFilters(zoom, bounds);
     
     setTimeout(() => {
-      isFetchingManually = false
+      isProcessingRequest = false
     }, 500)
   } else {
-    isMovingMapManually = false
+    isProgrammaticMapMovement = false
   }
 }
 
 // Function to fetch clusters based on map bounds and zoom level
 async function fetchClustersOnMoveEnd() {
-  if(isFetchingManually) return
+  if(isProcessingRequest) return
 
-  isMovingMapManually = true
-  isFetchingManually = true
+  isProgrammaticMapMovement = true
+  isProcessingRequest = true
 
   const bounds = map.getBounds();
   const zoom = map.getZoom();
@@ -214,7 +214,7 @@ async function fetchClustersOnMoveEnd() {
   } catch (error) {
     console.error("Error during fetchClustersOnMoveEnd:", error);
   } finally {
-    isFetchingManually = false
+    isProcessingRequest = false
   }
 }
 
