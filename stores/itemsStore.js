@@ -10,6 +10,9 @@ export const useItemsStore = defineStore('itemsStore', () => {
     const TYPE_LIST_ITEMS = 'list';
     const TYPE_LIST_HYBRID = 'hybrid';
 
+    // Default view mode state
+    const defaultView = ref(localStorage.getItem('defaultView') ?? TYPE_LIST_HYBRID);
+
     // Loading states
     const isItemsLoaded = ref(false);
     const isQueryLoading = ref(false);
@@ -179,6 +182,14 @@ export const useItemsStore = defineStore('itemsStore', () => {
         }
     };
 
+    // Set view mode and save to localStorage
+    const setDefaultView = (newViewMode) => {
+        if (defaultView.value !== newViewMode) {
+            defaultView.value = newViewMode;
+            localStorage.setItem('defaultView', newViewMode);
+        }
+    }
+
     // Return items-related functionality
     return {
         // Constants
@@ -224,5 +235,8 @@ export const useItemsStore = defineStore('itemsStore', () => {
         ITEMS_PER_PAGE,
         resetPagination,
         loadMoreItems,
+
+        setDefaultView,
+        defaultView,
     };
 });
