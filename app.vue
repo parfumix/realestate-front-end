@@ -7,6 +7,15 @@
 </template>
 
 <script setup>
+useHead({
+  htmlAttrs: {
+    class: 'h-full bg-white'
+  },
+  bodyAttrs: {
+    class: 'h-full'
+  }
+})
+
 provideHeadlessUseId(() => useId())
 const { createAnonymousUser, user } = useAuthService()
 
