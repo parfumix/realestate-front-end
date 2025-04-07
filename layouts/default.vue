@@ -36,7 +36,7 @@
       </button>
     </div>
 
-    <main>
+    <main class="lg:pl-20">
       <slot />
     </main>
 
