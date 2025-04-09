@@ -34,7 +34,7 @@ const initializeMap = async () => {
     // Initialize Leaflet map
     map = L.map(props.id, {
         maxZoom: 18,
-        minZoom: 6,
+        minZoom: 7,
         zoomControl: false, // Disable default zoom control
     }).setView([location.value?.lat ?? DEFAULT_LAT, location.value?.lon ?? DEFAULT_LON], 13);
 
