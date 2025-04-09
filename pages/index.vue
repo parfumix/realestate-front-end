@@ -127,7 +127,7 @@ handleFetchItems(activeMessage.value, filterStore.activeFilters, { zoom: mapZoom
 }
 
 const handleSwitchView = async(newViewMode) => {
-itemsStore.setDefaultView(newViewMode)
+  itemsStore.setDefaultView(newViewMode)
 }
 
 const handleResetActiveMessage = () => {
