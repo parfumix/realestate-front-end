@@ -4,13 +4,8 @@
           <RealEstateListItem v-for="item in items" :item="item" :key="item.id" class="relative" />
       </ul>
       <div :class="[{'right-0 -mr-14': defaultView==itemsStore.TYPE_LIST_ITEMS, 'left-1/2 -ml-5 -mb-2': defaultView==itemsStore.TYPE_LIST_HYBRID}, 'bottom-el absolute bottom-0 mb-2 cursor-pointer']" v-if="!noMoreValues" @click="scrollToBottom">
-        <svg v-if="isScrollingDown" class="animate-spin text-black size-10" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-        </svg>
-        <svg v-else xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-10">
-          <path stroke-linecap="round" stroke-linejoin="round" d="m9 12.75 3 3m0 0 3-3m-3 3v-7.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-        </svg>
+        <IconsSpinnerIcon v-if="isScrollingDown" :size="24" />
+        <IconsLoadingIcon v-else />
       </div>
     </div>
     <EmptyResults v-else class="w-full h-full flex flex-col justify-center items-center" />
