@@ -157,6 +157,14 @@ const initializeMap = async() => {
   map.on('moveend', handleMapMoveEndThrottled);
 }
 
+// Function to handle map size updates when container changes
+const refreshMap = () => {
+  if (map) {
+    // Force a rerender of the map by triggering a resize event
+    map.invalidateSize();
+  }
+}
+
 const setNewLocationBasedOnItems = (latlngs) => {
   const newBounds = L.latLngBounds(); // Initialize bounds object
 
@@ -347,11 +355,19 @@ watch(() => triggeredRefreshMap.value, async(newVal) => {
 watch(() => defaultView.value, (newView) => {
   const isAllowedToInitilizeMap = [itemsStore.TYPE_MAP_ITEMS, itemsStore.TYPE_LIST_HYBRID].includes(newView) || currentPageType.value == 'saved'
 
-  if (isAllowedToInitilizeMap && !map) {
-    nextTick(async() => {
-      await initializeMap()
-      updateMarkers(mapItems.value);
-    });
+  if (isAllowedToInitilizeMap) {
+    if (!map) {
+      // Initialize map if not yet initialized
+      nextTick(async() => {
+        await initializeMap();
+        updateMarkers(mapItems.value);
+      });
+    } else if (map) {
+      // If view changed and map exists, refresh it to handle size changes
+      nextTick(() => {
+        refreshMap();
+      });
+    }
   }
 }, { immediate: true });
 
@@ -368,6 +384,27 @@ watch(() => mapItems.value, (newVal) => {
     updateMarkers(newVal);
   })
 }, { deep: true, immediate: true })
+
+// Use resize observer to detect container size changes
+onMounted(() => {
+  const resizeObserver = new ResizeObserver(entries => {
+    for (const entry of entries) {
+      if (map) {
+        refreshMap();
+      }
+    }
+  });
+  
+  const mapEl = document.getElementById('map');
+  if (mapEl) {
+    resizeObserver.observe(mapEl);
+  }
+  
+  // Clean up observer on component unmount
+  onUnmounted(() => {
+    resizeObserver.disconnect();
+  });
+});
 </script>
 
 <style>
