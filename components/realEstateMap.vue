@@ -344,7 +344,7 @@ watch(() => triggeredRefreshMap.value, async(newVal) => {
   }
 })
 
-watch(() => defaultView, (newView) => {
+watch(() => defaultView.value, (newView) => {
   const isAllowedToInitilizeMap = [itemsStore.TYPE_MAP_ITEMS, itemsStore.TYPE_LIST_HYBRID].includes(newView) || currentPageType.value == 'saved'
 
   if (isAllowedToInitilizeMap && !map) {

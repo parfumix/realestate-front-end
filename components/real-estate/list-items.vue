@@ -5,7 +5,7 @@
             <RealEstateListItem v-for="(item, index) in items" :item="item" :key="item.id || index" class="relative" />
         </div>
         <div :class="loaderElClass" v-if="!noMoreValues" @click="scrollToBottom">
-          <IconsSpinnerIcon v-if="isScrollingDown" :size="24" />
+          <IconsArrowDown v-if="isScrollingDown" :size="24" />
           <IconsLoadingIcon v-else />
         </div>
       </div>
@@ -43,7 +43,7 @@ const loaderElClass = computed(() => {
   };
 })
 
-watch(() => [activeFilters, activeSorting], () => {
+watch(() => [activeFilters.value, activeSorting.value], () => {
     itemsStore.resetPagination();
 }, { deep: true })
 
