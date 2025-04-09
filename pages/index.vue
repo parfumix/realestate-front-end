@@ -12,11 +12,11 @@
     </div>
 
     <!-- Main content: List + Map -->
-    <div class="flex flex-grow w-full flex-col md:flex-row p-6">
+    <div class="flex flex-grow w-full flex-col md:flex-row">
       
       <!-- Left: Property List -->
       <div 
-        class="overflow-y-auto flex-grow h-[calc(100vh-155px)] no-scrollbar"
+        class="overflow-y-auto flex-grow h-[calc(100vh-155px)] no-scrollbar p-6"
         :class="[
           isHybridView ? 'w-full md:w-2/5' : isListView ? 'w-full' : 'hidden'
         ]"
@@ -77,30 +77,31 @@ modalStore.openModal(RealEstatePropertyModal);
 }
 
 const { 
-selectedItem
+  selectedItem
 } = storeToRefs(itemsStore)
 
 const { isModalVisible } = storeToRefs(modalStore)
 const { activeMessage, mapZoom, mapBbox, hasFiltersChanged, parsequery, activeSorting } = storeToRefs(filterStore)
 
 const isListView = computed(() =>
-defaultView.value === itemsStore.TYPE_LIST_ITEMS
+  defaultView.value === itemsStore.TYPE_LIST_ITEMS
 )
 const isMapView = computed(() =>
-defaultView.value === itemsStore.TYPE_MAP_ITEMS
+  defaultView.value === itemsStore.TYPE_MAP_ITEMS
 )
 const isHybridView = computed(() =>
-defaultView.value === itemsStore.TYPE_LIST_HYBRID
+  defaultView.value === itemsStore.TYPE_LIST_HYBRID
 )
 
 watch(() => isModalVisible.value, newval => {
-if(! newval) itemsStore.handleResetSelectedItem()
+  if(! newval) itemsStore.handleResetSelectedItem()
 })
 
 /**
 * In case of map while user moing map around, I have to keep items list as it is and just fetch new items from map
 */
 const handleMapFetchItems = async(mapFilters) => {
+  console.log('map filters', mapFilters)
 return handleFetchItems(activeMessage.value, filterStore.activeFilters, mapFilters, parsequery.value, activeSorting.value)
 }
 
@@ -131,11 +132,11 @@ const handleSwitchView = async(newViewMode) => {
 }
 
 const handleResetActiveMessage = () => {
-filterStore.resetActiveMessage()
-filterStore.resetActiveFilters()
-hasFiltersChanged.value = true
+  filterStore.resetActiveMessage()
+  filterStore.resetActiveFilters()
+  hasFiltersChanged.value = true
 
-handleFetchItems(filterStore.activeMessage, filterStore.activeFilters, { zoom: mapZoom.value, bbox: mapBbox.value }, false)
+  handleFetchItems(filterStore.activeMessage, filterStore.activeFilters, { zoom: mapZoom.value, bbox: mapBbox.value }, false)
 }
 
 const handleSendMessage = async (message) => {
@@ -178,7 +179,7 @@ try {
 }
 
 onUnmounted(() => {
-itemsStore.handleResetItems()
+  itemsStore.handleResetItems()
 })
 
 // emulate triggering handleCloseModal
