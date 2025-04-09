@@ -1,6 +1,6 @@
 <template>
-    <div class="relative">
-      <ul :class="[{'sm:grid-cols-3': defaultView==itemsStore.TYPE_LIST_ITEMS && currentPageType!=='saved'}, 'sm:grid-cols-2 grid gap-x-4 gap-y-4 sm:gap-x-6 xl:gap-x-4 no-scrollbar overflow-y-auto pb-2']" ref="scrollable" @scroll="handleScroll">
+    <div v-if="items.length && isItemsLoaded" class="relative">
+      <ul :class="[{'sm:grid-cols-4': defaultView==itemsStore.TYPE_LIST_ITEMS && currentPageType!=='saved'}, 'sm:grid-cols-2 grid gap-x-4 gap-y-4 sm:gap-x-6 xl:gap-x-4 no-scrollbar overflow-y-auto pb-2']" ref="scrollable" @scroll="handleScroll">
           <RealEstateListItem v-for="item in items" :item="item" :key="item.id" class="relative" />
       </ul>
       <div :class="[{'right-0 -mr-14': defaultView==itemsStore.TYPE_LIST_ITEMS, 'left-1/2 -ml-5 -mb-2': defaultView==itemsStore.TYPE_LIST_HYBRID}, 'bottom-el absolute bottom-0 mb-2 cursor-pointer']" v-if="!noMoreValues" @click="scrollToBottom">
@@ -13,23 +13,16 @@
         </svg>
       </div>
     </div>
+    <EmptyResults v-else class="w-full h-full flex flex-col justify-center items-center" />
 </template>
 
 <script setup>
-const props = defineProps({
-    items: {
-        type: Array
-    },
-    defaultView: {
-      type: String
-    }
-})
+const itemsStore = useItemsStore()
 
 const filterStore = useFilterStore()
 const {  activeFilters, activeSorting } = storeToRefs(filterStore)
 
-const itemsStore = useItemsStore()
-const { isScrollingDown, noMoreValues } = storeToRefs(itemsStore)
+const { isScrollingDown, noMoreValues, defaultView, items, isItemsLoaded } = storeToRefs(itemsStore)
 
 const scrollable = ref(null)
 

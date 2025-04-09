@@ -58,7 +58,9 @@ const router = useRouter()
 const route = useRoute();
 
 const { removeFavorite, addFavorite } = useFavoritesService()
-const { user, isAuthenticated } = useAuthService()
+const { isAuthenticated } = useAuthService()
+
+const { defaultView } = storeToRefs(itemsStore)
 
 const currentPageType = route.name
 
@@ -78,9 +80,6 @@ const props = defineProps({
         default: false
     }
 })
-let defaultView = ref(
-  localStorage.getItem('defaultView') ?? 'list'
-)
 
 const openSignInModal = () => {
   modalStore.openModal(SignInModal);

@@ -18,17 +18,11 @@ import { getRomanianBounds, useThrottle } from '../utils'
 
 const itemsStore = useItemsStore()
 
-const { mapItems, items, latlngs, triggeredRefreshMap, hoveredItem } = storeToRefs(itemsStore)
+const { mapItems, latlngs, triggeredRefreshMap, hoveredItem, defaultView } = storeToRefs(itemsStore)
 
 const { $currencyFormat } = useNuxtApp();
 
 const emit = defineEmits(['moveend'])
-
-const props = defineProps({
-  defaultView: {
-    type: String
-  }
-})
 
 let map;
 let spiderfier;
@@ -350,7 +344,7 @@ watch(() => triggeredRefreshMap.value, async(newVal) => {
   }
 })
 
-watch(() => props.defaultView, (newView) => {
+watch(() => defaultView, (newView) => {
   const isAllowedToInitilizeMap = [itemsStore.TYPE_MAP_ITEMS, itemsStore.TYPE_LIST_HYBRID].includes(newView) || currentPageType.value == 'saved'
 
   if (isAllowedToInitilizeMap && !map) {
