@@ -3,7 +3,7 @@
     
     <!-- Filters -->
     <div class="w-full flex justify-center border-b border-gray-200">
-      <Filters class="w-full max-w-screen-xl" @applyFilters="handleApplyFilters" />
+      <Filters class="w-full max-w-screen-xl z-[500]" @applyFilters="handleApplyFilters" />
     </div>
 
     <!-- View Mode Switcher -->
