@@ -428,9 +428,6 @@ onMounted(() => {
   const debouncedRefresh = debounce(() => {
     if (map && isMapInitialized.value) {
       // Disable events before resize handling
-      disableMapEvents();
-      isProcessingRequest = true;
-      
       refreshMap();
       
       setTimeout(() => {
@@ -439,10 +436,13 @@ onMounted(() => {
         enableMapEvents(500);
       }, 500);
     }
-  }, 30);
+  }, 500);
   
   const resizeObserver = new ResizeObserver(entries => {
     if (entries.length > 0) {
+      disableMapEvents();
+      isProcessingRequest = true;
+
       debouncedRefresh();
     }
   });

@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col h-screen relative">
+  <div class="flex flex-col h-[calc(100vh-56px)] lg:h-screen relative">
     
     <!-- Filters -->
     <div class="w-full flex justify-center border-b border-gray-200">
@@ -16,7 +16,7 @@
       
       <!-- Left: Property List -->
       <div 
-        class="overflow-y-auto flex-grow h-[calc(100vh-155px)] no-scrollbar p-6"
+        class="overflow-y-auto flex-grow h-[calc(100vh-211px)] lg:h-[calc(100vh-155px)] no-scrollbar p-6"
         :class="[
           isHybridView ? 'w-full md:w-2/5' : isListView ? 'w-full' : 'hidden'
         ]"
@@ -102,7 +102,7 @@ watch(() => isModalVisible.value, newval => {
 */
 const handleMapFetchItems = async(mapFilters) => {
   console.log('map filters', mapFilters)
-return handleFetchItems(activeMessage.value, filterStore.activeFilters, mapFilters, parsequery.value, activeSorting.value)
+  return handleFetchItems(activeMessage.value, filterStore.activeFilters, mapFilters, parsequery.value, activeSorting.value)
 }
 
 const handleFetchItems = async(trimmedMessage = null, appliedFilters = null, mapFilters = null, parsequery = null, activeSorting = null) => {
