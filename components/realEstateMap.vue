@@ -14,7 +14,7 @@ const OverlappingMarkerSpiderfier = window.OverlappingMarkerSpiderfier;
 
 const filterStore = useFilterStore()
 const { mapZoom, mapBbox } = storeToRefs(filterStore)
-import { getRomanianBounds, useThrottle } from '../utils'
+import { getRomanianBounds, useThrottle, debounce } from '../utils'
 
 const itemsStore = useItemsStore()
 
@@ -24,9 +24,10 @@ const { $currencyFormat } = useNuxtApp();
 
 const emit = defineEmits(['moveend'])
 
-let map;
-let spiderfier;
-let markersCluster;
+let map = null;
+let spiderfier = null;
+let markersCluster = null;
+let lastView = null;
 
 let isProcessingRequest = false
 let isProgrammaticMapMovement = true
@@ -34,11 +35,39 @@ let isProgrammaticMapMovement = true
 const route = useRoute();
 const currentPageType = ref(route.name)
 
+// Track if the map events are currently disabled
+const mapEventsDisabled = ref(false);
+
 let selectedItem = ref(null);
 const handleMapMoveEndThrottled = useThrottle(handleMapMoveEnd, 700);
 
+// Track if the map has been initialized
+const isMapInitialized = ref(false);
+
 const handleSelectCurrentItem = (item) => {
   selectedItem.value = item;
+}
+
+// Function to temporarily disable map events
+const disableMapEvents = () => {
+  if (map && !mapEventsDisabled.value) {
+    map.off('moveend', handleMapMoveEndThrottled);
+    mapEventsDisabled.value = true;
+    return true;
+  }
+  return false;
+}
+
+// Function to re-enable map events
+const enableMapEvents = (delay = 500) => {
+  if (map && mapEventsDisabled.value) {
+    setTimeout(() => {
+      map.on('moveend', handleMapMoveEndThrottled);
+      mapEventsDisabled.value = false;
+    }, delay);
+    return true;
+  }
+  return false;
 }
 
 // Function to initialize the map
@@ -57,7 +86,7 @@ const initializeMap = async() => {
   map = L.map('map', {
     scrollWheelZoom: false,
     maxZoom: 18,
-    minZoom: 6,
+    minZoom: 7,
   }).setView(defaultCenter, defaultZoom);
 
   // Set max bounds to keep the map restricted within Romania
@@ -81,7 +110,7 @@ const initializeMap = async() => {
     spiralFootSeparation: 50,      // Separation for spiral layout
     circleStartAngle: Math.PI / 6, // Starting angle for circular layout
     spiralLengthStart: 20,         // Starting length of the spiral
-    spiralLengthFactor: 10,         // Tightness of the spiral
+    spiralLengthFactor: 10,        // Tightness of the spiral
     legWeight: 1.5,                // Thickness of the spiderfy lines (legs)
     legColors: {
       usual: '#3e92c9',            // Default line color, e.g., orange-red
@@ -138,7 +167,7 @@ const initializeMap = async() => {
     })
     .catch(error => console.error('Error loading world GeoJSON:', error));
 
-  // Load and add Romania’s GeoJSON with only the border displayed
+  // Load and add Romania's GeoJSON with only the border displayed
   await fetch('/ro.geo.json')
     .then(response => response.json())
     .then(countryData => {
@@ -155,13 +184,22 @@ const initializeMap = async() => {
 
   // Fetch clusters initially and whenever the map view changes
   map.on('moveend', handleMapMoveEndThrottled);
+  
+  // Set the map as initialized
+  isMapInitialized.value = true;
 }
 
 // Function to handle map size updates when container changes
 const refreshMap = () => {
   if (map) {
+    // Disable map events during refresh
+    disableMapEvents();
+    
     // Force a rerender of the map by triggering a resize event
     map.invalidateSize();
+
+    // Re-enable map events after the refresh is complete
+    enableMapEvents(500);
   }
 }
 
@@ -263,7 +301,9 @@ function updateMarkers(clusterData) {
       }
 
       // Preload marker image if `image_url` exists
-      preloadImage(images?.[0]);
+      if (images && images.length > 0) {
+        preloadImage(images[0]);
+      }
 
       const marker = L.marker([lat, lng], {
         icon: createPriceIcon(price),
@@ -345,21 +385,28 @@ watch(() => hoveredItem.value, (id) => {
   });
 });
 
+// Handle refresh map trigger
 watch(() => triggeredRefreshMap.value, async(newVal) => {
   if(newVal === true) {
-    await handleMapMoveEnd()
-    itemsStore.handleTriggerRefreshMap(false)
+    await handleMapMoveEnd();
+    itemsStore.handleTriggerRefreshMap(false);
   }
-})
+});
 
-watch(() => defaultView.value, (newView) => {
-  const isAllowedToInitilizeMap = [itemsStore.TYPE_MAP_ITEMS, itemsStore.TYPE_LIST_HYBRID].includes(newView) || currentPageType.value == 'saved'
+// Watch for view changes to initialize or refresh map
+watch(() => defaultView.value, (newView, oldView) => {
+  const isAllowedToInitilizeMap = [itemsStore.TYPE_MAP_ITEMS, itemsStore.TYPE_LIST_HYBRID].includes(newView) || currentPageType.value == 'saved';
+
+  // Track view change for container width change detection
+  lastView = oldView;
 
   if (isAllowedToInitilizeMap) {
-    if (!map) {
+    if (!isMapInitialized.value && !map) {
       // Initialize map if not yet initialized
       nextTick(async() => {
         await initializeMap();
+
+        // Update markers with initial data
         updateMarkers(mapItems.value);
       });
     } else if (map) {
@@ -387,11 +434,26 @@ watch(() => mapItems.value, (newVal) => {
 
 // Use resize observer to detect container size changes
 onMounted(() => {
+  // Add a debounced version of refreshMap to prevent multiple refreshes
+  const debouncedRefresh = debounce(() => {
+    if (map && isMapInitialized.value) {
+      // Disable events before resize handling
+      disableMapEvents();
+      isProcessingRequest = true;
+      
+      refreshMap();
+      
+      setTimeout(() => {
+        isProcessingRequest = false;
+        // Re-enable events after resize handling is complete
+        enableMapEvents(500);
+      }, 500);
+    }
+  }, 30);
+  
   const resizeObserver = new ResizeObserver(entries => {
-    for (const entry of entries) {
-      if (map) {
-        refreshMap();
-      }
+    if (entries.length > 0) {
+      debouncedRefresh();
     }
   });
   
