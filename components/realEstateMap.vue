@@ -50,24 +50,14 @@ const handleSelectCurrentItem = (item) => {
 
 // Function to temporarily disable map events
 const disableMapEvents = () => {
-  if (map && !mapEventsDisabled.value) {
-    map.off('moveend', handleMapMoveEndThrottled);
-    mapEventsDisabled.value = true;
-    return true;
-  }
-  return false;
+  mapEventsDisabled.value = true;
 }
 
 // Function to re-enable map events
 const enableMapEvents = (delay = 500) => {
-  if (map && mapEventsDisabled.value) {
-    setTimeout(() => {
-      map.on('moveend', handleMapMoveEndThrottled);
-      mapEventsDisabled.value = false;
-    }, delay);
-    return true;
-  }
-  return false;
+  setTimeout(() => {
+    mapEventsDisabled.value = false;
+  }, delay);
 }
 
 // Function to initialize the map
@@ -233,7 +223,7 @@ const setNewLocationBasedOnItems = (latlngs) => {
 
 // Function to fetch clusters based on map bounds and zoom level
 async function handleMapMoveEnd() {
-  if (isProcessingRequest) return;
+  if (isProcessingRequest || mapEventsDisabled.value) return;
 
   isProgrammaticMapMovement = true
   isProcessingRequest = true
