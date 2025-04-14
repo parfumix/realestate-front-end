@@ -16,12 +16,12 @@
       
       <!-- Left: Property List -->
       <div 
-        class="overflow-y-auto flex-grow h-[calc(100vh-211px)] lg:h-[calc(100vh-155px)] no-scrollbar p-6"
+        class="p-6"
         :class="[
           isHybridView ? 'w-full md:w-2/5' : isListView ? 'w-full' : 'hidden'
         ]"
       >
-        <RealEstateList />
+        <RealEstateListItems class="overflow-y-auto flex-grow h-[calc(100vh-211px)] lg:h-[calc(100vh-155px)] no-scrollbar" />
       </div>
 
       <!-- Right: Map -->

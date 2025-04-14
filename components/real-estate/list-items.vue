@@ -1,7 +1,7 @@
 <template>
-    <div class="w-full h-full flex flex-col">
+    <div class="w-full h-full flex flex-col" ref="scrollable" @scroll="handleScroll">
       <div v-if="items && items.length && isItemsLoaded" class="relative">
-        <div :class="gridClasses" ref="scrollable" @scroll="handleScroll">
+        <div :class="`${gridClasses} scroll-smooth`">
             <RealEstateListItem v-for="(item, index) in items" :item="item" :key="item.id || index" class="relative" />
         </div>
         <div :class="loaderElClass" v-if="!noMoreValues" @click="scrollToBottom">
@@ -71,3 +71,9 @@ const scrollToBottom = () => {
   }
 }
 </script>
+
+<style scoped>
+.scroll-smooth {
+  scroll-behavior: smooth;
+}
+</style>
