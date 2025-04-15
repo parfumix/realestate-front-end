@@ -5,7 +5,6 @@ export default defineNuxtConfig({
     '@nuxtjs/tailwindcss',
     'nuxt-headlessui',
     '@pinia/nuxt',
-    '@nuxtjs/supabase',
     'nuxt-keen-slider',
     'nuxt3-notifications',
     '@nuxtjs/turnstile'
@@ -42,24 +41,6 @@ export default defineNuxtConfig({
   },
   turnstile: {
     siteKey: process.env.TURNSTILE_SITE_KEY,
-  },
-  supabase: {
-    // Options
-    url: process.env.SUPABASE_URL,
-    key: process.env.SUPABASE_KEY,
-    redirect: false,
-    redirectOptions: {
-      login: '/login',
-      callback: '/confirm',
-      include: undefined,
-      exclude: [],
-      cookieRedirect: false,
-    },
-    cookieOptions: {
-      maxAge: 60 * 60 * 8,  // Cookie valid for 8 hours
-      sameSite: 'lax',
-      secure: true
-    }
   },
   headlessui: {
     prefix: 'Headless'

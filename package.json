@@ -13,7 +13,6 @@
     "@headlessui/vue": "^1.7.23",
     "@heroicons/vue": "^2.1.5",
     "@nuxt/scripts": "^0.9.5",
-    "@nuxtjs/supabase": "^1.4.0",
     "@nuxtjs/turnstile": "^0.9.11",
     "@pinia/nuxt": "^0.5.4",
     "canvas-confetti": "^1.9.3",

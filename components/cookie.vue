@@ -19,9 +19,11 @@
 </template>
 
 <script>
-  window.addEventListener('load', () => {
-    setTimeout(() => {
-      document.querySelectorAll('.hs-overlay').forEach((el) => HSOverlay.open(el));
+  onMounted(() => {
+    window.addEventListener('load', () => {
+      setTimeout(() => {
+        document.querySelectorAll('.hs-overlay').forEach((el) => HSOverlay.open(el));
+      });
     });
-  });
+  })
 </script>
