@@ -165,7 +165,7 @@ export const scrollToElement = (target, marginTop = 30) => {
         // Check if the element is already in the viewport
         const isInViewport = 
             elementRect.top >= marginTop && 
-            elementRect.bottom <= window.innerHeight;
+            elementRect.bottom <= window?.innerHeight;
 
         if (isInViewport) {
             element.focus();

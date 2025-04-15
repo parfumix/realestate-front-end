@@ -14,7 +14,11 @@ export default defineNuxtConfig({
       baseURL: `${process.env.API_BASE_URL}` || 'http://localhost:3001',
     },
   },
-  ssr: false,
+  ssr: true,
+  routeRules: {
+    // Homepage pre-rendered at build time
+    '/': { ssr: false },
+  },
   hooks: {
     'pages:extend'(pages) {
       pages.push({
