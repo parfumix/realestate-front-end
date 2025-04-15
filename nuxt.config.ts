@@ -15,10 +15,6 @@ export default defineNuxtConfig({
     },
   },
   ssr: true,
-  routeRules: {
-    // Homepage pre-rendered at build time
-    '/': { ssr: false },
-  },
   hooks: {
     'pages:extend'(pages) {
       pages.push({
