@@ -31,7 +31,9 @@
           isHybridView ? 'w-full md:w-3/5' : isMapView ? 'w-full' : 'hidden'
         ]"
       >
-        <RealEstateMap @moveend="handleMapFetchItems" />
+        <ClientOnly>
+          <RealEstateMap @moveend="handleMapFetchItems" />
+        </ClientOnly>
       </div>
 
     </div>

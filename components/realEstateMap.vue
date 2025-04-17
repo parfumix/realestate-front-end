@@ -62,121 +62,126 @@ const enableMapEvents = (delay = 500) => {
 
 // Function to initialize the map
 const initializeMap = async() => {
-  const romaniaBounds = getRomanianBounds();
+  try {
+    const romaniaBounds = getRomanianBounds();
 
-  const defaultZoom = mapZoom.value;
+    const defaultZoom = mapZoom.value || 7; // Fallback zoom if not set
 
-  const defaultCenter = mapBbox.value
-    ? [
-        (mapBbox.value[1] + mapBbox.value[3]) / 2,
-        (mapBbox.value[0] + mapBbox.value[2]) / 2,
-      ]
-    : [45.90529985724799, 24.895019531250004]; // Default center if mapBbox not available
+    const defaultCenter = mapBbox.value
+      ? [
+          (mapBbox.value[1] + mapBbox.value[3]) / 2,
+          (mapBbox.value[0] + mapBbox.value[2]) / 2,
+        ]
+      : [45.90529985724799, 24.895019531250004]; // Default center if mapBbox not available
 
-  map = L.map('map', {
-    scrollWheelZoom: false,
-    maxZoom: 18,
-    minZoom: 7,
-  }).setView(defaultCenter, defaultZoom);
+    map = L.map('map', {
+      scrollWheelZoom: false,
+      maxZoom: 18,
+      minZoom: 7,
+    }).setView(defaultCenter, defaultZoom);
 
-  // Set max bounds to keep the map restricted within Romania
-  map.setMaxBounds(romaniaBounds);
+    // Set max bounds to keep the map restricted within Romania
+    map.setMaxBounds(romaniaBounds);
 
-  // Optionally, you can set options to disable dragging outside bounds
-  map.options.maxBoundsViscosity = 1;
+    // Optionally, you can set options to disable dragging outside bounds
+    map.options.maxBoundsViscosity = 1;
 
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    opacity: 1
-  }).addTo(map);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      opacity: 1
+    }).addTo(map);
 
-  markersCluster = L.layerGroup();
-  map.addLayer(markersCluster);
+    markersCluster = L.layerGroup();
+    map.addLayer(markersCluster);
 
-  // Initialize OverlappingMarkerSpiderfier
-  spiderfier = new OverlappingMarkerSpiderfier(map, {
-    keepSpiderfied: true,
-    nearbyDistance: 30,            // Distance threshold for spiderfying
-    circleFootSeparation: 40,      // Separation for circular layout
-    spiralFootSeparation: 50,      // Separation for spiral layout
-    circleStartAngle: Math.PI / 6, // Starting angle for circular layout
-    spiralLengthStart: 20,         // Starting length of the spiral
-    spiralLengthFactor: 10,        // Tightness of the spiral
-    legWeight: 1.5,                // Thickness of the spiderfy lines (legs)
-    legColors: {
-      usual: '#3e92c9',            // Default line color, e.g., orange-red
-      highlighted: '#67bdf5'       // Highlighted line color, e.g., yellow
-    }
-  });
-
-  // Set up spiderfy events
-  spiderfier.addListener('click', (marker) => {
-    // if (!map.getBounds().contains(marker.getLatLng())) {
-    //   map.flyTo(marker.getLatLng(), map.getZoom() + 2);
-    // }
-
-    marker.openPopup();
-  });
-
-  // Listener for when markers are spiderfied (expanded around a central point)
-  spiderfier.addListener('spiderfy', (markers) => {
-    markers.forEach(marker => {
-      marker.setIcon(createPriceIcon(marker.options.feature.price));
-    });
-
-    map.closePopup();
-  });
-
-  // Listener for when markers are unspiderfied (return to original positions)
-  spiderfier.addListener('unspiderfy', (markers) => {
-    // Handle individual markers
-    markers.forEach(marker => {
-      marker.setIcon(createPriceIcon(marker.options.feature.price));
-    });
-
-    // Optionally reset cluster icons (if clusters need to reflect unspiderfy state)
-    markersCluster.eachLayer(layer => {
-      if (layer instanceof L.Marker && layer.options.feature?.cluster) {
-        layer.setIcon(createClusterIcon(layer.options.feature.point_count));
+    // Initialize OverlappingMarkerSpiderfier
+    spiderfier = new OverlappingMarkerSpiderfier(map, {
+      keepSpiderfied: true,
+      nearbyDistance: 30,            // Distance threshold for spiderfying
+      circleFootSeparation: 40,      // Separation for circular layout
+      spiralFootSeparation: 50,      // Separation for spiral layout
+      circleStartAngle: Math.PI / 6, // Starting angle for circular layout
+      spiralLengthStart: 20,         // Starting length of the spiral
+      spiralLengthFactor: 10,        // Tightness of the spiral
+      legWeight: 1.5,                // Thickness of the spiderfy lines (legs)
+      legColors: {
+        usual: '#3e92c9',            // Default line color, e.g., orange-red
+        highlighted: '#67bdf5'       // Highlighted line color, e.g., yellow
       }
     });
-  });
 
-  // Load and add the world GeoJSON to the map with a light fill
-  await fetch('/world.geo.json')
-    .then(response => response.json())
-    .then(worldData => {
-      L.geoJSON(worldData, {
-        style: {
-          color: '#ccc',        // Border color for the world
-          fillColor: '#ccc',    // Fill color for the world
-          weight: 1,            // Border width
-          opacity: 0.2,         // Border opacity for the world
-          fillOpacity: 0.3     // Fill opacity to make it lighter
+    // Set up spiderfy events
+    spiderfier.addListener('click', (marker) => {
+      // if (!map.getBounds().contains(marker.getLatLng())) {
+      //   map.flyTo(marker.getLatLng(), map.getZoom() + 2);
+      // }
+
+      marker.openPopup();
+    });
+
+    // Listener for when markers are spiderfied (expanded around a central point)
+    spiderfier.addListener('spiderfy', (markers) => {
+      markers.forEach(marker => {
+        marker.setIcon(createPriceIcon(marker.options.feature.price));
+      });
+
+      map.closePopup();
+    });
+
+    // Listener for when markers are unspiderfied (return to original positions)
+    spiderfier.addListener('unspiderfy', (markers) => {
+      // Handle individual markers
+      markers.forEach(marker => {
+        marker.setIcon(createPriceIcon(marker.options.feature.price));
+      });
+
+      // Optionally reset cluster icons (if clusters need to reflect unspiderfy state)
+      markersCluster.eachLayer(layer => {
+        if (layer instanceof L.Marker && layer.options.feature?.cluster) {
+          layer.setIcon(createClusterIcon(layer.options.feature.point_count));
         }
-      }).addTo(map);            // Add the layer to the map
-    })
-    .catch(error => console.error('Error loading world GeoJSON:', error));
+      });
+    });
 
-  // Load and add Romania's GeoJSON with only the border displayed
-  await fetch('/ro.geo.json')
-    .then(response => response.json())
-    .then(countryData => {
-      L.geoJSON(countryData, {
-        style: {
-          color: '#808080',     // Border color for Romania
-          weight: 2,            // Slightly thicker border
-          opacity: 1,           // Full opacity for the border
-          fillOpacity: 0        // No fill color (transparent)
-        }
-      }).addTo(map);            // Add the layer to the map
-    })
-    .catch(error => console.error('Error loading Romania GeoJSON:', error));
+    // Load and add the world GeoJSON to the map with a light fill
+    await fetch('/world.geo.json')
+      .then(response => response.json())
+      .then(worldData => {
+        L.geoJSON(worldData, {
+          style: {
+            color: '#ccc',        // Border color for the world
+            fillColor: '#ccc',    // Fill color for the world
+            weight: 1,            // Border width
+            opacity: 0.2,         // Border opacity for the world
+            fillOpacity: 0.3     // Fill opacity to make it lighter
+          }
+        }).addTo(map);            // Add the layer to the map
+      })
+      .catch(error => console.error('Error loading world GeoJSON:', error));
 
-  // Fetch clusters initially and whenever the map view changes
-  map.on('moveend', handleMapMoveEndThrottled);
-  
-  // Set the map as initialized
-  isMapInitialized.value = true;
+    // Load and add Romania's GeoJSON with only the border displayed
+    await fetch('/ro.geo.json')
+      .then(response => response.json())
+      .then(countryData => {
+        L.geoJSON(countryData, {
+          style: {
+            color: '#808080',     // Border color for Romania
+            weight: 2,            // Slightly thicker border
+            opacity: 1,           // Full opacity for the border
+            fillOpacity: 0        // No fill color (transparent)
+          }
+        }).addTo(map);            // Add the layer to the map
+      })
+      .catch(error => console.error('Error loading Romania GeoJSON:', error));
+
+    // Fetch clusters initially and whenever the map view changes
+    map.on('moveend', handleMapMoveEndThrottled);
+
+    // Set the map as initialized
+    isMapInitialized.value = true;
+  } catch(err) {
+    isMapInitialized.value = false;
+    console.error("Error initializing map:", err);
+  }
 }
 
 // Function to handle map size updates when container changes
@@ -204,7 +209,7 @@ const setNewLocationBasedOnItems = (latlngs) => {
   if(latlngs.length && newBounds.isValid() && !isProgrammaticMapMovement) {
     isProcessingRequest = true
 
-    map.fitBounds(newBounds, { padding: [80, 80], animate: true });
+    map.fitBounds(newBounds, { padding: [80, 80], animate: true, maxZoom: 14 });
 
     // Get the current bounds and convert to bbox format
     const bounds = newBounds.toBBoxString().split(',').map(coord => parseFloat(coord));
