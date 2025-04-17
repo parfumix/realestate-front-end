@@ -113,8 +113,8 @@ watch(() => route.fullPath, async(newRoute) => {
 
 // Handle property deletion
 const handleDelete = async (id) => {
-  const confirmed = window.confirm('Are you sure you want to delete this property?');
-  if (!confirmed) return;
+  const confirmed = window?.confirm('Are you sure you want to delete this property?');
+  if (! confirmed) return;
 
   try {
     await deletePropertyById(id);
