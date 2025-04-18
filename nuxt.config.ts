@@ -10,9 +10,13 @@ export default defineNuxtConfig({
     '@nuxtjs/turnstile'
   ],
   runtimeConfig: {
+    jwtSecret: process.env.JWT_SECRET,
     public: {
       baseURL: `${process.env.API_BASE_URL}` || 'http://localhost:3001',
     },
+  },
+  pinia: {
+    storesDirs: ['./stores/**'],
   },
   ssr: true,
   hooks: {
