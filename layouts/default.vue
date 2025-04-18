@@ -41,7 +41,7 @@
     </main>
 
     <Notifications />
-    <Modal class="z-[1900]" />
+    <Modal class="z-[999999]" />
     <NuxtNotifications position="bottom left" :speed="500" />
   </div>
 </template>
