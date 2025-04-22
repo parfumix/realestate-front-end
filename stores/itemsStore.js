@@ -11,7 +11,7 @@ export const useItemsStore = defineStore('itemsStore', () => {
     const TYPE_LIST_HYBRID = 'hybrid';
 
     // Default view mode state
-    const defaultView = ref(localStorage.getItem('defaultView') ?? TYPE_LIST_HYBRID);
+    const defaultView = process.client ? ref(localStorage.getItem('defaultView') ?? TYPE_LIST_HYBRID) : ref(TYPE_LIST_HYBRID);
 
     // Loading states
     const isItemsLoaded = ref(false);
@@ -98,7 +98,7 @@ export const useItemsStore = defineStore('itemsStore', () => {
         try {
             isQueryLoading.value = true;
 
-            const viewMode = localStorage.getItem('defaultView') || TYPE_LIST_HYBRID
+            const viewMode = process.client ? (localStorage.getItem('defaultView') || TYPE_LIST_HYBRID) : TYPE_LIST_HYBRID;
 
             const filteredFilters = removeEmptyValues(filters);
             const haveAnyFilters = Object.keys(filteredFilters).length;

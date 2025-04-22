@@ -2,7 +2,7 @@ import { defineStore } from 'pinia';
 
 export const useLocationStore = defineStore('location', () => {
     const LOCAL_STORAGE_KEY = 'userLocation'
-    const location = ref(JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY) ?? '{}'))
+    const location = process.client ? ref(JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY) ?? '{}')) : ref({})
 
     const isLoading = ref(false)
 

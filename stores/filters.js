@@ -126,12 +126,12 @@ export const useFilterStore = defineStore('filtersStore', () => {
       console.error('Error parsing saved filters:', e);
       return null;
     }
-  })();
+  });
 
-  const activeFilters = reactive(savedFilters || {...defaultFilters});
+  const activeFilters = process.client ? reactive(savedFilters() || {...defaultFilters}) : reactive({});
 
-  let mapZoom = ref(parseInt(localStorage.getItem('mapZoom') ?? 7))
-  let mapBbox = ref(localStorage.getItem('mapBbox') ? JSON.parse(localStorage.getItem('mapBbox')) : null)
+  let mapZoom = process.client ? ref(parseInt(localStorage.getItem('mapZoom') ?? 7)) : null
+  let mapBbox = process.client ? (ref(localStorage.getItem('mapBbox') ? JSON.parse(localStorage.getItem('mapBbox')) : null)) : null
 
   const hasFiltersChanged = ref(false)
   const resetHasFiltersChanged = () => {
@@ -178,7 +178,7 @@ export const useFilterStore = defineStore('filtersStore', () => {
     setMapFilters(null, null)
   }
 
-  const setActiveMesasge = (message) => {
+  const setActiveMessage = (message) => {
     activeMessage.value = message
   }
 
@@ -285,7 +285,7 @@ export const useFilterStore = defineStore('filtersStore', () => {
     handleSortOption,
 
     setActiveFilter,
-    setActiveMesasge,
+    setActiveMessage,
 
     resetMapFilters,
     setMapFilters,
