@@ -12,6 +12,7 @@ export const useAuthStore = defineStore('authStore', () => {
 
   const emailPending = computed(() => typeof user.value?.email_verified === 'boolean');
   const emailVerified = computed(() => typeof user.value?.email_verified === 'boolean' && user.value?.email_verified === true)
+  const isAccountDeleted = computed(() => user.value?.deleted_at !== null)
 
   // Initialize user from token
   const initializeFromToken = async (tokenValue) => {
