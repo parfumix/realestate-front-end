@@ -56,6 +56,7 @@ const openSigInModal = () => {
 const handleLogout = () => {
   authStore.logout()
   authStore.setUser(null)
+  authStore.setToken(null)
 
   notify({
     title: "Deconectare reușită!",

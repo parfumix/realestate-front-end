@@ -97,7 +97,7 @@ export const useAuthStore = defineStore('authStore', () => {
   const logout = async () => {
     try {
       const { data, error } = await useCustomFetch('/auth/logout', {
-        method: 'POST',
+        method: 'GET',
         credentials: 'include'
       })
 
