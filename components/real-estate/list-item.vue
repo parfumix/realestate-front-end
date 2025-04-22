@@ -49,16 +49,12 @@
 
 <script setup>
 import { useModalStore } from '@/stores/modals';
-import SignInModal from '@/components/auth-modals/sing-in.vue';
 
-const modalStore = useModalStore();
 const itemsStore = useItemsStore();
-
 const router = useRouter()
 const route = useRoute();
 
 const { removeFavorite, addFavorite } = useFavoritesService()
-const { isAuthenticated } = useAuthService()
 
 const { defaultView } = storeToRefs(itemsStore)
 
@@ -81,10 +77,6 @@ const props = defineProps({
     }
 })
 
-const openSignInModal = () => {
-  modalStore.openModal(SignInModal);
-}
-
 const handleSelect = () => {
     router.push({ name: 'property', params: { slug: props.item.slug  } })
 }
@@ -95,11 +87,6 @@ const handleHoverItem = (item = null) => {
 }
 
 const handleTogglFavorite = async() => {
-    if(! isAuthenticated()) {
-        openSignInModal()
-        return
-    }
-
     const isFavorited = props.item.is_favorited
 
     if(currentPageType == 'saved') {

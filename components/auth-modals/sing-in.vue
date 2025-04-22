@@ -30,7 +30,7 @@
           <button type="submit" :disabled="isLoading" class="flex w-full justify-center rounded-md bg-blue-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600">Intră în Cont</button>
         </div>
 
-        <AuthModalsConfirmationWarning v-if="isUserPendingConfirmation()" />
+        <AuthModalsConfirmationWarning v-if="authStore.emailVerified && authStore.emailPending" />
       </form>
     </div>
   </div>
@@ -38,23 +38,24 @@
 
 <script setup>
 import RegisterModal from '@/components/auth-modals/register.vue';
-import { useModalStore } from '@/stores/modals';
 
 // https://preline.co/examples/forms-authentication.html
 const email = ref('')
 const password = ref('')
 const modalStore = useModalStore();
 
-const { loginUser } = useAuthService()
 const { notify } = useNotification();
 const isLoading = ref(false)
-const { isUserPendingConfirmation } = useAuthService()
+const authStore = useAuthStore();
 
 const signInWithEmail = async () => {
   try {
     isLoading.value = true
 
-    await loginUser(email.value, password.value)
+    const { token } = await authStore.login(email.value, password.value)
+
+    await authStore.initializeFromToken(token)
+    useState('auth-token', () => token ?? null)
 
     notify({
       title: "Autentificare reușită!",

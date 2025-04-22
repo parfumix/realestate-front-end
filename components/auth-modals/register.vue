@@ -30,19 +30,17 @@
           <button type="submit" :disabled="isLoading" class="flex w-full justify-center rounded-md bg-blue-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600">Creează un cont</button>
         </div>
 
-        <AuthModalsConfirmationWarning v-if="isUserPendingConfirmation()" />
+        <AuthModalsConfirmationWarning v-if="!authStore.emailVerified && authStore.emailPending" />
       </form>
     </div>
   </div>
 </template>
 
 <script setup>
-import { useModalStore } from '@/stores/modals';
-
 import SignInModal from '@/components/auth-modals/sing-in.vue';
-const { notify } = useNotification();
 
-const { convertAnonymousToRealUser, isUserPendingConfirmation, user } = useAuthService()
+const { notify } = useNotification();
+const authStore = useAuthStore();
 const modalStore = useModalStore();
 
 const email = ref('')
@@ -52,8 +50,11 @@ const isLoading = ref(false)
 const signUp = async () => {
   try {
     isLoading.value = true
-    await convertAnonymousToRealUser(email.value)
 
+    const { token } = await authStore.register(email.value ,password.value)
+    await authStore.initializeFromToken(token)
+    useState('auth-token', () => token ?? null)
+    
     notify({
       title: "Confirmă adresa de e-mail!",
       text: "Te rugăm să îți verifici e-mailul și să confirmi adresa înainte de a te putea autentifica și accesa contul. Mulțumim!",

@@ -18,8 +18,10 @@
         </div>
 
         <div class="flex items-center justify-center cursor-pointer">
-          <svg v-if="isAuthenticated()" @click="handleLogout" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6 text-gray-200"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15M12 9l-3 3m0 0 3 3m-3-3h12.75" /></svg>
-          <svg xmlns="http://www.w3.org/2000/svg" v-else @click="openSigInModal" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6 text-gray-200"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 5.25a3 3 0 0 1 3 3m3 0a6 6 0 0 1-7.029 5.912c-.563-.097-1.159.026-1.563.43L10.5 17.25H8.25v2.25H6v2.25H2.25v-2.818c0-.597.237-1.17.659-1.591l6.499-6.499c.404-.404.527-1 .43-1.563A6 6 0 1 1 21.75 8.25Z" /></svg>
+          <client-only>
+            <svg v-if="authStore.isAuthenticated && authStore.emailVerified" @click="handleLogout" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6 text-gray-200"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15M12 9l-3 3m0 0 3 3m-3-3h12.75" /></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" v-else @click="openSigInModal" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6 text-gray-200"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 5.25a3 3 0 0 1 3 3m3 0a6 6 0 0 1-7.029 5.912c-.563-.097-1.159.026-1.563.43L10.5 17.25H8.25v2.25H6v2.25H2.25v-2.818c0-.597.237-1.17.659-1.591l6.499-6.499c.404-.404.527-1 .43-1.563A6 6 0 1 1 21.75 8.25Z" /></svg>
+          </client-only>
         </div>
       </div>
 
@@ -28,7 +30,6 @@
 </template>
 
 <script setup>
-
 // https://preline.co//docs/sidebar.html
 // https://tailwindui.com/components/application-ui/application-shells/multi-column#component-d447e3faf2d20feaf42f06c4cbbcd94a
 import { useNotificationsStore } from '@/stores/notifications';
@@ -37,13 +38,12 @@ import { useModalStore } from '@/stores/modals';
 import RegisterModal from '@/components/auth-modals/register.vue';
 import SignInModal from '@/components/auth-modals/sing-in.vue';
 
-const { logoutUser, isAuthenticated } = useAuthService()
-
 const router = useRouter()
 const { notify } = useNotification();
 
 const notificationStore = useNotificationsStore()
 const modalStore = useModalStore();
+const authStore = useAuthStore();
 
 const openRegisterModal = () => {
   modalStore.openModal(RegisterModal);
@@ -54,7 +54,8 @@ const openSigInModal = () => {
 }
 
 const handleLogout = () => {
-  logoutUser()
+  authStore.logout()
+  authStore.setUser(null)
 
   notify({
     title: "Deconectare reușită!",
@@ -66,7 +67,7 @@ const linksCss = 'hs-tooltip-toggle size-[38px] inline-flex justify-center items
 const menuItems = ref([{
   visible: true,
   handler: () => {
-    if( !isAuthenticated()) {
+    if( !authStore.isAuthenticated || authStore.isAnonymous) {
       openRegisterModal()
       return
     }
@@ -76,7 +77,7 @@ const menuItems = ref([{
 },{
   visible: true,
   handler: () => {
-    if( !isAuthenticated()) {
+    if( !authStore.isAuthenticated || authStore.isAnonymous) {
       openRegisterModal()
       return
     }
@@ -86,7 +87,7 @@ const menuItems = ref([{
 },{
   visible: true,
   handler: () => {
-    if( !isAuthenticated()) {
+    if( !authStore.isAuthenticated || authStore.isAnonymous) {
       openRegisterModal()
       return
     }
@@ -96,7 +97,7 @@ const menuItems = ref([{
 },{
   visible: false,
   handler: () => {
-    if( !isAuthenticated()) {
+    if( !authStore.isAuthenticated || authStore.isAnonymous) {
       openRegisterModal()
       return
     }

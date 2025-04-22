@@ -130,6 +130,10 @@ export const useAuthStore = defineStore('authStore', () => {
     return user.value
   }
 
+  const notifyTabs = (value) => {
+    localStorage.setItem('auth-sync', value)
+  }
+
   return {
     user,
     token,
@@ -146,6 +150,7 @@ export const useAuthStore = defineStore('authStore', () => {
     confirmEmail,
     login,
     register,
-    logout
+    logout,
+    notifyTabs
   }
 })

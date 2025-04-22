@@ -26,25 +26,31 @@
   const errorMessage = ref('')
   
   const confirmEmail = async () => {
-    const token = route.params.token
+    const urlToken = route.params.token
 
-    if (! token) {
+    if (! urlToken) {
       status.value = 'error'
       errorMessage.value = 'Missing token in URL.'
       return
     }
 
-
     try {
-      await auth.confirmEmail(token)
+      const { token } = await auth.confirmEmail(urlToken)
+      auth.initializeFromToken(token)
+      auth.notifyTabs(token)
       status.value = 'success'
     } catch (err) {
+      console.error('Error confirming email:', err)
       status.value = 'error'
       errorMessage.value = err?.statusMessage || 'Email confirmation failed.'
     }
   }
 
-  await confirmEmail()
+  onMounted(() => {
+    setTimeout(() => {
+      confirmEmail()
+    }, 500)
+  })
   </script>
   
   <style scoped>

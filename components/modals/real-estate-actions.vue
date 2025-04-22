@@ -19,15 +19,8 @@
 import { format } from 'date-fns'
 import { ro } from 'date-fns/locale'
 
-import SignInModal from '@/components/auth-modals/sing-in.vue';
-const { isAuthenticated } = useAuthService()
-
 const itemsStore = useItemsStore()
-
 const { selectedItem: item } = storeToRefs(itemsStore)
-
-const modalStore = useModalStore();
-const { user } = useAuthService()
 const { removeFavorite, addFavorite } = useFavoritesService()
 
 const route = useRoute();
@@ -37,16 +30,7 @@ const formattedDate = computed(() => {
     return format(new Date(item.value.created_at), "d MMMM yyyy", { locale: ro })
 })
 
-const openSignInModal = () => {
-  modalStore.openModal(SignInModal);
-}
-
 const handleTogglFavorite = async() => {
-    if(! isAuthenticated()) {
-        openSignInModal()
-        return
-    }
-
     const isFavorited = item.value.is_favorited
 
     if(currentPageType == 'saved') {
