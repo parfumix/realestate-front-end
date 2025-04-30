@@ -375,3 +375,13 @@ export const debounce = (func, wait) => {
     timeout = setTimeout(() => func.apply(this, args), wait);
   };
 }
+
+export const normalizeQuery = (query) => {
+  return query
+    .toLowerCase()
+    .normalize('NFD')                       // Split accented characters into base + diacritics
+    .replace(/[\u0300-\u036f]/g, '')       // Remove diacritics
+    .replace(/[^a-z0-9\s]/g, '')           // Remove non-alphanumeric characters except spaces
+    .replace(/\s+/g, ' ')                  // Collapse multiple spaces
+    .trim();                               // Remove leading/trailing spaces
+};
