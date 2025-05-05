@@ -16,6 +16,7 @@ export const useItemsStore = defineStore('itemsStore', () => {
     // Loading states
     const isItemsLoaded = ref(false);
     const isQueryLoading = ref(false);
+    const isQueryLoadingChat = ref(false);
     const isQueryLoadingProperty = ref(false);
 
     // Items management
@@ -220,6 +221,7 @@ export const useItemsStore = defineStore('itemsStore', () => {
 
         // Loading states
         isQueryLoading,
+        isQueryLoadingChat,
         isItemsLoaded,
         isQueryLoadingProperty,
 

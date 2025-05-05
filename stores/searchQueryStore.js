@@ -1,14 +1,22 @@
 import { defineStore } from 'pinia'
-import { querySuggestions } from '~/api/querySuggestions'
+import { querySuggestions, getCombinedQueries, getRecentQueries, getPopularQueries } from '~/api/querySuggestions'
 import { normalizeQuery } from '~/utils'
 
 export const useSearchQueryStore = defineStore('searchQuery', () => {
   const term = ref('')
+
   const results = ref([])
+  const recentQueries = ref([])
+  const popularQueries = ref([])
+
   const isLoading = ref(false)
-  const error = ref(null)
+  const isCombinedLoading = ref(false)
+  const isRecentLoading = ref(false)
+  const isPopularLoading = ref(false)
+
   const cache = ref({}) // { normalized_term: [...] }
 
+  // Fetch suggestions based on the input term
   const fetchSuggestions = async (input) => {
     term.value = input
     const normalized = normalizeQuery(input)
@@ -25,26 +33,96 @@ export const useSearchQueryStore = defineStore('searchQuery', () => {
     }
 
     isLoading.value = true
-    error.value = null
 
-    const suggestions = await querySuggestions(normalized)
+    try {
+      const { data } = await querySuggestions(normalized)
+      const { data: suggestions } = data?.value || {}
 
-    if (suggestions.length) {
-      results.value = suggestions
-      cache.value[normalized] = suggestions
-    } else {
-      error.value = 'No results found'
+      const mapped = suggestions.map(el => ({...el, ...{type: 'suggestion'}}))
+
+      if (mapped.length) {
+        results.value = mapped
+        cache.value[normalized] = mapped
+      } else {
+        results.value = []
+      }
+    } catch (err) {
+      console.error('Error fetching suggestions:', err)
+      throw err
+    } finally {
+      isLoading.value = false
     }
+  }
 
-    isLoading.value = false
+  // Fetch combined queries with a default limit of 10
+  const fetchCombinedQueries = async () => {
+    isCombinedLoading.value = true
+
+    try {
+      const { data } = await getCombinedQueries()
+      const { recent_queries, popular_queries } = data?.value || {}
+
+      // Normalize the recent queries
+      recentQueries.value = JSON.parse(JSON.stringify(recent_queries)).map(el => ({...el, ...{type: 'recent'}}))
+      popularQueries.value = JSON.parse(JSON.stringify(popular_queries)).map(el => ({...el, ...{type: 'popular'}}))
+    } catch (err) {
+      console.error('Error fetching combined queries:', err)
+      throw err
+    } finally {
+      isCombinedLoading.value = false
+    }
+  }
+
+  // Fetch recent queries with a default limit of 5
+  const fetchRecentQueries = async (limit = 5) => {
+    isRecentLoading.value = true
+
+    try {
+      const recent = await getRecentQueries(limit)
+      recentQueries.value = recent
+    } catch (err) {
+      console.error('Error fetching recent queries:', err)
+      throw err
+    } finally {
+      isRecentLoading.value = false
+    }
+  }
+
+  // Fetch popular queries with a default limit of 10
+  const fetchPopularQueries = async (limit = 10) => {
+    isPopularLoading.value = true
+
+    try {
+      const popular = await getPopularQueries(limit)
+      popularQueries.value = popular
+    } catch (err) {
+      console.error('Error fetching popular queries:', err)
+      throw err
+    } finally {
+      isPopularLoading.value = false
+    }
   }
 
   return {
+    // State
     term,
     results,
+    recentQueries,
+    popularQueries,
+
+    // Loading states
     isLoading,
-    error,
+    isCombinedLoading,
+    isRecentLoading,
+    isPopularLoading,
+
+    // Cache
     cache,
+
+    // Actions
     fetchSuggestions,
+    fetchCombinedQueries,
+    fetchRecentQueries,
+    fetchPopularQueries,
   }
 })

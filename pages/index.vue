@@ -3,7 +3,7 @@
     
     <!-- Filters -->
     <div class="w-full flex justify-center border-b border-gray-200">
-      <Filters class="w-full max-w-screen-xl z-[99999999]" @applyFilters="handleApplyFilters" />
+      <Filters class="w-full max-w-screen-xl z-[7777]" @applyFilters="handleApplyFilters" />
     </div>
 
     <!-- View Mode Switcher -->
@@ -40,7 +40,7 @@
 
     <!-- Chatbox at the bottom, responsive -->
     <div class="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-full lg:w-2/6 px-4 lg:px-0 z-[500]">
-      <Chat 
+      <ChatInline
         @submit="handleSendMessage" 
         @resetActiveMessage="handleResetActiveMessage" 
         class="w-full my-4 rounded-lg shadow-xs" 
@@ -68,21 +68,15 @@ const modalStore = useModalStore();
 const route = useRoute();
 const router = useRouter();
 
-const { sendMessage } = useMessagesService();
-
 import { getRomanianBounds, setHead } from '../utils'
 
-const { defaultView } = storeToRefs(itemsStore)
+const defaultView = computed(() => itemsStore.defaultView);
+const selectedItem = computed(() => itemsStore.selectedItem);
+const isModalVisible = computed(() => modalStore.isModalVisible);
 
 const openRealEstatePropertyModal = () => {
 modalStore.openModal(RealEstatePropertyModal);
 }
-
-const { 
-  selectedItem
-} = storeToRefs(itemsStore)
-
-const { isModalVisible } = storeToRefs(modalStore)
 const { activeMessage, mapZoom, mapBbox, hasFiltersChanged, parsequery, activeSorting } = storeToRefs(filterStore)
 
 const isListView = computed(() =>
@@ -146,18 +140,14 @@ try {
   let trimmedMessage = message.trim()
   if(! trimmedMessage) return
 
-  // adding user message to stack
-  chatStore.handlePushMessage('default', { text: message, sender: 'user' })
-  chatStore.handleSetPromptsByThread('default', [])
+  // enable quuery loading state
+  itemsStore.isQueryLoadingChat = true
 
   // we're usign all romanian bbox because search can contain new locations so we need to clusterize items by whole country
   const mapFilters = { zoom: 6, bbox: getRomanianBounds(true) }
   const { reply, items, filters, prompts = [] } = await handleFetchItems(trimmedMessage, null, mapFilters, true)
   if(! items) throw new Error('No results found for' + trimmedMessage)
   
-  chatStore.handleSetPromptsByThread('default', prompts)
-  chatStore.handlePushMessage('default', { text: reply, sender: 'bot' })
-
   // apply filters automatically
   let parsedFilters = JSON.parse(JSON.stringify(filters ?? {}))
 
@@ -166,17 +156,14 @@ try {
     filterStore.setActiveFilter(key, parsedFilters[key])
   });
 
-  filterStore.setActiveMesasge(trimmedMessage)
-
-  sendMessage(
-    null, 'default', trimmedMessage, 'user', parsedFilters
-  )
+  filterStore.setActiveMessage(trimmedMessage)
 
 } catch(err) {
-  chatStore.handlePushMessage('default', {
-    text: err,
-    sender: 'bot',
-  })
+  // handle error
+  console.error('Error fetching items:', err)
+} finally {
+  // enable quuery loading state
+  itemsStore.isQueryLoadingChat = false
 }
 }
 
@@ -205,5 +192,9 @@ itemsStore.handleSelectItem(foundItem)
 openRealEstatePropertyModal()
 }, { immediate: true })
 
-await handleFetchItems(activeMessage.value, filterStore.activeFilters, { zoom: 6, bbox: getRomanianBounds(true) }, null, activeSorting.value)
+const initialFetchDone = ref(false);
+if(! initialFetchDone.value) {
+  await handleFetchItems(activeMessage.value, filterStore.activeFilters, { zoom: 6, bbox: getRomanianBounds(true) }, null, activeSorting.value)
+  initialFetchDone.value = true
+}
 </script>
