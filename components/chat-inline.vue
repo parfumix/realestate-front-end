@@ -16,7 +16,7 @@
             <ul v-if="filteredCombinedQueries.length > 0 && inputIsFocused"
                 class="absolute no-scrollbar bottom-full left-0 w-full bg-white border max-h-48 overflow-y-auto z-10 mb-.5">
                 <li v-for="(query, index) in filteredCombinedQueries" :key="index" class="px-4 py-2 text-medium text-gray-800 hover:bg-gray-200 cursor-pointer flex justify-between items-center" @click="handleSetActiveQueryMessage(query?.query)">
-                    <span :title="query?.query">{{ truncateString(query?.query, 45) }}</span>
+                    <span :title="query?.query" v-html="highlightMatch(truncateString(query?.query, 45))"></span>
                     <span class="text-sm text-gray-600 flex items-center justify-between">
                         <span class="flex items-center gap-1">
                             <component :is="getIconComponent(query?.type)" class="w-4 h-4" />
@@ -106,6 +106,14 @@ const filteredCombinedQueries = computed(() => {
         return itemQuery.includes(query);
     }).slice(0, 15);
 })
+
+const highlightMatch = (text) => {
+  const query = message.value.trim();
+  if (!query) return text;
+
+  const regex = new RegExp(`(${query})`, 'ig');
+  return text.replace(regex, '<span class="bg-yellow-200">$1</span>');
+};
 
 const scrollToBottom = () => {
     if (scrollContainer.value) {
