@@ -39,7 +39,7 @@
     </div>
 
     <!-- Chatbox at the bottom, responsive -->
-    <div class="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-full lg:w-2/6 px-4 lg:px-0 z-[1900]">
+    <div class="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-full lg:w-3/6 px-4 lg:px-0 z-[1900]">
       <ChatInline
         @submit="handleSendMessage" 
         @resetActiveMessage="handleResetActiveMessage" 
