@@ -349,7 +349,7 @@ export const propertyFieldsMeta = {
   },
 }
 
-export const truncateString = (str, maxLength) => {
+export const truncateString = (str, maxLength = 100) => {
   if (str.length > maxLength) {
     return str.slice(0, maxLength) + "...";
   }

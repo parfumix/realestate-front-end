@@ -12,7 +12,7 @@
             <!-- Suggestions -->
             <ul v-if="filteredCombinedQueries.length > 0 && inputIsFocused" class="absolute no-scrollbar bottom-full left-0 w-full bg-white border max-h-48 overflow-y-auto z-10 mb-.5">
                 <li v-for="(query, index) in filteredCombinedQueries" :key="index" class="px-4 py-2 text-medium text-gray-800 hover:bg-gray-200 cursor-pointer flex justify-between items-center" @click="handleSetActiveQueryMessage(query?.query)">
-                    <span>{{ query?.query }}</span>
+                    <span :title="query?.query">{{ truncateString(query?.query, 45) }}</span>
                     <span class="text-sm text-gray-600">{{ capitalizeFirst(query?.type) }}</span>
                 </li>
             </ul>
@@ -37,13 +37,14 @@
 import { CircleX } from 'lucide-vue-next'
 import { useItemsStore } from '@/stores/itemsStore';
 import debounce from 'lodash-es/debounce';
-import { capitalizeFirst } from '../utils';
+import { capitalizeFirst, truncateString } from '../utils';
 
 const itemsStore = useItemsStore()
 const { isQueryLoadingChat } = storeToRefs(itemsStore)
 
 const message = ref('');
 const inputIsFocused = ref(false);
+const isSelectedManually = ref(false);
 
 // Importing the useFilterStore
 const filterStore = useFilterStore()
@@ -85,8 +86,14 @@ const scrollToBottom = () => {
 };
 
 const handleSetActiveQueryMessage = (query) => {
+    isSelectedManually.value = true;
+
     message.value = query;
     inputIsFocused.value = false;
+
+    setTimeout(() => {
+        isSelectedManually.value = false;
+    }, 100);
 };
 
 const debouncedFetchSuggestions = debounce((val) => {
@@ -94,6 +101,7 @@ const debouncedFetchSuggestions = debounce((val) => {
 }, 300); // adjust delay as needed (ms)
 
 watch(() => message.value, newValue => {
+    if( isSelectedManually.value ) return;
     debouncedFetchSuggestions(newValue);
 })
 
