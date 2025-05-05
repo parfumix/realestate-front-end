@@ -1,5 +1,5 @@
 <template>
-    <main v-if="! publishedSuccessfully" class="flex flex-row space-x-2 ml-20">
+    <main v-if="! publishedSuccessfully" class="flex flex-row space-x-2 ml-4">
       <div class="lg:w-1/2 md:w-full md:mx-auto flex">
         <div class="w-5/6">
           <div class="p-6 h-[20px]">
