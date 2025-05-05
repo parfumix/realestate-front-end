@@ -50,7 +50,9 @@ export const useSearchQueryStore = defineStore('searchQuery', () => {
       console.error('Error fetching suggestions:', err)
       throw err
     } finally {
-      isLoading.value = false
+      setTimeout(() => {
+        isLoading.value = false
+      }, 300)
     }
   }
 

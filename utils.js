@@ -385,3 +385,5 @@ export const normalizeQuery = (query) => {
     .replace(/\s+/g, ' ')                  // Collapse multiple spaces
     .trim();                               // Remove leading/trailing spaces
 };
+
+export const capitalizeFirst = str => str.charAt(0).toUpperCase() + str.slice(1);
