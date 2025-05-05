@@ -61,7 +61,7 @@ export const useSearchQueryStore = defineStore('searchQuery', () => {
     isCombinedLoading.value = true
 
     try {
-      const { data } = await getCombinedQueries()
+      const { data } = await getCombinedQueries(5)
       const { recent_queries, popular_queries } = data?.value || {}
 
       // Normalize the recent queries

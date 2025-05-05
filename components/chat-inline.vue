@@ -99,12 +99,12 @@ const handleClearActiveMessage = () => {
 
 const filteredCombinedQueries = computed(() => {
     const query = message.value.toLowerCase();
-    const combinedElements = [...recentQueries.value, ...popularQueries.value, ...results.value];
+    const combinedElements = [...popularQueries.value, ...recentQueries.value, ...results.value];
 
     return combinedElements.filter((item) => {
         const itemQuery = item.query.toLowerCase();
         return itemQuery.includes(query);
-    }).slice(0, 5);
+    }).slice(0, 15);
 })
 
 const scrollToBottom = () => {
@@ -143,9 +143,10 @@ const handleSendMessage = (query, resetMessage = true) => {
     }
 };
 
-await searchQueryStore.fetchCombinedQueries()
-
 onMounted(async() => {
     scrollToBottom();
+    setTimeout(async() => {
+        await searchQueryStore.fetchCombinedQueries()
+    }, 10);
 });
 </script>
