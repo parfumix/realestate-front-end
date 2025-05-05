@@ -55,13 +55,11 @@
 
 import RealEstatePropertyModal from '@/components/modals/real-estate-property.vue';
 
-import { useChatStore } from '@/stores/chat';
 import { useItemsStore } from '@/stores/itemsStore';
 import { useFilterStore } from '@/stores/filters';
 import { useModalStore } from '@/stores/modals';
 
 const filterStore = useFilterStore()
-const chatStore = useChatStore()
 const itemsStore = useItemsStore()
 const modalStore = useModalStore();
 
