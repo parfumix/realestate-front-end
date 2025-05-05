@@ -86,6 +86,7 @@ const scrollToBottom = () => {
 
 const handleSetActiveQueryMessage = (query) => {
     message.value = query;
+    inputIsFocused.value = false;
 };
 
 const debouncedFetchSuggestions = debounce((val) => {
