@@ -59,7 +59,7 @@
 import { CircleX } from 'lucide-vue-next'
 import { useItemsStore } from '@/stores/itemsStore';
 import debounce from 'lodash-es/debounce';
-import { capitalizeFirst, truncateString } from '../utils';
+import { capitalizeFirst, truncateString, normalizeQuery } from '../utils';
 import { History, TrendingUp, Sparkles } from 'lucide-vue-next';
 
 const itemsStore = useItemsStore()
@@ -98,21 +98,48 @@ const handleClearActiveMessage = () => {
 }
 
 const filteredCombinedQueries = computed(() => {
-    const query = message.value.toLowerCase();
+    const query = normalizeQuery(message.value.trim());
     const combinedElements = [...popularQueries.value, ...recentQueries.value, ...results.value];
 
     return combinedElements.filter((item) => {
-        const itemQuery = item.query.toLowerCase();
+        const itemQuery = item.normalized_query.toLowerCase();
         return itemQuery.includes(query);
     }).slice(0, 15);
 })
 
 const highlightMatch = (text) => {
   const query = message.value.trim();
-  if (!query) return text;
+  if (! query) return text;
 
-  const regex = new RegExp(`(${query})`, 'ig');
-  return text.replace(regex, '<span class="bg-yellow-200">$1</span>');
+  const normalizedText = normalizeQuery(text);
+  const normalizedQuery = normalizeQuery(query);
+
+  if (! normalizedQuery) return text;
+
+  const matchIndexes = [];
+  let index = normalizedText.indexOf(normalizedQuery);
+
+  while (index !== -1) {
+    matchIndexes.push(index);
+    index = normalizedText.indexOf(normalizedQuery, index + normalizedQuery.length);
+  }
+
+  if (matchIndexes.length === 0) return text;
+
+  let result = '';
+  let lastIndex = 0;
+
+  for (const matchIndex of matchIndexes) {
+    // Get corresponding original string segment
+    const beforeMatch = text.slice(lastIndex, matchIndex);
+    const matchSegment = text.slice(matchIndex, matchIndex + query.length);
+
+    result += beforeMatch + `<span class="bg-yellow-200">${matchSegment}</span>`;
+    lastIndex = matchIndex + query.length;
+  }
+
+  result += text.slice(lastIndex);
+  return result;
 };
 
 const scrollToBottom = () => {
@@ -137,7 +164,7 @@ const handleSetActiveQueryMessage = (query) => {
 
 const debouncedFetchSuggestions = debounce((val) => {
   searchQueryStore.fetchSuggestions(val);
-}, 300); // adjust delay as needed (ms)
+}, 300);
 
 watch(() => message.value, newValue => {
     if( isSelectedManually.value ) return;
