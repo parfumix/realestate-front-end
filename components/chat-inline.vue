@@ -44,7 +44,7 @@
                     ]"
                     @click="handleSetActiveQueryMessage(query?.query)">
                     <div class="flex flex-col w-full">
-                        <span :title="query?.query" class="font-medium text-sm truncate" v-html="highlightMatch(truncateString(query?.query, 45))"></span>
+                        <span :title="query?.query" class="font-medium text-sm truncate" v-html="highlightMatch(truncateString(query?.query, 45), query.matches)"></span>
                         <span class="text-xs text-gray-500 mt-1 flex items-center gap-1">
                             <component :is="getIconComponent(query?.type)" class="w-4 h-4 text-gray-400" />
                             {{ capitalizeFirst(query?.type) }}
@@ -83,6 +83,7 @@ import { useItemsStore } from '@/stores/itemsStore';
 import throttle from 'lodash-es/throttle';
 import { capitalizeFirst, truncateString, normalizeQuery } from '../utils';
 import { History, TrendingUp, Sparkles, CircleX } from 'lucide-vue-next';
+import Fuse from 'fuse.js'
 
 const itemsStore = useItemsStore()
 const { isQueryLoadingChat } = storeToRefs(itemsStore)
@@ -131,43 +132,54 @@ const handleClearActiveMessage = () => {
 
 const filteredCombinedQueries = computed(() => {
     const query = normalizeQuery(message.value.trim());
-    const combinedElements = [...popularQueries.value, ...recentQueries.value, ...results.value];
 
-    return combinedElements.filter((item) => {
-        const itemQuery = item.normalized_query.toLowerCase();
-        return itemQuery.includes(query);
-    }).slice(0, 15);
-})
+    const popularWithRecentQueries = [
+        ...popularQueries.value,
+        ...recentQueries.value,
+    ];
 
-const highlightMatch = (text) => {
-  const query = message.value.trim();
-  if (! query) return text;
+    if(! query) {
+        return popularWithRecentQueries.slice(0, 15)
+    }
 
-  const normalizedText = normalizeQuery(text);
-  const normalizedQuery = normalizeQuery(query);
+    const combinedElements = [
+        ...results.value,
+        ...popularWithRecentQueries, 
+    ];
 
-  if (! normalizedQuery) return text;
+    const fuse = new Fuse(combinedElements, {
+        keys: ['normalized_query'],
+        ignoreDiacritics: true,
+        includeMatches: true, // find all matches
+        threshold: 0.35,           // adjust for more/less fuzziness
+        includeScore: true,
+        ignoreLocation: true,      // allows match anywhere in the string
+        minMatchCharLength: 2
+    });
 
-  const matchIndexes = [];
-  let index = normalizedText.indexOf(normalizedQuery);
+    const searchResults = fuse.search(query).map(result => ({
+        ...result.item,
+        matches: result.matches
+    }));
 
-  while (index !== -1) {
-    matchIndexes.push(index);
-    index = normalizedText.indexOf(normalizedQuery, index + normalizedQuery.length);
-  }
+    return searchResults;
+});
 
-  if (matchIndexes.length === 0) return text;
+const highlightMatch = (text, matches = []) => {
+  if (!matches.length) return text;
+
+  // We only care about matches in the 'normalized_query' key
+  const match = matches.find(m => m.key === 'normalized_query');
+  if (!match || !match.indices?.length) return text;
 
   let result = '';
   let lastIndex = 0;
 
-  for (const matchIndex of matchIndexes) {
-    // Get corresponding original string segment
-    const beforeMatch = text.slice(lastIndex, matchIndex);
-    const matchSegment = text.slice(matchIndex, matchIndex + query.length);
-
-    result += beforeMatch + `<span class="bg-yellow-200">${matchSegment}</span>`;
-    lastIndex = matchIndex + query.length;
+  for (const [start, end] of match.indices) {
+    // Match original substring by position
+    result += text.slice(lastIndex, start);
+    result += `<span class="bg-yellow-200">${text.slice(start, end + 1)}</span>`;
+    lastIndex = end + 1;
   }
 
   result += text.slice(lastIndex);
