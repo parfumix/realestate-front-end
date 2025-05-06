@@ -5,7 +5,11 @@
             <div class="relative flex-1">
                 <input v-model="message" @focus="inputIsFocused=true"
                     @keyup.enter="() => handleSendMessage(message, false)" type="text" placeholder="Scrie ce cauți..."
-                    class="py-2 px-4 focus:ring-0 border-0 shadow-md w-full focus:outline-none" ref="inputField" />
+                    @keydown.down.prevent="handleArrowDown"
+                    @keydown.up.prevent="handleArrowUp"
+                    @keydown.enter.prevent="handleEnter"
+                    class="py-2.5 px-4 rounded-l-lg text-sm focus:ring-0 border-0 shadow-md w-full focus:outline-none" ref="inputField"
+                />
 
                 <div v-if="message?.length && !isLoading" @click="message = ''"
                     class="absolute top-0 right-0 flex items-center w-[30px] h-full">
@@ -25,20 +29,29 @@
 
             <!-- Suggestions -->
             <ul v-if="filteredCombinedQueries.length > 0 && inputIsFocused"
-                class="absolute no-scrollbar bottom-full left-0 w-full bg-white border max-h-48 overflow-y-auto z-10 mb-.5">
-                <li v-for="(query, index) in filteredCombinedQueries" :key="index" class="px-4 py-2 text-medium text-gray-800 hover:bg-gray-200 cursor-pointer flex justify-between items-center" @click="handleSetActiveQueryMessage(query?.query)">
-                    <span :title="query?.query" v-html="highlightMatch(truncateString(query?.query, 45))"></span>
-                    <span class="text-sm text-gray-600 flex items-center justify-between">
-                        <span class="flex items-center gap-1">
-                            <component :is="getIconComponent(query?.type)" class="w-4 h-4" />
+                class="absolute no-scrollbar bottom-full rounded-t-md left-0 w-full bg-white border max-h-48 overflow-y-auto z-10 mb-.5">
+                <li v-for="(query, index) in filteredCombinedQueries" 
+                    :key="index" 
+                    :ref="el => suggestionRefs[index] = el" 
+                    :class="[
+                        'px-4 py-2 text-gray-800 cursor-pointer flex justify-between items-start transition-colors duration-150',
+                        index === activeIndex ? 'bg-blue-100' : 'hover:bg-blue-50'
+                    ]"
+                    @click="handleSetActiveQueryMessage(query?.query)">
+                    <div class="flex flex-col w-full">
+                        <span :title="query?.query" class="font-medium text-sm truncate" v-html="highlightMatch(truncateString(query?.query, 45))"></span>
+                        <span class="text-xs text-gray-500 mt-1 flex items-center gap-1">
+                            <component :is="getIconComponent(query?.type)" class="w-4 h-4 text-gray-400" />
+                            {{ capitalizeFirst(query?.type) }}
+                            <span v-if="query?.type === 'popular'" class="ml-1 text-gray-400">· {{ query?.search_count }}</span>
                         </span>
-                    </span>
+                    </div>
                 </li>
             </ul>
 
             <!-- Button to send message -->
             <button :disabled="isQueryLoadingChat" @click="() => handleSendMessage(message, false)"
-                class="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 flex items-center">
+                class="bg-blue-500 text-white py-2 px-4 rounded-r-md hover:bg-blue-600 flex items-center">
                 <svg v-if="! isQueryLoadingChat" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                     stroke-width="1.5" stroke="currentColor" class="size-6">
                     <path stroke-linecap="round" stroke-linejoin="round"
@@ -69,6 +82,9 @@ const message = ref('');
 const inputIsFocused = ref(false);
 const isSelectedManually = ref(false);
 
+const activeIndex = ref(-1);
+const suggestionRefs = ref([]);
+
 // Importing the useFilterStore
 const filterStore = useFilterStore()
 const { activeMessage } = storeToRefs(filterStore)
@@ -90,6 +106,7 @@ const emit = defineEmits(['submit', 'resetActiveMessage']);
 
 const handleClickOutside = () => {
     inputIsFocused.value = false;
+    activeIndex.value = -1;
 }
 
 const handleClearActiveMessage = () => {
@@ -174,6 +191,8 @@ const debouncedFetchSuggestions = debounce((val) => {
 }, 300);
 
 watch(() => message.value, newValue => {
+    activeIndex.value = -1;
+
     if( isSelectedManually.value ) return;
     debouncedFetchSuggestions(newValue);
 })
@@ -183,6 +202,36 @@ const handleSendMessage = (query, resetMessage = true) => {
     if (resetMessage) {
         message.value = "";
     }
+};
+
+const scrollActiveIntoView = () => {
+  nextTick(() => {
+    const el = suggestionRefs.value[activeIndex.value];
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+  });
+};
+
+const handleArrowDown = () => {
+  if (filteredCombinedQueries.value.length === 0) return;
+  activeIndex.value = (activeIndex.value + 1) % filteredCombinedQueries.value.length;
+  scrollActiveIntoView();
+};
+
+const handleArrowUp = () => {
+  if (filteredCombinedQueries.value.length === 0) return;
+  activeIndex.value =
+    (activeIndex.value - 1 + filteredCombinedQueries.value.length) % filteredCombinedQueries.value.length;
+  scrollActiveIntoView();
+};
+
+const handleEnter = () => {
+  if (activeIndex.value >= 0 && activeIndex.value < filteredCombinedQueries.value.length) {
+    handleSetActiveQueryMessage(filteredCombinedQueries.value[activeIndex.value]?.query);
+  } else {
+    handleSendMessage(message.value, false);
+  }
 };
 
 onMounted(async() => {
