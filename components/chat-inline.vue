@@ -3,7 +3,7 @@
         <!-- Input Field -->
         <div class="w-full rounded-b-lg flex justify-between relative" v-click-outside="handleClickOutside">
             <div class="relative flex-1">
-                <input v-model="message" @focus="inputIsFocused=true"
+                <input v-model="message" @focus="inputIsFocused=true" @click="inputIsFocused=true"
                     @keyup.enter="() => handleSendMessage(message, false)" type="text" placeholder="Scrie ce cauți..."
                     @keydown.down.prevent="handleArrowDown"
                     @keydown.up.prevent="handleArrowUp"
@@ -16,7 +16,7 @@
                     ref="inputField"
                 />
 
-                <div v-if="message?.length && !isLoading" @click="message = ''"
+                <div v-if="message?.length && !isLoading" @click="handleClearActiveMessage"
                     class="absolute top-0 right-0 flex items-center w-[30px] h-full">
                     <CircleX class="size-4 text-gray-600" />
                 </div>
@@ -94,6 +94,8 @@ const isSelectedManually = ref(false);
 const activeIndex = ref(-1);
 const suggestionRefs = ref([]);
 
+const inputField = ref(null);
+
 // Importing the useFilterStore
 const filterStore = useFilterStore()
 const { activeMessage } = storeToRefs(filterStore)
@@ -119,8 +121,12 @@ const handleClickOutside = () => {
 }
 
 const handleClearActiveMessage = () => {
-    emit('resetActiveMessage')
+    //emit('resetActiveMessage')
     message.value = ''
+    inputField.value.focus()
+    setTimeout(() => {
+        inputIsFocused.value = true;
+    }, 50);
 }
 
 const filteredCombinedQueries = computed(() => {
