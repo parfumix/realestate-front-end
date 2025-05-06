@@ -1,7 +1,7 @@
 <template>
     <div class="w-full">
-        <!-- Input Field -->
         <div class="w-full rounded-b-lg flex justify-between relative" v-click-outside="handleClickOutside">
+            <!-- Input field -->
             <div class="relative flex-1">
                 <input v-model="message" @focus="inputIsFocused=true" @click="inputIsFocused=true"
                     @keyup.enter="() => handleSendMessage(message, false)" type="text" placeholder="Scrie ce cauți..."
