@@ -9,7 +9,11 @@
                     @keydown.up.prevent="handleArrowUp"
                     @keydown.enter.prevent="handleEnter"
                     @keydown.esc="handleClickOutside"
-                    class="py-2.5 px-4 rounded-l-lg text-sm focus:ring-0 border-0 shadow-md w-full focus:outline-none" ref="inputField"
+                    :class="[
+                        'py-2.5 px-4 text-sm focus:ring-0 border-0 shadow-md w-full focus:outline-none',
+                        !inputIsFocused ? 'rounded-l-lg' : '',
+                    ]"
+                    ref="inputField"
                 />
 
                 <div v-if="message?.length && !isLoading" @click="message = ''"
@@ -52,7 +56,11 @@
 
             <!-- Button to send message -->
             <button :disabled="isQueryLoadingChat" @click="() => handleSendMessage(message, false)"
-                class="bg-blue-500 text-white py-2 px-4 rounded-r-md hover:bg-blue-600 flex items-center">
+                :class="[
+                    'bg-blue-500 text-white py-2 px-4 hover:bg-blue-600 flex items-center',
+                    inputIsFocused ? 'rounded-br-md' : 'rounded-r-md',
+                ]"
+            >
                 <svg v-if="! isQueryLoadingChat" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                     stroke-width="1.5" stroke="currentColor" class="size-6">
                     <path stroke-linecap="round" stroke-linejoin="round"
