@@ -134,35 +134,37 @@ const handleResetActiveMessage = () => {
 }
 
 const handleSendMessage = async (message) => {
-try {
-  let trimmedMessage = message.trim()
-  if(! trimmedMessage) return
+  try {
+    let trimmedMessage = message.trim()
+    if(! trimmedMessage) return
 
-  // enable quuery loading state
-  itemsStore.isQueryLoadingChat = true
+    // if is loading, do not send new query
+    if(itemsStore.isQueryLoadingChat === true) return 
 
-  // we're usign all romanian bbox because search can contain new locations so we need to clusterize items by whole country
-  const mapFilters = { zoom: 6, bbox: getRomanianBounds(true) }
-  const { reply, items, filters, prompts = [] } = await handleFetchItems(trimmedMessage, null, mapFilters, true)
-  if(! items) throw new Error('No results found for' + trimmedMessage)
-  
-  // apply filters automatically
-  let parsedFilters = JSON.parse(JSON.stringify(filters ?? {}))
+    // enable quuery loading state
+    itemsStore.isQueryLoadingChat = true
 
-  Object.keys(parsedFilters).forEach(key => {
-    if(! parsedFilters?.[key]) return
-    filterStore.setActiveFilter(key, parsedFilters[key])
-  });
+    // we're usign all romanian bbox because search can contain new locations so we need to clusterize items by whole country
+    const mapFilters = { zoom: 6, bbox: getRomanianBounds(true) }
+    const { reply, items, filters, prompts = [] } = await handleFetchItems(trimmedMessage, null, mapFilters, true)
+    if(! items) throw new Error('No results found for' + trimmedMessage)
+    
+    // apply filters automatically
+    let parsedFilters = JSON.parse(JSON.stringify(filters ?? {}))
 
-  filterStore.setActiveMessage(trimmedMessage)
+    Object.keys(parsedFilters).forEach(key => {
+      if(! parsedFilters?.[key]) return
+      filterStore.setActiveFilter(key, parsedFilters[key])
+    });
 
-} catch(err) {
-  // handle error
-  console.error('Error fetching items:', err)
-} finally {
-  // enable quuery loading state
-  itemsStore.isQueryLoadingChat = false
-}
+    filterStore.setActiveMessage(trimmedMessage)
+
+  } catch(err) {
+    // handle error
+    console.error('Error fetching items:', err)
+  } finally {
+    itemsStore.isQueryLoadingChat = false;
+  }
 }
 
 onUnmounted(() => {

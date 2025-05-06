@@ -226,6 +226,8 @@ watch(() => message.value, newValue => {
 })
 
 const handleSendMessage = (query, resetMessage = true) => {
+    if(isQueryLoadingChat.value) return
+    
     emit("submit", query);
     if (resetMessage) {
         message.value = "";
