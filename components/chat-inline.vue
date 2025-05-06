@@ -8,6 +8,7 @@
                     @keydown.down.prevent="handleArrowDown"
                     @keydown.up.prevent="handleArrowUp"
                     @keydown.enter.prevent="handleEnter"
+                    @keydown.esc="handleClickOutside"
                     class="py-2.5 px-4 rounded-l-lg text-sm focus:ring-0 border-0 shadow-md w-full focus:outline-none" ref="inputField"
                 />
 
@@ -71,7 +72,7 @@
 
 <script setup>
 import { useItemsStore } from '@/stores/itemsStore';
-import debounce from 'lodash-es/debounce';
+import throttle from 'lodash-es/throttle';
 import { capitalizeFirst, truncateString, normalizeQuery } from '../utils';
 import { History, TrendingUp, Sparkles, CircleX } from 'lucide-vue-next';
 
@@ -186,15 +187,16 @@ const handleSetActiveQueryMessage = (query) => {
     }, 100);
 };
 
-const debouncedFetchSuggestions = debounce((val) => {
+const throttledSuggestions = throttle((val) => {
   searchQueryStore.fetchSuggestions(val);
-}, 300);
+}, 500);
+
 
 watch(() => message.value, newValue => {
     activeIndex.value = -1;
 
     if( isSelectedManually.value ) return;
-    debouncedFetchSuggestions(newValue);
+    throttledSuggestions(newValue);
 })
 
 const handleSendMessage = (query, resetMessage = true) => {
