@@ -4,7 +4,7 @@
             <!-- Input field -->
             <div class="relative flex-1">
                 <input v-model="message" @focus="inputIsFocused=true" @click="inputIsFocused=true"
-                    @keyup.enter="() => handleSendMessage(message, false)" type="text" placeholder="Scrie ce cauți..."
+                    @keyup.enter="() => handleSendMessage(message)" type="text" placeholder="Scrie ce cauți..."
                     @keydown.down.prevent="handleArrowDown"
                     @keydown.up.prevent="handleArrowUp"
                     @keydown.enter.prevent="handleEnter"
@@ -55,7 +55,7 @@
             </ul>
 
             <!-- Button to send message -->
-            <button :disabled="isQueryLoadingChat" @click="() => handleSendMessage(message, false)"
+            <button :disabled="isQueryLoadingChat" @click="() => handleSendMessage(message)"
                 :class="[
                     'bg-blue-500 text-white py-2 px-4 hover:bg-blue-600 flex items-center',
                     inputIsFocused ? 'rounded-br-md' : 'rounded-r-md',
@@ -210,7 +210,7 @@ const handleSetActiveQueryMessage = (query) => {
     message.value = query;
     inputIsFocused.value = false;
 
-    handleSendMessage(query, false);
+    handleSendMessage(query);
 
     setTimeout(() => {
         isSelectedManually.value = false;
@@ -228,13 +228,12 @@ watch(() => message.value, newValue => {
     throttledSuggestions(newValue);
 })
 
-const handleSendMessage = (query, resetMessage = true) => {
+const handleSendMessage = (query) => {
+    // to prevent sending messages when user clicks too many times in a row
     if(isQueryLoadingChat.value) return
     
+    // send the message to the parent component for processing
     emit("submit", query);
-    if (resetMessage) {
-        message.value = "";
-    }
 };
 
 const scrollActiveIntoView = () => {
@@ -263,7 +262,7 @@ const handleEnter = () => {
   if (activeIndex.value >= 0 && activeIndex.value < filteredCombinedQueries.value.length) {
     handleSetActiveQueryMessage(filteredCombinedQueries.value[activeIndex.value]?.query);
   } else {
-    handleSendMessage(message.value, false);
+    handleSendMessage(message.value);
   }
 };
 
