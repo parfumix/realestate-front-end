@@ -80,6 +80,8 @@
 
 <script setup>
 import { useItemsStore } from '@/stores/itemsStore';
+import { useChatStore } from '@/stores/chat';
+
 import throttle from 'lodash-es/throttle';
 import { capitalizeFirst, truncateString, normalizeQuery } from '../utils';
 import { History, TrendingUp, Sparkles, CircleX } from 'lucide-vue-next';
@@ -87,6 +89,8 @@ import Fuse from 'fuse.js'
 
 const itemsStore = useItemsStore()
 const { isQueryLoadingChat } = storeToRefs(itemsStore)
+
+const chatStore = useChatStore()
 
 const message = ref('');
 const inputIsFocused = ref(false);
@@ -266,6 +270,16 @@ const handleEnter = () => {
 
 onMounted(async() => {
     scrollToBottom();
+
+    if(! chatStore.isInputHasBeenMounted) {
+        setTimeout(() => {
+            inputField.value.focus()
+
+            localStorage.setItem('inputHasBeenMounted', 'true');
+            chatStore.isInputHasBeenMounted = true
+        }, 10);
+    }
+
     setTimeout(async() => {
         await searchQueryStore.fetchCombinedQueries()
     }, 10);

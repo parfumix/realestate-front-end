@@ -3,6 +3,9 @@ import { defineStore } from 'pinia';
 import { ref } from 'vue';
 
 export const useChatStore = defineStore('chatStore', () => {
+
+    const isChatInlineHasBeenMounted = ref(false);
+
     // Unified prompts by thread name
     const prompts = ref({
         default: [
@@ -83,5 +86,6 @@ export const useChatStore = defineStore('chatStore', () => {
 
         // Loading state
         isQueryLoading,
+        isChatInlineHasBeenMounted,
     };
 });
