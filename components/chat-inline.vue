@@ -221,11 +221,10 @@ const throttledSuggestions = throttle((val) => {
   searchQueryStore.fetchSuggestions(val);
 }, 500);
 
-
 watch(() => message.value, newValue => {
     activeIndex.value = -1;
 
-    if( isSelectedManually.value ) return;
+    if(isSelectedManually.value) return;
     throttledSuggestions(newValue);
 })
 
@@ -268,20 +267,20 @@ const handleEnter = () => {
   }
 };
 
-onMounted(async() => {
-    scrollToBottom();
+await searchQueryStore.fetchCombinedQueries()
 
-    if(! chatStore.isInputHasBeenMounted) {
-        setTimeout(() => {
+if(process.client) {
+    setTimeout(() => {
+        if(! chatStore.isChatInlineHasBeenMounted) {
             inputField.value.focus()
 
             localStorage.setItem('inputHasBeenMounted', 'true');
-            chatStore.isInputHasBeenMounted = true
-        }, 10);
-    }
+            chatStore.isChatInlineHasBeenMounted = true
+        }
+    })
+}
 
-    setTimeout(async() => {
-        await searchQueryStore.fetchCombinedQueries()
-    }, 10);
+onMounted(async() => {
+    scrollToBottom();
 });
 </script>
