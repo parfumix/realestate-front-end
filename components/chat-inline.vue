@@ -1,13 +1,31 @@
 <template>
-    <div class="w-full">
+    <div class="w-full relative">
         <div class="w-full rounded-b-lg flex justify-between relative" v-click-outside="handleClickOutside">
             <!-- Input field -->
             <div class="relative flex-1">
+
+                <!-- Serach by image -->
+                <div class="absolute left-[10px] top-1/2 -translate-y-1/2 flex items-center justify-center w-[30px] h-[30px] cursor-pointer hover:bg-gray-100 rounded-full z-10" @click="isImageModalOpen = true">
+                    <Image class="size-4 text-gray-500" />
+                </div>
+
+                <div class="absolute top-0 left-[40px] flex items-center w-[30px] h-full">
+                     <!-- Clear button -->
+                    <div v-if="message?.length && !isLoading" @click="handleClearActiveMessage" class="cursor-pointer">
+                        <CircleX class="size-4 text-gray-600 hover:text-red-500" />
+                    </div>
+
+                    <!-- Loader -->
+                    <div v-if="isLoading">
+                        <LoaderCircle class="size-4 animate-spin text-gray-600" />
+                    </div>
+                </div>
+
                 <input v-model="message" @focus="inputIsFocused = true" @click="inputIsFocused = true"
                     @keyup.enter="() => handleSendMessage(message)" type="text" placeholder="Scrie ce cauți..."
                     @keydown.down.prevent="handleArrowDown" @keydown.up.prevent="handleArrowUp"
                     @keydown.enter.prevent="handleEnter" @keydown.esc="handleClickOutside" :class="[
-                        'py-2.5 pl-[25px] pr-4 text-sm focus:ring-0 border-0 shadow-md w-full focus:outline-none',
+                        'py-2.5 pl-[60px] pr-4 text-sm focus:ring-0 border-0 shadow-md w-full focus:outline-none',
                         !inputIsFocused ? 'rounded-l-lg' : '',
                     ]" ref="inputField" />
 
@@ -46,17 +64,6 @@
                         Dezabonează-te
                     </button>
                 </div>
-
-                <!-- Clear button -->
-                <div v-if="message?.length && !isLoading" @click="handleClearActiveMessage"
-                    class="absolute top-0 left-[5px] flex items-center w-[30px] h-full cursor-pointer">
-                    <CircleX class="size-4 text-gray-600 hover:text-red-500" />
-                </div>
-
-                <!-- Loader -->
-                <div v-if="isLoading" class="absolute top-0 left-[5px] flex items-center w-[30px] h-full">
-                    <LoaderCircle class="size-4 animate-spin text-gray-600" />
-                </div>
             </div>
 
             <!-- Suggestions -->
@@ -75,9 +82,11 @@
                             {{ translations[query?.type] || capitalizeFirst(query?.type) }}
                             <span v-if="query?.type === 'recent' && query.userSearches[0]?.last_searched_at"
                                 class="ml-1 text-gray-400">
-                                · {{ formatDistanceToNow(new Date(query.userSearches[0].last_searched_at), { addSuffix: true, locale: ro }) }}
+                                · {{ formatDistanceToNow(new Date(query.userSearches[0].last_searched_at), { addSuffix:
+                                true, locale: ro }) }}
                             </span>
-                            <span v-if="['suggestion', 'popular'].includes(query?.type)" class="ml-1 text-gray-400">· {{ query?.search_count
+                            <span v-if="['suggestion', 'popular'].includes(query?.type)" class="ml-1 text-gray-400">· {{
+                                query?.search_count
                                 }} de căutări</span>
                         </span>
                     </div>
@@ -94,6 +103,8 @@
                 <LoaderCircle class="animate-spin size-6" v-else />
             </button>
         </div>
+
+        <!-- <FormImageSearch v-if="isImageModalOpen" @close="isImageModalOpen = false" @search="handleImageSearch" /> -->
     </div>
 </template>
 
@@ -107,7 +118,7 @@ import { useSubscriptionStore } from '@/stores/subscriptionStore'
 
 import throttle from 'lodash-es/throttle';
 import { capitalizeFirst, truncateString, normalizeQuery } from '../utils';
-import { History, TrendingUp, Sparkles, CircleX, LoaderCircle, Bell, BellOff, Send } from 'lucide-vue-next';
+import { History, TrendingUp, Sparkles, CircleX, LoaderCircle, Bell, BellOff, Send, Image } from 'lucide-vue-next';
 import Fuse from 'fuse.js'
 
 const itemsStore = useItemsStore()
@@ -255,6 +266,17 @@ const scrollToBottom = () => {
         });
     }
 };
+
+const isImageModalOpen = ref(false)
+
+const handleImageSearch = ({ file, url }) => {
+  if (file) {
+    // Convert file to FormData and send to API
+  } else if (url) {
+    // Send image URL to backend for processing
+  }
+  isImageModalOpen.value = false
+}
 
 const handleSetActiveQueryMessage = (query) => {
     if (query === message.value) {
