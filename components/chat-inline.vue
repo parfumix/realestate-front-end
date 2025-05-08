@@ -72,14 +72,12 @@
                             v-html="highlightMatch(truncateString(query?.query, 45), query.matches)"></span>
                         <span class="text-xs text-gray-500 mt-1 flex items-center gap-1">
                             <component :is="getIconComponent(query?.type)" class="size-3 text-gray-400" />
-                            {{ capitalizeFirst(query?.type) }}
+                            {{ translations[query?.type] || capitalizeFirst(query?.type) }}
                             <span v-if="query?.type === 'recent' && query.userSearches[0]?.last_searched_at"
                                 class="ml-1 text-gray-400">
-                                · {{ formatDistanceToNow(new Date(query.userSearches[0].last_searched_at), {
-                                    addSuffix:
-                                true }) }}
+                                · {{ formatDistanceToNow(new Date(query.userSearches[0].last_searched_at), { addSuffix: true, locale: ro }) }}
                             </span>
-                            <span v-if="query?.type === 'popular'" class="ml-1 text-gray-400">· {{ query?.search_count
+                            <span v-if="['suggestion', 'popular'].includes(query?.type)" class="ml-1 text-gray-400">· {{ query?.search_count
                                 }} de căutări</span>
                         </span>
                     </div>
@@ -101,6 +99,7 @@
 
 <script setup>
 import { formatDistanceToNow } from 'date-fns'
+import { ro } from 'date-fns/locale';
 
 import { useItemsStore } from '@/stores/itemsStore';
 import { useChatStore } from '@/stores/chat';
@@ -117,6 +116,12 @@ const { isQueryLoadingChat } = storeToRefs(itemsStore)
 const chatStore = useChatStore()
 
 const { notify } = useNotification();
+
+const translations = {
+    recent: 'Căutări recente',
+    popular: 'Populare',
+    suggestion: 'Sugestie',
+};
 
 // Importing the useSubscriptionStore
 const subscriptionStore = useSubscriptionStore()
@@ -183,8 +188,8 @@ const filteredCombinedQueries = computed(() => {
         ...recentQueries.value,
     ];
 
-    if (!query) {
-        return popularWithRecentQueries.slice(0, 15)
+    if (! query) {
+        return popularWithRecentQueries
     }
 
     const combinedElements = [
@@ -195,17 +200,28 @@ const filteredCombinedQueries = computed(() => {
     const fuse = new Fuse(combinedElements, {
         keys: ['normalized_query'],
         ignoreDiacritics: true,
+        findAllMatches: false,
         includeMatches: true, // find all matches
-        threshold: 0.35,           // adjust for more/less fuzziness
+        threshold: 0.5,           // adjust for more/less fuzziness
         includeScore: true,
         ignoreLocation: true,      // allows match anywhere in the string
-        minMatchCharLength: 2
+        minMatchCharLength: 2,
     });
 
     const searchResults = fuse.search(query).map(result => ({
         ...result.item,
         matches: result.matches
-    }));
+    })).sort((a, b) => {
+        const typePriority = { suggestion: 0, popular: 1, recent: 2 };
+        const aPriority = typePriority[a.type] ?? 3;
+        const bPriority = typePriority[b.type] ?? 3;
+
+        if (aPriority !== bPriority) {
+        return aPriority - bPriority;
+        }
+
+        return (a.score ?? 1) - (b.score ?? 1); // lower score = better match
+    });
 
     return searchResults;
 });
