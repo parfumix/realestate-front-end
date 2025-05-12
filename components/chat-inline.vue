@@ -156,7 +156,7 @@ const inputField = ref(null);
 
 // Importing the useFilterStore
 const filterStore = useFilterStore()
-const { activeMessage } = storeToRefs(filterStore)
+const { activeFilters } = storeToRefs(filterStore)
 
 // Importing the useSearchQueryStore
 const searchQueryStore = useSearchQueryStore()
@@ -349,7 +349,7 @@ const handleEnter = () => {
 const handleSubscribe = async () => {
     try {
         const normalized_query = normalizeQuery(message.value.trim())
-        await subscriptionStore.subscribe(normalized_query, selectedFrequency.value)
+        await subscriptionStore.subscribe(normalized_query, selectedFrequency.value, activeFilters)
         showFrequencySelect.value = false
 
         notify({

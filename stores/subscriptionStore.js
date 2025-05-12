@@ -34,11 +34,11 @@ export const useSubscriptionStore = defineStore('subscription', () => {
     }
   }
   
-  const subscribe = async (query, notificationFrequency = 'daily') => {
+  const subscribe = async (query, notificationFrequency = 'daily', filters = null) => {
     isSaving.value = true
   
     try {
-      const { data, error: subscribeError } = await subscribeToQuery(query, notificationFrequency)
+      const { data, error: subscribeError } = await subscribeToQuery(query, notificationFrequency, filters)
       if (subscribeError.value) throw subscribeError
   
       subscriptions.value.push(data?.value?.subscription)

@@ -5,12 +5,13 @@ export async function getUserSubscriptions() {
   return { data, error }
 }
 
-export async function subscribeToQuery(query, notificationFrequency = 'daily') {
+export async function subscribeToQuery(query, notificationFrequency = 'daily', filters = null) {
   const { data, error } = await useCustomFetch('/query/subscribe', {
     method: 'POST',
     body: {
       query,
-      notificationFrequency
+      notificationFrequency,
+      filters
     }
   })
   return { data, error }

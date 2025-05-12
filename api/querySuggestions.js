@@ -1,6 +1,6 @@
 import { useCustomFetch } from '~/composables/useCustomFetch'
 
-export async function querySuggestions(term, limit = 10) {
+export async function querySuggestions(term, limit = 15) {
     const { data, error } = await useCustomFetch('/query/autocomplete', {
         query: { term, limit },
     });
