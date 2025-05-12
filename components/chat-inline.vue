@@ -388,6 +388,9 @@ if (process.client) {
 
 onMounted(async () => {
     scrollToBottom();
-    subscriptionStore.fetchSubscriptions()
+    
+    setTimeout(async() => {
+        await subscriptionStore.fetchSubscriptions()
+    }, 100)
 });
 </script>
