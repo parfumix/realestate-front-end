@@ -30,19 +30,15 @@
                     ]" ref="inputField" />
 
                 <!-- Inline Subscribe/Unsubscribe Button -->
-                <div v-if="message && message.length > 3"
-                    class="absolute right-[5px] top-0 bottom-0 flex items-center pr-1 z-10">
+                <div v-if="message && message.length > 3" class="absolute right-[5px] top-0 bottom-0 flex items-center pr-1 z-10">
                     <!-- Step 1: Subscribe button -->
-                    <button v-if="!isSubscribedToQuery && !showFrequencySelect"
-                        @click.prevent="showFrequencySelect = true"
-                        class="text-xs px-2 py-1 bg-blue-100 text-blue-700 rounded hover:bg-blue-200 transition flex items-center gap-1">
+                    <button v-if="!isSubscribedToQuery && !showFrequencySelect" @click.prevent.stop="handleShowFrequencySelector" class="text-xs px-2 py-1 bg-blue-100 text-blue-700 rounded hover:bg-blue-200 transition flex items-center gap-1">
                         <Bell class="size-4 hover:animate-ring transform origin-top" />
                         Abonează-te
                     </button>
 
                     <!-- Step 2: Frequency selector -->
-                    <div v-else-if="!isSubscribedToQuery && showFrequencySelect"
-                        class="flex flex-col items-start gap-1 bg-white border p-2 rounded shadow-md text-xs w-32">
+                    <div v-click-outside="handleClickOutsideSubscribeSelector" v-else-if="!isSubscribedToQuery && showFrequencySelect" class="flex flex-col fixed right-0 bottom-[10px] items-start gap-1 bg-white border p-2 rounded shadow-md text-xs w-32">
                         <label class="flex items-center gap-1 cursor-pointer">
                             <input type="radio" value="daily" v-model="selectedFrequency" />
                             Zilnic
@@ -58,8 +54,7 @@
                     </div>
 
                     <!-- Unsubscribe button -->
-                    <button v-else @click.prevent="handleUnsubscribe"
-                        class="text-xs px-2 py-1 bg-red-100 text-red-600 rounded hover:bg-red-200 transition flex items-center gap-1">
+                    <button v-else @click.prevent="handleUnsubscribe" class="text-xs px-2 py-1 bg-red-100 text-red-600 rounded hover:bg-red-200 transition flex items-center gap-1">
                         <BellOff class="size-4 hover:animate-ring transform origin-top" />
                         Dezabonează-te
                     </button>
@@ -315,6 +310,9 @@ const handleSendMessage = (query) => {
     // to prevent sending messages when user clicks too many times in a row
     if (isQueryLoadingChat.value) return
 
+    inputIsFocused.value = false;
+    activeIndex.value = -1;
+
     // send the message to the parent component for processing
     emit("submit", query);
 };
@@ -374,6 +372,15 @@ const handleUnsubscribe = async () => {
     } catch (err) {
         console.error('Unsubscribe error:', err)
     }
+}
+
+const handleClickOutsideSubscribeSelector = () => {
+    showFrequencySelect.value = false
+}
+
+const handleShowFrequencySelector = () => {
+    showFrequencySelect.value = true
+    inputIsFocused.value = false
 }
 
 await searchQueryStore.fetchCombinedQueries()
