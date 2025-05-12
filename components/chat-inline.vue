@@ -116,7 +116,8 @@ import { useItemsStore } from '@/stores/itemsStore';
 import { useChatStore } from '@/stores/chat';
 import { useSubscriptionStore } from '@/stores/subscriptionStore'
 
-import throttle from 'lodash-es/throttle';
+import { debounce } from 'lodash';
+
 import { capitalizeFirst, truncateString, normalizeQuery } from '../utils';
 import { History, TrendingUp, Sparkles, CircleX, LoaderCircle, Bell, BellOff, Send, Image } from 'lucide-vue-next';
 import Fuse from 'fuse.js'
@@ -220,10 +221,12 @@ const filteredCombinedQueries = computed(() => {
         ignoreLocation: false,      // allows match anywhere in the string
     });
 
-    const searchResults = fuse.search(query).map(result => ({
-        ...result.item,
-        matches: result.matches
-    })).sort((a, b) => {
+    const searchResults = fuse.search(query).map(result => {
+        return {
+            ...result.item,
+            matches: result.matches,
+        };
+    }).sort((a, b) => {
         const typePriority = { suggestion: 0, popular: 1, recent: 2 };
         const aPriority = typePriority[a.type] ?? 3;
         const bPriority = typePriority[b.type] ?? 3;
@@ -297,7 +300,7 @@ const handleSetActiveQueryMessage = (query) => {
     }, 100);
 };
 
-const throttledSuggestions = throttle((val) => {
+const debouncedSuggestions = debounce((val) => {
     searchQueryStore.fetchSuggestions(val);
 }, 500);
 
@@ -305,7 +308,7 @@ watch(() => message.value, newValue => {
     activeIndex.value = -1;
 
     if (isSelectedManually.value) return;
-    throttledSuggestions(newValue);
+    debouncedSuggestions(newValue);
 })
 
 const handleSendMessage = (query) => {
