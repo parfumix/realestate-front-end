@@ -5,11 +5,11 @@
             <div class="relative flex-1">
 
                 <!-- Serach by image -->
-                <div class="absolute left-[10px] top-1/2 -translate-y-1/2 flex items-center justify-center w-[30px] h-[30px] cursor-pointer hover:bg-gray-100 rounded-full z-10" @click="isImageModalOpen = true">
+                <!-- <div class="absolute left-[10px] top-1/2 -translate-y-1/2 flex items-center justify-center w-[30px] h-[30px] cursor-pointer hover:bg-gray-100 rounded-full z-10" @click="isImageModalOpen = true">
                     <Image class="size-4 text-gray-500" />
-                </div>
+                </div> -->
 
-                <div class="absolute top-0 left-[40px] flex items-center w-[30px] h-full">
+                <div class="absolute top-0 left-[10px] flex items-center w-[30px] h-full">
                      <!-- Clear button -->
                     <div v-if="message?.length && !isLoading" @click="handleClearActiveMessage" class="cursor-pointer">
                         <CircleX class="size-4 text-gray-600 hover:text-red-500" />
@@ -25,7 +25,7 @@
                     @keyup.enter="() => handleSendMessage(message)" type="text" placeholder="Scrie ce cauți..."
                     @keydown.down.prevent="handleArrowDown" @keydown.up.prevent="handleArrowUp"
                     @keydown.enter.prevent="handleEnter" @keydown.esc="handleClickOutside" :class="[
-                        'py-2.5 pl-[60px] pr-4 text-sm focus:ring-0 border-0 shadow-md w-full focus:outline-none',
+                        'py-2.5 pl-[40px] pr-4 text-sm focus:ring-0 border-0 shadow-md w-full focus:outline-none',
                         !inputIsFocused ? 'rounded-l-lg' : '',
                     ]" ref="inputField" />
 
@@ -136,7 +136,6 @@ const translations = {
 
 // Importing the useSubscriptionStore
 const subscriptionStore = useSubscriptionStore()
-const { subscriptions } = storeToRefs(subscriptionStore)
 
 const isSubscribedToQuery = computed(() => {
     const normalized_query = normalizeQuery(message.value.trim())
@@ -211,12 +210,14 @@ const filteredCombinedQueries = computed(() => {
     const fuse = new Fuse(combinedElements, {
         keys: ['normalized_query'],
         ignoreDiacritics: true,
-        findAllMatches: false,
-        includeMatches: true, // find all matches
-        threshold: 0.5,           // adjust for more/less fuzziness
+
+        includeMatches: true, // include match details
+        findAllMatches: false, // find all matches in the string
+        minMatchCharLength: 3, // minimum length of the match
+
+        threshold: 1,           // adjust for more/less fuzziness
         includeScore: true,
-        ignoreLocation: true,      // allows match anywhere in the string
-        minMatchCharLength: 2,
+        ignoreLocation: false,      // allows match anywhere in the string
     });
 
     const searchResults = fuse.search(query).map(result => ({
@@ -228,7 +229,7 @@ const filteredCombinedQueries = computed(() => {
         const bPriority = typePriority[b.type] ?? 3;
 
         if (aPriority !== bPriority) {
-        return aPriority - bPriority;
+            return aPriority - bPriority;
         }
 
         return (a.score ?? 1) - (b.score ?? 1); // lower score = better match
