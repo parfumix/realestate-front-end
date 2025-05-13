@@ -149,6 +149,7 @@ const activeIndex = ref(-1);
 const suggestionRefs = ref([]);
 
 const inputField = ref(null);
+const isImageModalOpen = ref(false)
 
 // Importing the useFilterStore
 const filterStore = useFilterStore()
@@ -265,8 +266,6 @@ const scrollToBottom = () => {
         });
     }
 };
-
-const isImageModalOpen = ref(false)
 
 const handleImageSearch = ({ file, url }) => {
   if (file) {
