@@ -84,9 +84,12 @@
                         </div>
                     </li>
                 </ul>
+                <div v-if="filteredCombinedQueries.length === 0 && !isLoading" class="px-4 py-2 text-gray-500 text-sm">
+                    Nu am găsit sugestii pentru căutarea ta. <Frown class="size-4 text-gray-400 inline" />
+                </div>
 
                 <!-- Recent searches -->
-                 <div class="p-2">
+                 <div class="p-2" v-if="filteredRecentQueries.length > 0">
                     <h2 class="text-sm font-semibold mb-2 text-gray-700">Recent searches</h2>
                     <div class="flex flex-wrap gap-2">
                     <div
@@ -128,7 +131,7 @@ import { useSubscriptionStore } from '@/stores/subscriptionStore'
 import { debounce } from 'lodash';
 
 import { capitalizeFirst, truncateString, normalizeQuery } from '../utils';
-import { History, TrendingUp, Sparkles, CircleX, LoaderCircle, Bell, BellOff, Send, Image, Search } from 'lucide-vue-next';
+import { History, TrendingUp, Sparkles, CircleX, LoaderCircle, Bell, BellOff, Send, Image, Search, Frown } from 'lucide-vue-next';
 import Fuse from 'fuse.js'
 
 const itemsStore = useItemsStore()
