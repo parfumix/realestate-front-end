@@ -84,6 +84,7 @@
                         </div>
                     </li>
                 </ul>
+
                 <div v-if="filteredCombinedQueries.length === 0 && !isLoading" class="px-4 py-2 text-gray-500 text-sm">
                     Nu am găsit sugestii pentru căutarea ta. <Frown class="size-4 text-gray-400 inline" />
                 </div>

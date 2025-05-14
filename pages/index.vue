@@ -58,10 +58,13 @@ import RealEstatePropertyModal from '@/components/modals/real-estate-property.vu
 import { useItemsStore } from '@/stores/itemsStore';
 import { useFilterStore } from '@/stores/filters';
 import { useModalStore } from '@/stores/modals';
+import { useSearchQueryStore } from '@/stores/searchQueryStore';
+
 
 const filterStore = useFilterStore()
 const itemsStore = useItemsStore()
 const modalStore = useModalStore();
+const searchQueryStore = useSearchQueryStore()
 
 const route = useRoute();
 const router = useRouter();
@@ -152,7 +155,8 @@ const handleSendMessage = async (message) => {
     // apply filters automatically
     let parsedFilters = JSON.parse(JSON.stringify(filters ?? {}))
 
-    // TODO add that message to recent queries
+    // adding query to recent queries
+    searchQueryStore.addToRecentQueries(trimmedMessage)
 
     Object.keys(parsedFilters).forEach(key => {
       if(! parsedFilters?.[key]) return

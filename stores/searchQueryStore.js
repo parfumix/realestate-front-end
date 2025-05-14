@@ -1,6 +1,12 @@
 import { defineStore } from 'pinia'
-import { querySuggestions, getCombinedQueries, getRecentQueries, getPopularQueries } from '~/api/querySuggestions'
+import {
+  querySuggestions,
+  getCombinedQueries,
+  getRecentQueries,
+  getPopularQueries,
+} from '~/api/querySuggestions'
 import { normalizeQuery } from '~/utils'
+import { ref } from 'vue'
 
 export const useSearchQueryStore = defineStore('searchQuery', () => {
   const term = ref('')
@@ -52,7 +58,7 @@ export const useSearchQueryStore = defineStore('searchQuery', () => {
         results.value = mapped
         cache.value[normalized] = {
           value: mapped,
-          timestamp: now
+          timestamp: now,
         }
       } else {
         results.value = []
@@ -116,6 +122,30 @@ export const useSearchQueryStore = defineStore('searchQuery', () => {
     }
   }
 
+  // === Helpers for recentQueries ===
+  const addToRecentQueries = (queryString) => {
+    const normalized = normalizeQuery(queryString)
+
+    // Prevent duplicates
+    if (!recentQueries.value.some(q => normalizeQuery(q.normalized_query) === normalized)) {
+      recentQueries.value.unshift({
+        query: queryString,
+        normalized_query: normalized,
+        search_count: 1,
+      })
+    }
+  }
+  
+  const removeFromRecentQueries = (queryString) => {
+    const normalized = normalizeQuery(queryString)
+    recentQueries.value = recentQueries.value.filter(
+      (q) => normalizeQuery(q.normalized_query) !== normalized,
+    )
+  }
+  const resetRecentQueries = () => {
+    recentQueries.value = []
+  }
+
   return {
     // State
     term,
@@ -137,5 +167,10 @@ export const useSearchQueryStore = defineStore('searchQuery', () => {
     fetchCombinedQueries,
     fetchRecentQueries,
     fetchPopularQueries,
+
+    // Helpers
+    addToRecentQueries,
+    removeFromRecentQueries,
+    resetRecentQueries,
   }
 })
