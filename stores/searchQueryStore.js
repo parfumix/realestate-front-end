@@ -82,8 +82,14 @@ export const useSearchQueryStore = defineStore('searchQuery', () => {
       const { recent_queries, popular_queries } = data?.value || {}
 
       // Normalize the recent queries
-      recentQueries.value = JSON.parse(JSON.stringify(recent_queries)).map(el => ({...el, ...{type: 'recent'}}))
-      popularQueries.value = JSON.parse(JSON.stringify(popular_queries)).map(el => ({...el, ...{type: 'popular'}}))
+      recentQueries.value = JSON.parse(JSON.stringify(recent_queries)).map((el) => ({
+        ...el,
+        ...{ type: 'recent' },
+      }))
+      popularQueries.value = JSON.parse(JSON.stringify(popular_queries)).map((el) => ({
+        ...el,
+        ...{ type: 'popular' },
+      }))
     } catch (err) {
       console.error('Error fetching combined queries:', err)
       throw err
@@ -135,7 +141,7 @@ export const useSearchQueryStore = defineStore('searchQuery', () => {
       })
     }
   }
-  
+
   const removeFromRecentQueries = (queryString) => {
     const normalized = normalizeQuery(queryString)
     recentQueries.value = recentQueries.value.filter(
