@@ -68,8 +68,7 @@
                 <ul v-if="filteredCombinedQueries.length > 0 && inputIsFocused">
                     <li v-for="(query, index) in filteredCombinedQueries" :key="index" :ref="el => suggestionRefs[index] = el" :class="['px-4 py-2 text-gray-800 cursor-pointer flex justify-between items-start transition-colors duration-150', index === activeIndex ? 'bg-blue-100' : 'hover:bg-blue-50']" @click="handleSetActiveQueryMessage(query?.query)">
                         <div class="flex flex-col w-full">
-                            <span :title="query?.query" class="font-medium text-sm truncate"
-                                v-html="highlightMatch(truncateString(query?.query, 45), query.matches)"></span>
+                            <span :title="query?.query" class="font-medium text-sm" v-html="truncateString(highlightMatchUsingNormalized(query?.query, query?.normalized_query, query.matches), 160)"></span>
                             <span class="text-xs text-gray-500 mt-1 flex items-center gap-1">
                                 <component :is="getIconComponent(query?.type)" class="size-3 text-gray-400" />
                                 {{ translations[query?.type] || capitalizeFirst(query?.type) }}
@@ -96,7 +95,7 @@
                         @click="handleSetActiveQueryMessage(query?.query)"
                         class="flex items-center px-3 py-1 rounded-full text-sm font-medium hover:bg-blue-50 cursor-pointer transition-colors duration-150"
                     >
-                        <span :title="query?.query" class="font-medium text-sm truncate cursor-pointer" v-html="highlightMatch(truncateString(query?.query, 45), query.matches)"></span>
+                        <span :title="query?.query" class="font-medium text-sm cursor-pointer" v-html="truncateString(highlightMatchUsingNormalized(query?.query, query?.normalized_query, query.matches), 160)"></span>
                        <Search class="ml-2 size-4 text-gray-600" />
                     </div>
                     </div>
@@ -278,26 +277,47 @@ const filteredCombinedQueries = computed(() => {
     return searchResults;
 });
 
-const highlightMatch = (text, matches = []) => {
-    if (!matches.length) return text;
+function highlightMatchUsingNormalized(originalText, normalizedText, matches = []) {
+    if (!matches.length || !originalText || !normalizedText) return originalText;
 
-    // We only care about matches in the 'normalized_query' key
     const match = matches.find(m => m.key === 'normalized_query');
-    if (!match || !match.indices?.length) return text;
+    if (!match || !match.indices?.length) return originalText;
+
+    // Build a map from normalized string index → original string index
+    const normToOrig = [];
+    let j = 0;
+    for (let i = 0; i < normalizedText.length && j < originalText.length; i++) {
+        while (
+            j < originalText.length &&
+            normalizeChar(originalText[j]) !== normalizedText[i]
+        ) {
+            j++;
+        }
+        normToOrig[i] = j;
+        j++;
+    }
 
     let result = '';
     let lastIndex = 0;
 
     for (const [start, end] of match.indices) {
-        // Match original substring by position
-        result += text.slice(lastIndex, start);
-        result += `<span class="bg-yellow-200">${text.slice(start, end + 1)}</span>`;
-        lastIndex = end + 1;
+        const realStart = normToOrig[start] ?? -1;
+        const realEnd = normToOrig[end] ?? -1;
+
+        if (realStart === -1 || realEnd === -1) continue;
+
+        result += originalText.slice(lastIndex, realStart);
+        result += `<span class="bg-yellow-200">${originalText.slice(realStart, realEnd + 1)}</span>`;
+        lastIndex = realEnd + 1;
     }
 
-    result += text.slice(lastIndex);
+    result += originalText.slice(lastIndex);
     return result;
-};
+}
+
+function normalizeChar(c) {
+    return c.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+}
 
 const scrollToBottom = () => {
     if (scrollContainer.value) {
