@@ -61,32 +61,47 @@
                 </div>
             </div>
 
-            <!-- Suggestions -->
-            <ul v-if="filteredCombinedQueries.length > 0 && inputIsFocused"
-                class="absolute no-scrollbar bottom-full rounded-t-md left-0 w-full bg-white border max-h-48 overflow-y-auto z-10 mb-.5">
-                <li v-for="(query, index) in filteredCombinedQueries" :key="index"
-                    :ref="el => suggestionRefs[index] = el" :class="[
-                        'px-4 py-2 text-gray-800 cursor-pointer flex justify-between items-start transition-colors duration-150',
-                        index === activeIndex ? 'bg-blue-100' : 'hover:bg-blue-50'
-                    ]" @click="handleSetActiveQueryMessage(query?.query)">
-                    <div class="flex flex-col w-full">
-                        <span :title="query?.query" class="font-medium text-sm truncate"
-                            v-html="highlightMatch(truncateString(query?.query, 45), query.matches)"></span>
-                        <span class="text-xs text-gray-500 mt-1 flex items-center gap-1">
-                            <component :is="getIconComponent(query?.type)" class="size-3 text-gray-400" />
-                            {{ translations[query?.type] || capitalizeFirst(query?.type) }}
-                            <span v-if="query?.type === 'recent' && query.userSearches[0]?.last_searched_at"
-                                class="ml-1 text-gray-400">
-                                · {{ formatDistanceToNow(new Date(query.userSearches[0].last_searched_at), { addSuffix:
-                                true, locale: ro }) }}
+            <!-- Autocomplete -->
+            <div v-if="inputIsFocused" class="absolute w-full bottom-full rounded-t-md left-0 bg-white border max-h-48 overflow-y-auto z-10 mb-.5">
+
+                <!-- Popular or Search suggestions -->
+                <ul v-if="filteredCombinedQueries.length > 0 && inputIsFocused">
+                    <li v-for="(query, index) in filteredCombinedQueries" :key="index" :ref="el => suggestionRefs[index] = el" :class="['px-4 py-2 text-gray-800 cursor-pointer flex justify-between items-start transition-colors duration-150', index === activeIndex ? 'bg-blue-100' : 'hover:bg-blue-50']" @click="handleSetActiveQueryMessage(query?.query)">
+                        <div class="flex flex-col w-full">
+                            <span :title="query?.query" class="font-medium text-sm truncate"
+                                v-html="highlightMatch(truncateString(query?.query, 45), query.matches)"></span>
+                            <span class="text-xs text-gray-500 mt-1 flex items-center gap-1">
+                                <component :is="getIconComponent(query?.type)" class="size-3 text-gray-400" />
+                                {{ translations[query?.type] || capitalizeFirst(query?.type) }}
+                                <span v-if="query?.type === 'recent' && query.userSearches[0]?.last_searched_at"
+                                    class="ml-1 text-gray-400">
+                                    · {{ formatDistanceToNow(new Date(query.userSearches[0].last_searched_at), { addSuffix:
+                                    true, locale: ro }) }}
+                                </span>
+                                <span v-if="['suggestion', 'popular'].includes(query?.type)" class="ml-1 text-gray-400">· {{
+                                    query?.search_count
+                                    }} de căutări</span>
                             </span>
-                            <span v-if="['suggestion', 'popular'].includes(query?.type)" class="ml-1 text-gray-400">· {{
-                                query?.search_count
-                                }} de căutări</span>
-                        </span>
+                        </div>
+                    </li>
+                </ul>
+
+                <!-- Recent searches -->
+                 <div class="p-2 max-w-xl">
+                    <h2 class="text-sm font-semibold mb-2 text-gray-800">Recent searches</h2>
+                    <div class="flex flex-wrap gap-2">
+                    <div
+                        v-for="(query, index) in filteredRecentQueries"
+                        :key="index"
+                        class="flex items-center px-4 py-2 rounded-full border text-sm font-medium"
+                        :class="index === 0 ? 'bg-black text-white' : ''"
+                    >
+                        <span :title="query?.query" class="font-medium text-sm truncate" v-html="highlightMatch(truncateString(query?.query, 45), query.matches)"></span>
+                        <span class="ml-2">🔍</span>
                     </div>
-                </li>
-            </ul>
+                    </div>
+                </div>
+            </div>
 
             <!-- Button to send message -->
             <button :disabled="isQueryLoadingChat" @click="() => handleSendMessage(message)" :class="[
@@ -187,43 +202,69 @@ const handleClearActiveMessage = () => {
     }, 50);
 }
 
-const filteredCombinedQueries = computed(() => {
-    const query = normalizeQuery(message.value.trim());
-
-    const popularWithRecentQueries = [
-        ...popularQueries.value,
-        ...recentQueries.value,
-    ];
+const filteredRecentQueries = computed(() => {
+     const query = normalizeQuery(message.value.trim());
 
     if (! query) {
-        return popularWithRecentQueries
+        return recentQueries.value
     }
 
-    const combinedElements = [
-        ...results.value,
-        ...popularWithRecentQueries,
-    ];
-
-    const fuse = new Fuse(combinedElements, {
+    const fuse = new Fuse(recentQueries.value, {
         keys: ['normalized_query'],
+        isCaseSensitive: false,
         ignoreDiacritics: true,
+        shouldSort: true,     // sorting them manually
 
-        includeMatches: true, // include match details
+        includeMatches: true,  // include match details
         findAllMatches: false, // find all matches in the string
         minMatchCharLength: 3, // minimum length of the match
 
-        threshold: 1,           // adjust for more/less fuzziness
+        threshold: 0.3,          // adjust for more/less fuzziness
         includeScore: true,
-        ignoreLocation: false,      // allows match anywhere in the string
+        ignoreLocation: false, // allows match anywhere in the string
     });
 
     const searchResults = fuse.search(query).map(result => {
         return {
             ...result.item,
+            score: result.score,
+            matches: result.matches,
+        };
+    })
+
+    return searchResults;
+})
+
+const filteredCombinedQueries = computed(() => {
+    const query = normalizeQuery(message.value.trim());
+
+    if (! query) {
+        return popularQueries.value
+    }
+
+    const fuse = new Fuse(results.value, {
+        keys: ['normalized_query'],
+        isCaseSensitive: false,
+        ignoreDiacritics: true,
+        shouldSort: false,     // sorting them manually
+
+        includeMatches: true,  // include match details
+        findAllMatches: false, // find all matches in the string
+        minMatchCharLength: 3, // minimum length of the match
+
+        threshold: 1,          // adjust for more/less fuzziness
+        includeScore: true,
+        ignoreLocation: false, // allows match anywhere in the string
+    });
+
+    const searchResults = fuse.search(query).map(result => {
+        return {
+            ...result.item,
+            score: result.score,
             matches: result.matches,
         };
     }).sort((a, b) => {
-        const typePriority = { suggestion: 0, popular: 1, recent: 2 };
+        const typePriority = { suggestion: 0, popular: 1 };
         const aPriority = typePriority[a.type] ?? 3;
         const bPriority = typePriority[b.type] ?? 3;
 
