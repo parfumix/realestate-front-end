@@ -87,17 +87,17 @@
                 </ul>
 
                 <!-- Recent searches -->
-                 <div class="p-2 max-w-xl">
-                    <h2 class="text-sm font-semibold mb-2 text-gray-800">Recent searches</h2>
+                 <div class="p-2">
+                    <h2 class="text-sm font-semibold mb-2 text-gray-700">Recent searches</h2>
                     <div class="flex flex-wrap gap-2">
                     <div
                         v-for="(query, index) in filteredRecentQueries"
                         :key="index"
-                        class="flex items-center px-4 py-2 rounded-full border text-sm font-medium"
-                        :class="index === 0 ? 'bg-black text-white' : ''"
+                        @click="handleSetActiveQueryMessage(query?.query)"
+                        class="flex items-center px-3 py-1 rounded-full text-sm font-medium hover:bg-blue-50 cursor-pointer transition-colors duration-150"
                     >
-                        <span :title="query?.query" class="font-medium text-sm truncate" v-html="highlightMatch(truncateString(query?.query, 45), query.matches)"></span>
-                        <span class="ml-2">🔍</span>
+                        <span :title="query?.query" class="font-medium text-sm truncate cursor-pointer" v-html="highlightMatch(truncateString(query?.query, 45), query.matches)"></span>
+                       <Search class="ml-2 size-4 text-gray-600" />
                     </div>
                     </div>
                 </div>
@@ -129,7 +129,7 @@ import { useSubscriptionStore } from '@/stores/subscriptionStore'
 import { debounce } from 'lodash';
 
 import { capitalizeFirst, truncateString, normalizeQuery } from '../utils';
-import { History, TrendingUp, Sparkles, CircleX, LoaderCircle, Bell, BellOff, Send, Image } from 'lucide-vue-next';
+import { History, TrendingUp, Sparkles, CircleX, LoaderCircle, Bell, BellOff, Send, Image, Search } from 'lucide-vue-next';
 import Fuse from 'fuse.js'
 
 const itemsStore = useItemsStore()
