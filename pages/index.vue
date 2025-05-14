@@ -152,6 +152,8 @@ const handleSendMessage = async (message) => {
     // apply filters automatically
     let parsedFilters = JSON.parse(JSON.stringify(filters ?? {}))
 
+    // TODO add that message to recent queries
+
     Object.keys(parsedFilters).forEach(key => {
       if(! parsedFilters?.[key]) return
       filterStore.setActiveFilter(key, parsedFilters[key])
