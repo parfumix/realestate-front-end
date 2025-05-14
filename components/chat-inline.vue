@@ -140,7 +140,7 @@ import { useItemsStore } from '@/stores/itemsStore';
 import { useChatStore } from '@/stores/chat';
 import { useSubscriptionStore } from '@/stores/subscriptionStore'
 
-import { debounce } from 'lodash';
+import { throttle } from 'lodash';
 
 import { capitalizeFirst, truncateString, normalizeQuery } from '../utils';
 import { History, TrendingUp, Sparkles, CircleX, LoaderCircle, Bell, BellOff, Send, Image, Search, Frown } from 'lucide-vue-next';
@@ -370,7 +370,7 @@ const handleSetActiveQueryMessage = (query) => {
     }, 100);
 };
 
-const debouncedSuggestions = debounce((val) => {
+const throttleSuggestions = throttle((val) => {
     searchQueryStore.fetchSuggestions(val);
 }, 500);
 
@@ -378,7 +378,7 @@ watch(() => message.value, newValue => {
     activeIndex.value = -1;
 
     if (isSelectedManually.value) return;
-    debouncedSuggestions(newValue);
+    throttleSuggestions(newValue);
 })
 
 const handleSendMessage = (query) => {
