@@ -4,14 +4,14 @@ export async function querySuggestions(term, limit = 15) {
     const { data, error } = await useCustomFetch('/query/autocomplete', {
         query: { term, limit },
     });
-    return { data, error };
+  return { data, error }
 }
 
 export async function getPopularQueries(limit = 10) {
     const { data, error } = await useCustomFetch('/query/popular', {
         query: { limit },
     });
-    return { data, error };
+  return { data, error }
 }
 
 export async function getRecentQueries(limit = 10) {
@@ -27,3 +27,10 @@ export async function getCombinedQueries(limit = 10) {
     });
     return { data, error };
 }
+
+export const deleteRecentQueries = async () => {
+    const { data, error } = await useCustomFetch('/query/recent', {
+        method: 'DELETE',
+    });
+    return { data, error };
+}   

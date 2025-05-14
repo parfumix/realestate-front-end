@@ -85,13 +85,24 @@
                     </li>
                 </ul>
 
-                <div v-if="filteredCombinedQueries.length === 0 && !isLoading" class="px-4 py-2 text-gray-500 text-sm">
-                    Nu am găsit sugestii pentru căutarea ta. <Frown class="size-4 text-gray-400 inline" />
+                <div v-if="filteredCombinedQueries.length === 0 && !isLoading" class="px-4 py-2 text-gray-500 text-sm flex items-center gap-1">
+                    Se pare că nu am găsit rezultate <Frown class="size-4 text-gray-400 inline" />
                 </div>
 
                 <!-- Recent searches -->
                  <div class="p-2" v-if="filteredRecentQueries.length > 0">
-                    <h2 class="text-sm font-semibold mb-2 text-gray-700">Recent searches</h2>
+                   
+                    <div class="flex items-center justify-between mb-2">
+                        <h2 class="text-sm font-semibold text-gray-700">Recent searches</h2>
+                        <button
+                            class="text-sm text-gray-500 hover:text-red-500 transition-colors duration-150"
+                            @click="handleDeletRecentQuries"
+                            title="Șterge căutările recente"
+                        >
+                            Șterge căutările
+                        </button>
+                    </div>
+                    
                     <div class="flex flex-wrap gap-2">
                     <div
                         v-for="(query, index) in filteredRecentQueries"
@@ -445,6 +456,21 @@ const handleClickOutsideSubscribeSelector = () => {
 const handleShowFrequencySelector = () => {
     showFrequencySelect.value = true
     inputIsFocused.value = false
+}
+
+const handleDeletRecentQuries = async () => {
+  const confirmed = window.confirm('Ești sigur că vrei să ștergi căutările recente?')
+
+  if (!confirmed) return
+
+  try {
+    await searchQueryStore.deleteRecentQueries()
+    notify({
+      title: 'Căutările recente au fost șterse!',
+    })
+  } catch (err) {
+    console.error('Delete recent queries error:', err)
+  }
 }
 
 await searchQueryStore.fetchCombinedQueries()

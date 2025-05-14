@@ -4,6 +4,7 @@ import {
   getCombinedQueries,
   getRecentQueries,
   getPopularQueries,
+  deleteRecentQueries as deleteRecentQueriesAPI,
 } from '~/api/querySuggestions'
 import { normalizeQuery } from '~/utils'
 import { ref } from 'vue'
@@ -113,6 +114,20 @@ export const useSearchQueryStore = defineStore('searchQuery', () => {
     }
   }
 
+  const deleteRecentQueries = async () => {
+    isRecentLoading.value = true
+
+    try {
+      await deleteRecentQueriesAPI()
+      recentQueries.value = []
+    } catch (err) {
+      console.error('Error deleting recent queries:', err)
+      throw err
+    } finally {
+      isRecentLoading.value = false
+    }
+  }
+
   // Fetch popular queries with a default limit of 10
   const fetchPopularQueries = async (limit = 10) => {
     isPopularLoading.value = true
@@ -129,6 +144,8 @@ export const useSearchQueryStore = defineStore('searchQuery', () => {
   }
 
   // === Helpers for recentQueries ===
+
+  // add a query to recent queries
   const addToRecentQueries = (queryString) => {
     const normalized = normalizeQuery(queryString)
 
@@ -142,12 +159,15 @@ export const useSearchQueryStore = defineStore('searchQuery', () => {
     }
   }
 
+  // Remove a query from recent queries
   const removeFromRecentQueries = (queryString) => {
     const normalized = normalizeQuery(queryString)
     recentQueries.value = recentQueries.value.filter(
       (q) => normalizeQuery(q.normalized_query) !== normalized,
     )
   }
+
+  // Reset recent queries
   const resetRecentQueries = () => {
     recentQueries.value = []
   }
@@ -178,5 +198,6 @@ export const useSearchQueryStore = defineStore('searchQuery', () => {
     addToRecentQueries,
     removeFromRecentQueries,
     resetRecentQueries,
+    deleteRecentQueries,
   }
 })
