@@ -15,6 +15,7 @@ export const useSearchQueryStore = defineStore('searchQuery', () => {
   const isPopularLoading = ref(false)
 
   const cache = ref({}) // { normalized_term: [...] }
+  const CACHE_TTL = 5 * 60 * 1000 // 5 minutes in milliseconds
 
   // Fetch suggestions based on the input term
   const fetchSuggestions = async (input) => {
@@ -26,10 +27,17 @@ export const useSearchQueryStore = defineStore('searchQuery', () => {
       return
     }
 
-    // Check local cache first
+    const now = Date.now()
+
+    // Check cache with expiration
     if (cache.value[normalized]) {
-      results.value = cache.value[normalized]
-      return
+      const cached = cache.value[normalized]
+      if (now - cached.timestamp < CACHE_TTL) {
+        results.value = cached.value
+        return
+      } else {
+        delete cache.value[normalized]
+      }
     }
 
     isLoading.value = true
@@ -38,11 +46,14 @@ export const useSearchQueryStore = defineStore('searchQuery', () => {
       const { data } = await querySuggestions(normalized)
       const { data: suggestions } = data?.value || {}
 
-      const mapped = suggestions.map(el => ({...el, ...{type: 'suggestion'}}))
+      const mapped = suggestions.map(el => ({ ...el, type: 'suggestion' }))
 
       if (mapped.length) {
         results.value = mapped
-        cache.value[normalized] = mapped
+        cache.value[normalized] = {
+          value: mapped,
+          timestamp: now
+        }
       } else {
         results.value = []
       }
