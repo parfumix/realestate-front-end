@@ -1,5 +1,5 @@
 <template>
-    <div class="absolute inset-0 z-50 flex items-center justify-center">
+    <div class="absolute inset-0 mb-[60px] z-50 flex items-center justify-center">
       <div class="bg-[#202124] text-white w-full max-w-md rounded-xl p-6 relative">
         <h2 class="text-lg font-semibold text-center mb-4">Search any image</h2>
   

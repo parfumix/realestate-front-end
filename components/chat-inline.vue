@@ -2,35 +2,36 @@
     <div class="w-full relative">
         <div class="w-full rounded-b-lg flex justify-between relative" v-click-outside="handleClickOutside">
             <!-- Input field -->
-            <div class="relative flex-1">
+            <div class="relative flex items-center w-full shadow-md">
 
-                <!-- Serach by image -->
-                <!-- <div class="absolute left-[10px] top-1/2 -translate-y-1/2 flex items-center justify-center w-[30px] h-[30px] cursor-pointer hover:bg-gray-100 rounded-full z-10" @click="isImageModalOpen = true">
-                    <Image class="size-4 text-gray-500" />
-                </div> -->
-
-                <div class="absolute top-0 left-[10px] flex items-center w-[30px] h-full">
-                     <!-- Clear button -->
-                    <div v-if="message?.length && !isLoading" @click="handleClearActiveMessage" class="cursor-pointer">
-                        <CircleX class="size-4 text-gray-600 hover:text-red-500" />
-                    </div>
-
-                    <!-- Loader -->
-                    <div v-if="isLoading">
-                        <LoaderCircle class="size-4 animate-spin text-gray-600" />
-                    </div>
+                <!-- Search Icon -->
+                <div class="absolute top-0 left-[5px] flex items-center w-[30px] h-full">
+                    <Search class="ml-2 size-4 text-gray-600" />
                 </div>
 
                 <input v-model="message" @focus="inputIsFocused = true" @click="inputIsFocused = true"
                     @keyup.enter="() => handleSendMessage(message)" type="text" placeholder="Scrie ce cauți..."
                     @keydown.down.prevent="handleArrowDown" @keydown.up.prevent="handleArrowUp"
                     @keydown.enter.prevent="handleEnter" @keydown.esc="handleClickOutside" :class="[
-                        'py-2.5 pl-[40px] pr-4 text-sm focus:ring-0 border-0 shadow-md w-full focus:outline-none',
+                        'py-2.5 pl-[40px] pr-4 text-sm focus:ring-0 border-0 flex-grow focus:outline-none',
                         !inputIsFocused ? 'rounded-l-lg' : '',
                     ]" ref="inputField" />
 
                 <!-- Inline Subscribe/Unsubscribe Button -->
-                <div v-if="message && message.length > 3" class="absolute right-[5px] top-0 bottom-0 flex items-center pr-1 z-10">
+                <div v-if="message && message.length > 3" class="absolute right-[45px] top-0 bottom-0 flex items-center pr-1 z-10">
+
+                    <div class="mr-2">
+                        <!-- Clear button -->
+                        <div v-if="message?.length && !isLoading" @click="handleClearActiveMessage" class="cursor-pointer">
+                            <CircleX class="size-4 text-gray-600 hover:text-red-500" />
+                        </div>
+
+                        <!-- Loader -->
+                        <div v-if="isLoading">
+                            <LoaderCircle class="size-4 animate-spin text-gray-600" />
+                        </div>
+                    </div>
+
                     <!-- Step 1: Subscribe button -->
                     <button v-if="!isSubscribedToQuery && !showFrequencySelect" @click.prevent.stop="handleShowFrequencySelector" class="text-xs px-2 py-1 bg-blue-100 text-blue-700 rounded hover:bg-blue-200 transition flex items-center gap-1">
                         <Bell class="size-4 hover:animate-ring transform origin-top" />
@@ -58,6 +59,11 @@
                         <BellOff class="size-4 hover:animate-ring transform origin-top" />
                         Dezabonează-te
                     </button>
+                </div>
+
+                 <!-- Search by image -->
+                <div class="flex items-center justify-center w-[50px] h-full bg-white cursor-pointer " @click="isImageModalOpen = true">
+                    <Camera class="size-5 text-gray-400 hover:text-gray-500 duration-300" />
                 </div>
             </div>
 
@@ -116,19 +122,9 @@
                     </div>
                 </div>
             </div>
-
-            <!-- Button to send message -->
-            <button :disabled="isQueryLoadingChat" @click="() => handleSendMessage(message)" :class="[
-                'bg-blue-500 text-white py-2 px-4 hover:bg-blue-600 flex items-center',
-                inputIsFocused ? 'rounded-br-md' : 'rounded-r-md',
-            ]">
-                <Send class="size-6 transition-transform duration-200 hover:translate-x-0.5 hover:-translate-y-0.5"
-                    v-if="!isQueryLoadingChat" />
-                <LoaderCircle class="animate-spin size-6" v-else />
-            </button>
         </div>
 
-        <!-- <FormImageSearch v-if="isImageModalOpen" @close="isImageModalOpen = false" @search="handleImageSearch" /> -->
+        <FormImageSearch v-if="isImageModalOpen" @close="isImageModalOpen = false" @search="handleImageSearch" />
     </div>
 </template>
 
@@ -143,7 +139,7 @@ import { useSubscriptionStore } from '@/stores/subscriptionStore'
 import { throttle } from 'lodash';
 
 import { capitalizeFirst, truncateString, normalizeQuery } from '../utils';
-import { History, TrendingUp, Sparkles, CircleX, LoaderCircle, Bell, BellOff, Send, Image, Search, Frown } from 'lucide-vue-next';
+import { History, TrendingUp, Sparkles, CircleX, LoaderCircle, Bell, BellOff, Camera, Search, Frown } from 'lucide-vue-next';
 import Fuse from 'fuse.js'
 
 const itemsStore = useItemsStore()
