@@ -1,12 +1,12 @@
 import { useCustomFetch } from '~/composables/useCustomFetch'
 
 export async function getUserSubscriptions() {
-  const { data, error } = await useCustomFetch('/query/subscriptions')
+  const { data, error } = await useCustomFetch('/subscriptions')
   return { data, error }
 }
 
 export async function subscribeToQuery(query, notificationFrequency = 'daily', filters = null) {
-  const { data, error } = await useCustomFetch('/query/subscribe', {
+  const { data, error } = await useCustomFetch('/subscriptions/subscribe', {
     method: 'POST',
     body: {
       query,
@@ -18,7 +18,7 @@ export async function subscribeToQuery(query, notificationFrequency = 'daily', f
 }
 
 export async function unsubscribeFromQuery(query) {
-  const { data, error } = await useCustomFetch('/query/unsubscribe', {
+  const { data, error } = await useCustomFetch('/subscriptions/unsubscribe', {
     method: 'DELETE',
     body: { query }
   })
@@ -26,7 +26,7 @@ export async function unsubscribeFromQuery(query) {
 }
 
 export async function toggleSubscriptionPause(subscriptionId) {
-  const { data, error } = await useCustomFetch(`/query/subscriptions/${subscriptionId}/toggle-pause`, {
+  const { data, error } = await useCustomFetch(`/subscriptions/${subscriptionId}/toggle-pause`, {
     method: 'PATCH'
   })
   return { data, error }

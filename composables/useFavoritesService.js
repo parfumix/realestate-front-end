@@ -5,7 +5,7 @@ export const useFavoritesService = () => {
 
     const addFavorite = async (propertyId) => {
         try {
-            const { data, error } = await useCustomFetch(`/properties/favorites/${propertyId}`, {
+            const { data, error } = await useCustomFetch(`/listings/favorites/${propertyId}`, {
                 method: 'POST'
             });
 
@@ -19,7 +19,7 @@ export const useFavoritesService = () => {
 
     const removeFavorite = async (propertyId) => {
         try {
-            const { data, error } = await useCustomFetch(`/properties/favorites/${propertyId}`, {
+            const { data, error } = await useCustomFetch(`/listings/favorites/${propertyId}`, {
                 method: 'DELETE'
             });
 

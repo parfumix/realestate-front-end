@@ -4,7 +4,7 @@ export const useVerificationService = () => {
     
     const startVerification = async (phoneNumber, via = 'sms') => {
         try {
-            const { data, error } = await useCustomFetch('/phone/verify', {
+            const { data, error } = await useCustomFetch('/notifications/sms/verify', {
                 method: 'POST',
                 body: { phoneNumber, via },
             });
@@ -19,7 +19,7 @@ export const useVerificationService = () => {
 
     const validateCode = async (phoneNumber, code) => {
         try {
-            const { data, error } = await useCustomFetch('/phone/validate', {
+            const { data, error } = await useCustomFetch('/notifications/sms/validate', {
                 method: 'POST',
                 body: { phoneNumber, code },
             });
@@ -34,7 +34,7 @@ export const useVerificationService = () => {
 
     const addPhoneNumber = async (phoneNumber) => {
         try {
-            const { data, error } = await useCustomFetch('/phone/add', {
+            const { data, error } = await useCustomFetch('/notifications/sms/add', {
                 method: 'POST',
                 body: { phoneNumber },
             });
@@ -49,7 +49,7 @@ export const useVerificationService = () => {
 
     const deletePhoneNumber = async (phoneNumber) => {
         try {
-            const { data, error } = await useCustomFetch('/phone/delete', {
+            const { data, error } = await useCustomFetch('/notifications/sms/delete', {
                 method: 'DELETE',
                 body: { phoneNumber },
             });
@@ -64,7 +64,7 @@ export const useVerificationService = () => {
 
     const fetchPhoneNumbers = async () => {
         try {
-            const { data, error } = await useCustomFetch('/phone/fetch', {
+            const { data, error } = await useCustomFetch('/notifications/sms/fetch', {
                 method: 'GET',
             });
 

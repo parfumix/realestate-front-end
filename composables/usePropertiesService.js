@@ -4,7 +4,7 @@ export const usePropertyService = () => {
     
     const getAllProperties = async () => {
         try {
-            const { data, error } = await useCustomFetch('/properties', {
+            const { data, error } = await useCustomFetch('/listings', {
                 method: 'GET',
             });
 
@@ -18,7 +18,7 @@ export const usePropertyService = () => {
 
     const getPropertyById = async (id) => {
         try {
-            const { data, error } = await useCustomFetch(`/properties/${id}`, {
+            const { data, error } = await useCustomFetch(`/listings/${id}`, {
                 method: 'GET',
             });
 
@@ -31,7 +31,7 @@ export const usePropertyService = () => {
 
     const createProperty = async (property) => {
         try {
-            const { data, error } = await useCustomFetch('/properties', {
+            const { data, error } = await useCustomFetch('/listings', {
                 method: 'POST',
                 body: property,
             });
@@ -46,7 +46,7 @@ export const usePropertyService = () => {
 
     const updateProperty = async (uuid, property) => {
         try {
-            const { data, error } = await useCustomFetch(`/properties/${uuid}`, {
+            const { data, error } = await useCustomFetch(`/listings/${uuid}`, {
                 method: 'PUT',
                 body: property,
             });
@@ -61,7 +61,7 @@ export const usePropertyService = () => {
 
     const deletePropertyById = async (id) => {
         try {
-            const { data, error } = await useCustomFetch(`/properties/${id}`, {
+            const { data, error } = await useCustomFetch(`/listings/${id}`, {
                 method: 'DELETE',
             });
 

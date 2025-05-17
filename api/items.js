@@ -2,7 +2,7 @@ import { useCustomFetch } from '~/composables/useCustomFetch'
 
 const fetchItems = async (q = null, filters = null, mapFilters = null, offset = null, parsequery = null, activeSorting = null, viewMode = null) => {
    // Start with the base URL
-   let url = 'properties/query';
+   let url = 'listings/query';
 
    // Initialize an array to store query parameters
    const queryParams = [];

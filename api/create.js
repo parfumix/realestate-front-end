@@ -1,7 +1,7 @@
 import { useCustomFetch } from '~/composables/useCustomFetch'
 
 const generateDescription = async({text, tone}) => {
-  const { data, error } = await useCustomFetch(`ai/generate-description`, {
+  const { data, error } = await useCustomFetch(`ai-tools/generate-description`, {
     method: 'POST',
     body: JSON.stringify({ text, tone }),
     headers: {
