@@ -4,7 +4,8 @@ import {
   getUserSubscriptions,
   subscribeToQuery,
   unsubscribeFromQuery,
-  toggleSubscriptionPause
+  toggleSubscriptionPause,
+  unsubscribeByToken as unsubscribeByTokenApi,
 } from '~/api/subscriptions'
 
 export const useSubscriptionStore = defineStore('subscription', () => {
@@ -65,6 +66,17 @@ export const useSubscriptionStore = defineStore('subscription', () => {
     }
   }
 
+  const unsubscribeByToken = async (token) => {
+    try {
+      const { error: unsubscribeError } = await unsubscribeByTokenApi(token)
+      if (unsubscribeError.value) throw unsubscribeError
+    } catch (err) {
+      throw err
+    } finally {
+      //
+    }
+  }
+
   const togglePause = async (subscriptionId) => {
     isSaving.value = true
     try {
@@ -93,6 +105,7 @@ export const useSubscriptionStore = defineStore('subscription', () => {
     subscribe,
     unsubscribe,
     togglePause,
-    isSubscribedToQuery
+    isSubscribedToQuery,
+    unsubscribeByToken,
   }
 })

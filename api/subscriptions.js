@@ -31,3 +31,12 @@ export async function toggleSubscriptionPause(subscriptionId) {
   })
   return { data, error }
 }
+
+export const unsubscribeByToken = async (token) => {
+  const { data, error } = await useCustomFetch(`subscriptions/unsubscribe`, {
+    method: 'GET',
+    query: { token },
+  })
+
+  return { data, error }
+}
