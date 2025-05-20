@@ -41,6 +41,10 @@
                     <!-- Step 2: Frequency selector -->
                     <div v-click-outside="handleClickOutsideSubscribeSelector" v-else-if="!isSubscribedToQuery && showFrequencySelect" class="flex flex-col fixed right-0 bottom-[10px] items-start gap-1 bg-white border p-2 rounded shadow-md text-xs w-32">
                         <label class="flex items-center gap-1 cursor-pointer">
+                            <input type="radio" value="instant" v-model="selectedFrequency" />
+                            Instant
+                        </label>
+                        <label class="flex items-center gap-1 cursor-pointer">
                             <input type="radio" value="daily" v-model="selectedFrequency" />
                             Zilnic
                         </label>
