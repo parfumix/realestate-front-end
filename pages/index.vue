@@ -103,13 +103,13 @@ const handleMapFetchItems = async(mapFilters) => {
 }
 
 const handleFetchItems = async(trimmedMessage = null, appliedFilters = null, mapFilters = null, parsequery = null, activeSorting = null) => {
-console.log('fetcing items...')
+  console.log('fetcing items...')
 
-const filtersCopy = { ...appliedFilters }; 
-const mapFiltersCopy = { ...mapFilters }; 
+  const filtersCopy = { ...appliedFilters }; 
+  const mapFiltersCopy = { ...mapFilters }; 
 
-const { reply, items = null, map: { items: mapItems = [], bounds = [] } = {}, filters, prompts = [] } = 
-  await itemsStore.handleFetchItems(trimmedMessage, filtersCopy, mapFiltersCopy, null, parsequery, activeSorting) 
+  const { reply, items = null, map: { items: mapItems = [], bounds = [] } = {}, filters, prompts = [] } = 
+    await itemsStore.handleFetchItems(trimmedMessage, filtersCopy, mapFiltersCopy, null, parsequery, activeSorting) 
 
   itemsStore.handleResetItems()
   itemsStore.handlePushItems({ items, mapItems })
@@ -120,8 +120,8 @@ const { reply, items = null, map: { items: mapItems = [], bounds = [] } = {}, fi
 }
 
 const handleApplyFilters = async() => {
-// if user manually set filters, than we should omit user query and search through properties using just filters
-handleFetchItems(activeMessage.value, filterStore.activeFilters, { zoom: mapZoom.value, bbox: mapBbox.value }, parsequery.value, activeSorting.value)
+  // if user manually set filters, than we should omit user query and search through properties using just filters
+  handleFetchItems(activeMessage.value, filterStore.activeFilters, { zoom: mapZoom.value, bbox: mapBbox.value }, parsequery.value, activeSorting.value)
 }
 
 const handleSwitchView = async(newViewMode) => {

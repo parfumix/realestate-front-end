@@ -45,6 +45,7 @@ const loaderElClass = computed(() => {
 
 watch(() => [activeFilters.value, activeSorting.value], () => {
     itemsStore.resetPagination();
+    scrollToTop();
 }, { deep: true })
 
 // Function to handle scroll event
@@ -57,6 +58,17 @@ const handleScroll = async() => {
   // Check if the user has scrolled to the bottom of the div
   if (scrollHeight - scrollPosition <= clientHeight + 1) {
     await itemsStore.loadMoreItems();
+  }
+}
+
+// Function to scroll to the top of the list
+const scrollToTop = () => {
+  if (scrollable.value) {
+    isScrollingDown.value = false
+    scrollable.value.scrollTo({
+      top: 0,
+      behavior: 'smooth',
+    });
   }
 }
 
