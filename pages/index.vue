@@ -108,13 +108,13 @@ console.log('fetcing items...')
 const filtersCopy = { ...appliedFilters }; 
 const mapFiltersCopy = { ...mapFilters }; 
 
-const { reply, items = null, map: { items: mapItems = [], latlngs = [] } = {}, filters, prompts = [] } = 
+const { reply, items = null, map: { items: mapItems = [], bounds = [] } = {}, filters, prompts = [] } = 
   await itemsStore.handleFetchItems(trimmedMessage, filtersCopy, mapFiltersCopy, null, parsequery, activeSorting) 
 
   itemsStore.handleResetItems()
   itemsStore.handlePushItems({ items, mapItems })
 
-  itemsStore.handleSetLatLngs(JSON.parse(JSON.stringify(latlngs)))
+  itemsStore.handleSetMapBounds(bounds)
 
   return { reply, items, mapItems, filters, prompts }
 }

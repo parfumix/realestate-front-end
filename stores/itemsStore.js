@@ -24,7 +24,7 @@ export const useItemsStore = defineStore('itemsStore', () => {
     const mapItems = ref([]);
     const selectedItem = ref(null);
     const hoveredItem = ref(null);
-    const latlngs = ref([]);
+    const mapBounds = ref([]);
 
     const paginationOffset = ref(12); // Initial offset
     const isLoadingMore = ref(false);
@@ -89,8 +89,8 @@ export const useItemsStore = defineStore('itemsStore', () => {
         if(newMapItems.length) mapItems.value = [...mapItems.value, ...newMapItems];
     };
 
-    const handleSetLatLngs = (newVal) => {
-        latlngs.value = newVal
+    const handleSetMapBounds = (newVal) => {
+        mapBounds.value = newVal
     }
 
     const handleFetchItems = async (
@@ -205,7 +205,7 @@ export const useItemsStore = defineStore('itemsStore', () => {
         // Items
         items,
         mapItems,
-        latlngs,
+        mapBounds,
         selectedItem,
         hoveredItem,
         handleUpdateItem,
@@ -217,7 +217,7 @@ export const useItemsStore = defineStore('itemsStore', () => {
         handlePushItem,
         handlePushItems,
         findItemBySlug,
-        handleSetLatLngs,
+        handleSetMapBounds,
 
         // Loading states
         isQueryLoading,

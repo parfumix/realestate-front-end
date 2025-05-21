@@ -18,7 +18,7 @@ import { getRomanianBounds, useThrottle, debounce } from '../utils'
 
 const itemsStore = useItemsStore()
 
-const { mapItems, latlngs, triggeredRefreshMap, hoveredItem, defaultView } = storeToRefs(itemsStore)
+const { mapItems, mapBounds, triggeredRefreshMap, hoveredItem, defaultView } = storeToRefs(itemsStore)
 
 const { $currencyFormat } = useNuxtApp();
 
@@ -198,15 +198,16 @@ const refreshMap = () => {
   }
 }
 
-const setNewLocationBasedOnItems = (latlngs) => {
-  const newBounds = L.latLngBounds(); // Initialize bounds object
+const setNewLocationBasedOnItems = (updatedBounds) => {
+  const [minLng, minLat, maxLng, maxLat] = updatedBounds;
 
-  latlngs.forEach((lat, lng) => {
-    newBounds.extend(L.latLng(lat, lng));
-  })
+  const newBounds = L.latLngBounds(
+    [minLat, minLng], // Southwest corner
+    [maxLat, maxLng]  // Northeast corner
+  );
 
   // Fit the map to the bounds of all markers
-  if(latlngs.length && newBounds.isValid() && !isProgrammaticMapMovement) {
+  if(updatedBounds.length && newBounds.isValid() && !isProgrammaticMapMovement) {
     isProcessingRequest = true
 
     map.fitBounds(newBounds, { padding: [80, 80], animate: true, maxZoom: 14 });
@@ -413,7 +414,7 @@ watch(() => defaultView.value, (newView, oldView) => {
   }
 }, { immediate: true });
 
-watch(() => latlngs.value, (newVal) => {
+watch(() => mapBounds.value, (newVal) => {
   if(! map) return
   setTimeout(() => {
     setNewLocationBasedOnItems(newVal);
