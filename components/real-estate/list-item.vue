@@ -48,8 +48,6 @@
 </template>
 
 <script setup>
-import { useModalStore } from '@/stores/modals';
-
 const itemsStore = useItemsStore();
 const router = useRouter()
 const route = useRoute();

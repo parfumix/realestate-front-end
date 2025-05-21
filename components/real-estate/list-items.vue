@@ -17,7 +17,7 @@
 const itemsStore = useItemsStore()
 const filterStore = useFilterStore()
 
-const { activeFilters, activeSorting } = storeToRefs(filterStore)
+const { activeFilters, activeSorting, mapZoom, mapBbox } = storeToRefs(filterStore)
 const { isScrollingDown, noMoreValues, defaultView, items, isItemsLoaded } = storeToRefs(itemsStore)
 
 const scrollable = ref(null)
@@ -45,7 +45,16 @@ const loaderElClass = computed(() => {
 
 watch(() => [activeFilters.value, activeSorting.value], () => {
     itemsStore.resetPagination();
-    scrollToTop();
+    
+    setTimeout(() => {
+      scrollToTop();
+    }, 100);
+}, { deep: true })
+
+watch(() => [mapZoom.value, mapBbox.value], () => {
+    setTimeout(() => {
+      scrollToTop();
+    }, 100);
 }, { deep: true })
 
 // Function to handle scroll event
