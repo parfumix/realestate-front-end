@@ -60,7 +60,6 @@ import { useFilterStore } from '@/stores/filters';
 import { useModalStore } from '@/stores/modals';
 import { useSearchQueryStore } from '@/stores/searchQueryStore';
 
-
 const filterStore = useFilterStore()
 const itemsStore = useItemsStore()
 const modalStore = useModalStore();
