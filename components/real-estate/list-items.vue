@@ -51,13 +51,13 @@ watch(() => [activeFilters.value, activeSorting.value], () => {
     
     setTimeout(() => {
       scrollToTop();
-    }, 100);
+    }, 500);
 }, { deep: true })
 
 watch(() => [mapZoom.value, mapBbox.value], () => {
     setTimeout(() => {
       scrollToTop();
-    }, 100);
+    }, 500);
 }, { deep: true })
 
 // Function to handle scroll event
