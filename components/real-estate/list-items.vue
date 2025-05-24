@@ -14,6 +14,9 @@
 </template>
 
 <script setup>
+import { useItemsStore } from '@/stores/itemsStore';
+import { useFilterStore } from '@/stores/filters';
+
 const itemsStore = useItemsStore()
 const filterStore = useFilterStore()
 
