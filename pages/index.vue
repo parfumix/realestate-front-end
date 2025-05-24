@@ -199,7 +199,7 @@ openRealEstatePropertyModal()
 
 const initialFetchDone = ref(false);
 if(! initialFetchDone.value) {
-  await handleFetchItems(activeMessage.value, filterStore.activeFilters, { zoom: 6, bbox: getRomanianBounds(true) }, null, activeSorting.value)
+  await handleFetchItems(activeMessage.value, filterStore.activeFilters, null, null, activeSorting.value)
   initialFetchDone.value = true
 }
 </script>

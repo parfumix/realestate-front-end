@@ -200,68 +200,52 @@ export const useFilterStore = defineStore('filtersStore', () => {
 
   const handleToggleFilter = (type, value) => {
     // Reset active search query
-    activeMessage.value = null;
-    
+    activeMessage.value = null
+
     // Special handling for location filters
-    const isLocationFilter = type === 'location';
-    const beforeLocations = isLocationFilter ? [...(activeFilters?.[type] || [])] : [];
-    
+    const isLocationFilter = type === 'location'
+    const beforeLocations = isLocationFilter ? [...(activeFilters?.[type] || [])] : []
+
     // Ensure filter type exists in activeFilters
     if (!activeFilters[type]) {
-      activeFilters[type] = [];
+      activeFilters[type] = []
     }
-    
+
     try {
       // Find if value already exists
-      const valueIndex = activeFilters[type].findIndex(el => el === value);
-      
+      const valueIndex = activeFilters[type].findIndex((el) => el === value)
+
       if (valueIndex >= 0) {
         // Remove value (toggle off)
-        activeFilters[type].splice(valueIndex, 1);
-        
+        activeFilters[type].splice(valueIndex, 1)
+
         // Clean up empty arrays
         if (activeFilters[type].length === 0) {
-          delete activeFilters[type];
+          delete activeFilters[type]
         }
       } else {
         // Add value (toggle on)
         activeFilters[type] = [...activeFilters[type], value];
       }
-      
+
       // Get updated locations after changes
-      const afterLocations = activeFilters?.location || [];
-      
+      const afterLocations = activeFilters?.location || []
+
       // Reset map bounds logic
       if (isLocationFilter) {
         // If all location filters were removed, reset to Romania bounds
         if (beforeLocations.length && afterLocations.length === 0) {
-          setMapFilters(6, getRomanianBounds(true));
-        } 
-
-        // If location filters changed, update the map to show these locations
-        else if (JSON.stringify(beforeLocations) !== JSON.stringify(afterLocations) && afterLocations.length > 0) {
-          const { combinedBbox, newZoom } = calculateCombinedBboxAndZoom(afterLocations);
-          setMapFilters(newZoom, combinedBbox);
-        }
-      } else {
-        // For non-location filters:
-        if (afterLocations.length > 0) {
-          // If locations exist, recalculate bounds for those locations
-          const { combinedBbox, newZoom } = calculateCombinedBboxAndZoom(afterLocations);
-          setMapFilters(newZoom, combinedBbox);
-        } else {
-          // If no location filters, reset to Romania bounds
-          setMapFilters(6, getRomanianBounds(true));
+          setMapFilters(6, getRomanianBounds(true))
         }
       }
-      
+
       // Signal that filters have changed to trigger data refresh
-      hasFiltersChanged.value = true;
+      hasFiltersChanged.value = true
     } catch (error) {
-      console.error(`Error toggling filter ${type}:${value}`, error);
+      console.error(`Error toggling filter ${type}:${value}`, error)
       // Optionally show a user-friendly error message
     }
-  };
+  }
 
   const toggleOpen = () => {
     open.value = !open.value;
