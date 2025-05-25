@@ -2,7 +2,7 @@ import { defineStore } from 'pinia';
 import { getRomanianBounds, calculateCombinedBboxAndZoom } from '~/utils';
 
 export const useFilterStore = defineStore('filtersStore', () => {
-  const open = ref(false);
+  const open = ref(false)
 
   const sortOptions = ref([
     { id: 'price_low_to_high', name: 'Preț: Crescător' },

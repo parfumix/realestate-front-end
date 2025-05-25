@@ -20,7 +20,7 @@ import { useFilterStore } from '@/stores/filters';
 const itemsStore = useItemsStore()
 const filterStore = useFilterStore()
 
-const { activeFilters, activeSorting, mapZoom, mapBbox } = storeToRefs(filterStore)
+const { activeFilters, activeSorting, mapZoom, mapBbox, activeMessage, parsequery } = storeToRefs(filterStore)
 const { isScrollingDown, noMoreValues, defaultView, items, isItemsLoaded } = storeToRefs(itemsStore)
 
 const scrollable = ref(null)
@@ -69,7 +69,9 @@ const handleScroll = async() => {
 
   // Check if the user has scrolled to the bottom of the div
   if (scrollHeight - scrollPosition <= clientHeight + 1) {
-    await itemsStore.loadMoreItems();
+    await itemsStore.loadMoreItems({ 
+      activeMessage, activeFilters, activeSorting, mapZoom, mapBbox, parsequery
+     });
   }
 }
 
