@@ -28,6 +28,8 @@ export const useItemsStore = defineStore('itemsStore', () => {
   const hoveredItem = ref(null)
   const mapBounds = ref([])
 
+  const resetTrigger = ref(0)
+
   const paginationOffset = ref(12) // Initial offset
   const isLoadingMore = ref(false)
   const isScrollingDown = ref(false)
@@ -79,6 +81,8 @@ export const useItemsStore = defineStore('itemsStore', () => {
 
     if (type == TYPE_LIST_ITEMS) items.value = []
     if (type == TYPE_MAP_ITEMS) mapItems.value = []
+
+    resetTrigger.value++
   }
 
   const handlePushItem = (item, type = TYPE_LIST_ITEMS) => {
@@ -255,5 +259,6 @@ export const useItemsStore = defineStore('itemsStore', () => {
 
     setDefaultView,
     defaultView,
+    resetTrigger,
   }
 })
