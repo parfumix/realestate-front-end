@@ -215,9 +215,11 @@ const handleResetFilterGroup = filterGroupId => {
   parsequery.value = false
 
   hasFiltersChanged.value = true
+
   // if location is removed set by default default bbox
   if(filterGroupId == 'location') {
-    filterStore.setMapFilters(6, getRomanianBounds(true))
+    // we need to reset the map filters because we have to load all items from the whole country/on server side if bbox is not set we're using the whole country bbox
+    filterStore.resetMapFilters()
   }
 }
 

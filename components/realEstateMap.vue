@@ -30,7 +30,6 @@ let markersCluster = null;
 let lastView = null;
 
 let isProcessingRequest = false
-let isProgrammaticMapMovement = true
 
 const route = useRoute();
 const currentPageType = ref(route.name)
@@ -207,10 +206,10 @@ const setNewLocationBasedOnItems = (updatedBounds) => {
   );
 
   // Fit the map to the bounds of all markers
-  if(updatedBounds.length && newBounds.isValid() && !isProgrammaticMapMovement) {
+  if(updatedBounds.length && newBounds.isValid()) {
     isProcessingRequest = true
 
-    map.fitBounds(newBounds, { padding: [80, 80], animate: true, maxZoom: 14 });
+    map.fitBounds(newBounds, { animate: true, maxZoom: 14 });
 
     // Get the current bounds and convert to bbox format
     const bounds = newBounds.toBBoxString().split(',').map(coord => parseFloat(coord));
@@ -222,8 +221,6 @@ const setNewLocationBasedOnItems = (updatedBounds) => {
     setTimeout(() => {
       isProcessingRequest = false
     }, 500)
-  } else {
-    isProgrammaticMapMovement = false
   }
 }
 
@@ -231,7 +228,6 @@ const setNewLocationBasedOnItems = (updatedBounds) => {
 async function handleMapMoveEnd() {
   if (isProcessingRequest || mapEventsDisabled.value) return;
 
-  isProgrammaticMapMovement = true
   isProcessingRequest = true
 
   const bounds = map.getBounds();
@@ -417,7 +413,7 @@ watch(() => defaultView.value, (newView, oldView) => {
 }, { immediate: true });
 
 watch(() => mapBounds.value, (newVal) => {
-  if(! map) return
+  if(! map || !newVal) return
   setTimeout(() => {
     setNewLocationBasedOnItems(newVal);
   })
