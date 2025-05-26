@@ -242,7 +242,7 @@ async function handleMapMoveEnd() {
 
   try {
     // when move map manually store bbox && zoom inside localStorage
-    filterStore.setMapFilters(zoom, bbox)
+    filterStore.setMapFilters(zoom, bbox, true)
 
     emit('moveend', { zoom: mapZoom.value, bbox: mapBbox.value, manualMovement: true })
   } catch (error) {
