@@ -117,8 +117,9 @@ export const useFilterStore = defineStore('filtersStore', () => {
 
   const activeFilters = reactive(defaultFilters)
 
-  let mapZoom = ref(null)
-  let mapBbox = ref(null)
+  const mapZoom = ref(null)
+  const mapBbox = ref(null)
+  const manualMovement = ref(null)
 
   const hasFiltersChanged = ref(false)
   const resetHasFiltersChanged = () => {
@@ -133,10 +134,11 @@ export const useFilterStore = defineStore('filtersStore', () => {
     }
   }
 
-  const setMapFilters = (zoom = 6, bbox = null) => {
+  const setMapFilters = (zoom = 6, bbox = null, isManualMovement = null) => {
     try {
       mapZoom.value = zoom
       mapBbox.value = bbox
+      manualMovement.value = isManualMovement
     } catch (e) {
       console.error('Error saving map filters:', e)
     }
@@ -145,6 +147,7 @@ export const useFilterStore = defineStore('filtersStore', () => {
   const resetMapFilters = () => {
     mapZoom.value = null
     mapBbox.value = null
+    manualMovement.value = null
   }
 
   const setActiveMessage = (message) => {
@@ -234,6 +237,7 @@ export const useFilterStore = defineStore('filtersStore', () => {
 
     mapZoom,
     mapBbox,
+    manualMovement,
 
     handleSortOption,
 

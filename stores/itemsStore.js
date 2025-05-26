@@ -167,6 +167,7 @@ export const useItemsStore = defineStore('itemsStore', () => {
     activeSorting,
     mapZoom,
     mapBbox,
+    manualMovement = false,
     parsequery,
   }) => {
     if (isLoadingMore.value || noMoreValues.value) return false
@@ -178,7 +179,7 @@ export const useItemsStore = defineStore('itemsStore', () => {
       const { items } = await handleFetchItems(
         activeMessage,
         activeFilters,
-        { zoom: mapZoom, bbox: mapBbox },
+        { zoom: mapZoom, bbox: mapBbox, manualMovement },
         paginationOffset.value,
         parsequery,
         activeSorting,
