@@ -28,10 +28,10 @@ const fetchItems = async (q = null, filters = null, mapFilters = null, offset = 
   return { data, error };
 };
 
-const requestDetails = async(uuid, query) => {
-  const { data, error } = await useCustomFetch(`properties/details/${uuid}`, {
+const requestDetails = async(uuid, question) => {
+  const { data, error } = await useCustomFetch(`property-questions/ask/${uuid}`, {
     method: 'POST',
-    body: JSON.stringify({ q: query }),
+    body: JSON.stringify({ question }),
     headers: {
       'Content-Type': 'application/json',
     },
