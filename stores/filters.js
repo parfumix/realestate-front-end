@@ -210,8 +210,8 @@ export const useFilterStore = defineStore('filtersStore', () => {
           resetMapFilters()
         }
 
-        // If before no locations and new location is added, reset manual movement
-        if (! beforeLocations.length && afterLocations.length > 0) {
+        // If new locations added to filters, reset manual movement
+        if (afterLocations.length > beforeLocations.length) {
           manualMovement.value = null
         }
       }
