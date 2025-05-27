@@ -159,8 +159,6 @@ import { ChevronDownIcon, XCircleIcon } from '@heroicons/vue/20/solid';
 import { useFilterStore } from '@/stores/filters';
 import { storeToRefs } from 'pinia'
 
-import { getRomanianBounds } from '~/utils';
-
 const emit = defineEmits(['applyFilters'])
 
 // Use the Pinia filter store
