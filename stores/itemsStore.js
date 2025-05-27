@@ -26,7 +26,6 @@ export const useItemsStore = defineStore('itemsStore', () => {
   const mapItems = ref([])
   const selectedItem = ref(null)
   const hoveredItem = ref(null)
-  const mapBounds = ref([])
 
   const resetTrigger = ref(0)
 
@@ -93,10 +92,6 @@ export const useItemsStore = defineStore('itemsStore', () => {
   const handlePushItems = ({ items: newItems = [], mapItems: newMapItems = [] }) => {
     if (newItems.length) items.value = [...items.value, ...newItems]
     if (newMapItems.length) mapItems.value = [...mapItems.value, ...newMapItems]
-  }
-
-  const handleSetMapBounds = (newVal) => {
-    mapBounds.value = newVal
   }
 
   const handleFetchItems = async (
@@ -225,7 +220,6 @@ export const useItemsStore = defineStore('itemsStore', () => {
     // Items
     items,
     mapItems,
-    mapBounds,
     selectedItem,
     hoveredItem,
     handleUpdateItem,
@@ -237,7 +231,6 @@ export const useItemsStore = defineStore('itemsStore', () => {
     handlePushItem,
     handlePushItems,
     findItemBySlug,
-    handleSetMapBounds,
 
     // Loading states
     isQueryLoading,

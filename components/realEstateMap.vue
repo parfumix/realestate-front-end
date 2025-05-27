@@ -18,7 +18,7 @@ import { getRomanianBounds, useThrottle, debounce } from '../utils'
 
 const itemsStore = useItemsStore()
 
-const { mapItems, mapBounds, triggeredRefreshMap, hoveredItem, defaultView } = storeToRefs(itemsStore)
+const { mapItems, triggeredRefreshMap, hoveredItem, defaultView } = storeToRefs(itemsStore)
 
 const { $currencyFormat } = useNuxtApp();
 
@@ -205,23 +205,21 @@ const setNewLocationBasedOnItems = (updatedBounds) => {
     [maxLat, maxLng]  // Northeast corner
   );
 
-  // Fit the map to the bounds of all markers
-  if(updatedBounds.length && newBounds.isValid()) {
-    isProcessingRequest = true
-
-    map.fitBounds(newBounds, { animate: true, maxZoom: 14 });
-
-    // Get the current bounds and convert to bbox format
-    const bounds = newBounds.toBBoxString().split(',').map(coord => parseFloat(coord));
-    const zoom = map.getZoom();
-    
-    // Update zoom and bbox in the store
-    filterStore.setMapFilters(zoom, bounds);
-    
-    setTimeout(() => {
-      isProcessingRequest = false
-    }, 500)
+   // Skip if bounds are invalid or unchanged
+  if (
+    !updatedBounds.length || 
+    !newBounds.isValid() || 
+    newBounds.equals(map.getBounds())
+  ) {
+    return;
   }
+
+  isProcessingRequest = true
+  map.fitBounds(newBounds, { animate: true, maxZoom: 14 });
+
+  setTimeout(() => {
+    isProcessingRequest = false
+  }, 500)
 }
 
 // Function to fetch clusters based on map bounds and zoom level
@@ -243,8 +241,7 @@ async function handleMapMoveEnd() {
   try {
     // when move map manually store bbox && zoom inside localStorage
     filterStore.setMapFilters(zoom, bbox, true)
-
-    emit('moveend', { zoom: mapZoom.value, bbox: mapBbox.value, manualMovement: true })
+    emit('moveend')
   } catch (error) {
     console.error("Error during handleMapMoveEnd:", error);
   } finally {
@@ -412,7 +409,7 @@ watch(() => defaultView.value, (newView, oldView) => {
   }
 }, { immediate: true });
 
-watch(() => mapBounds.value, (newVal) => {
+watch(() => mapBbox.value, (newVal) => {
   if(! map || !newVal) return
   setTimeout(() => {
     setNewLocationBasedOnItems(newVal);

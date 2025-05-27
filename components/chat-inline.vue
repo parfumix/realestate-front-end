@@ -205,8 +205,6 @@ const handleClickOutside = () => {
 }
 
 const handleClearActiveMessage = () => {
-    //emit('resetActiveMessage')
-
     filterStore.resetActiveMessage()
 
     message.value = ''

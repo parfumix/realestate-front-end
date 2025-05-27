@@ -42,7 +42,6 @@
     <div class="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-full lg:w-3/6 px-4 lg:px-0 z-[1900]">
       <ChatInline
         @submit="handleSendMessage" 
-        @resetActiveMessage="handleResetActiveMessage" 
         class="w-full my-4 rounded-lg shadow-xs" 
       />
     </div>
@@ -96,9 +95,8 @@ watch(() => isModalVisible.value, newval => {
 /**
 * In case of map while user moing map around, I have to keep items list as it is and just fetch new items from map
 */
-const handleMapFetchItems = async(mapFilters) => {
-  console.log('map filters', mapFilters)
-  return handleFetchItems(activeMessage.value, filterStore.activeFilters, mapFilters, parsequery.value, activeSorting.value)
+const handleMapFetchItems = async() => {
+  return handleFetchItems(activeMessage.value, filterStore.activeFilters, { zoom: mapZoom.value, bbox: mapBbox.value, manualMovement: filterStore.manualMovement }, parsequery.value, activeSorting.value)
 }
 
 const handleFetchItems = async(trimmedMessage = null, appliedFilters = null, mapFilters = null, parsequery = null, activeSorting = null) => {
@@ -107,32 +105,29 @@ const handleFetchItems = async(trimmedMessage = null, appliedFilters = null, map
   const filtersCopy = { ...appliedFilters }; 
   const mapFiltersCopy = { ...mapFilters }; 
 
-  const { reply, items = null, map: { items: mapItems = [], bounds = [] } = {}, filters, prompts = [] } = 
+  const { reply, items = null, map: { items: mapItems = [], bounds = [], zoom = null } = {}, filters, prompts = [] } = 
     await itemsStore.handleFetchItems(trimmedMessage, filtersCopy, mapFiltersCopy, null, parsequery, activeSorting) 
 
   itemsStore.handleResetItems()
   itemsStore.handlePushItems({ items, mapItems })
 
-  itemsStore.handleSetMapBounds(bounds)
+  // set map zoom and bbox
+  if(bounds && bounds.length === 4) {
+    filterStore.setMapFilters(zoom, bounds)
+  }
 
   return { reply, items, mapItems, filters, prompts }
 }
 
+// if user manually set filters, than we should omit user query and search through properties using just filters
 const handleApplyFilters = async() => {
-  // if user manually set filters, than we should omit user query and search through properties using just filters
-  handleFetchItems(activeMessage.value, filterStore.activeFilters, { zoom: mapZoom.value, bbox: mapBbox.value }, parsequery.value, activeSorting.value)
+  handleFetchItems(
+    activeMessage.value, filterStore.activeFilters, { zoom: mapZoom.value, bbox: mapBbox.value, manualMovement: filterStore.manualMovement }, parsequery.value, activeSorting.value
+  )
 }
 
 const handleSwitchView = async(newViewMode) => {
   itemsStore.setDefaultView(newViewMode)
-}
-
-const handleResetActiveMessage = () => {
-  filterStore.resetActiveMessage()
-  filterStore.resetActiveFilters()
-  hasFiltersChanged.value = true
-
-  handleFetchItems(filterStore.activeMessage, filterStore.activeFilters, { zoom: mapZoom.value, bbox: mapBbox.value }, false)
 }
 
 const handleSendMessage = async (message) => {
@@ -147,8 +142,7 @@ const handleSendMessage = async (message) => {
     itemsStore.isQueryLoadingChat = true
 
     // we're usign all romanian bbox because search can contain new locations so we need to clusterize items by whole country
-    const mapFilters = { zoom: 6, bbox: getRomanianBounds(true) }
-    const { reply, items, filters, prompts = [] } = await handleFetchItems(trimmedMessage, null, mapFilters, true)
+    const { reply, items, filters, prompts = [] } = await handleFetchItems(trimmedMessage, null, null, true)
     if(! items) throw new Error('No results found for' + trimmedMessage)
     
     // apply filters automatically
