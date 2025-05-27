@@ -53,7 +53,7 @@ export const useSearchQueryStore = defineStore('searchQuery', () => {
       const { data } = await querySuggestions(normalized)
       const { data: suggestions } = data?.value || {}
 
-      const mapped = suggestions.map(el => ({ ...el, type: 'suggestion' }))
+      const mapped = suggestions.map((el) => ({ ...el, type: 'suggestion' }))
 
       if (mapped.length) {
         results.value = mapped
@@ -150,7 +150,7 @@ export const useSearchQueryStore = defineStore('searchQuery', () => {
     const normalized = normalizeQuery(queryString)
 
     // Prevent duplicates
-    if (!recentQueries.value.some(q => normalizeQuery(q.normalized_query) === normalized)) {
+    if (!recentQueries.value.some((q) => normalizeQuery(q.normalized_query) === normalized)) {
       recentQueries.value.unshift({
         query: queryString,
         normalized_query: normalized,

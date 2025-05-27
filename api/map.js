@@ -7,11 +7,9 @@ const fetchNearestPlaces = async (lat, lon, amenity, distance_in_meters = 5000) 
     headers: {
       'Content-Type': 'application/json',
     },
-  });
+  })
 
-  return { data, error };
-};
-
-export {
-    fetchNearestPlaces
+  return { data, error }
 }
+
+export { fetchNearestPlaces }

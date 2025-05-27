@@ -11,8 +11,8 @@ export async function subscribeToQuery(query, notificationFrequency = 'daily', f
     body: {
       query,
       notificationFrequency,
-      filters
-    }
+      filters,
+    },
   })
   return { data, error }
 }
@@ -20,14 +20,14 @@ export async function subscribeToQuery(query, notificationFrequency = 'daily', f
 export async function unsubscribeFromQuery(query) {
   const { data, error } = await useCustomFetch('/subscriptions/unsubscribe', {
     method: 'DELETE',
-    body: { query }
+    body: { query },
   })
   return { data, error }
 }
 
 export async function toggleSubscriptionPause(subscriptionId) {
   const { data, error } = await useCustomFetch(`/subscriptions/${subscriptionId}/toggle-pause`, {
-    method: 'PATCH'
+    method: 'PATCH',
   })
   return { data, error }
 }

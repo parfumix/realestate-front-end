@@ -1,7 +1,7 @@
 // stores/auth.js
 import { defineStore } from 'pinia'
 import { useCustomFetch } from '~/composables/useCustomFetch'
-import { jwtDecode } from "jwt-decode";
+import { jwtDecode } from 'jwt-decode'
 
 export const useAuthStore = defineStore('authStore', () => {
   const user = ref(null)
@@ -10,15 +10,17 @@ export const useAuthStore = defineStore('authStore', () => {
   const isAuthenticated = computed(() => !!user.value && !user.value.is_anonymous)
   const isAnonymous = computed(() => !!user.value?.is_anonymous)
 
-  const emailPending = computed(() => typeof user.value?.email_verified === 'boolean');
-  const emailVerified = computed(() => typeof user.value?.email_verified === 'boolean' && user.value?.email_verified === true)
+  const emailPending = computed(() => typeof user.value?.email_verified === 'boolean')
+  const emailVerified = computed(
+    () => typeof user.value?.email_verified === 'boolean' && user.value?.email_verified === true,
+  )
   const isAccountDeleted = computed(() => user.value?.deleted_at !== null)
 
   // Initialize user from token
   const initializeFromToken = async (tokenValue) => {
     try {
       const decoded = jwtDecode(tokenValue)
-      
+
       setUser(decoded)
       setToken(tokenValue)
     } catch (err) {
@@ -37,7 +39,7 @@ export const useAuthStore = defineStore('authStore', () => {
       if (error.value) throw new Error('Invalid or expired token')
       return data.value
     } catch (err) {
-      throw err;
+      throw err
     }
   }
 
@@ -55,7 +57,7 @@ export const useAuthStore = defineStore('authStore', () => {
       return data.value
     } catch (err) {
       console.error('Anonymous user creation failed', err)
-      throw err;
+      throw err
     }
   }
 
@@ -65,13 +67,13 @@ export const useAuthStore = defineStore('authStore', () => {
       const { data, error } = await useCustomFetch('/auth/login', {
         method: 'POST',
         body: { email, password },
-        credentials: 'include'
+        credentials: 'include',
       })
 
       if (error.value) throw new Error('Failed to create anonymous user')
       return data.value
     } catch (err) {
-      throw err;
+      throw err
     }
   }
 
@@ -84,13 +86,13 @@ export const useAuthStore = defineStore('authStore', () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        credentials: 'include'
+        credentials: 'include',
       })
 
       if (error.value) throw new Error('Failed to create anonymous user')
       return data.value
     } catch (err) {
-      throw err;
+      throw err
     }
   }
 
@@ -99,7 +101,7 @@ export const useAuthStore = defineStore('authStore', () => {
     try {
       const { data, error } = await useCustomFetch('/auth/logout', {
         method: 'GET',
-        credentials: 'include'
+        credentials: 'include',
       })
 
       if (error.value) throw new Error('Failed to create anonymous user')
@@ -107,7 +109,7 @@ export const useAuthStore = defineStore('authStore', () => {
       return data.value
     } catch (err) {
       console.error('Logout failed', err)
-      throw err;
+      throw err
     }
   }
 
@@ -152,6 +154,6 @@ export const useAuthStore = defineStore('authStore', () => {
     login,
     register,
     logout,
-    notifyTabs
+    notifyTabs,
   }
 })
