@@ -76,7 +76,7 @@ const isModalVisible = computed(() => modalStore.isModalVisible);
 const openRealEstatePropertyModal = () => {
 modalStore.openModal(RealEstatePropertyModal);
 }
-const { activeMessage, mapZoom, mapBbox, hasFiltersChanged, parsequery, activeSorting } = storeToRefs(filterStore)
+const { activeMessage, mapZoom, mapBbox, parsequery, activeSorting } = storeToRefs(filterStore)
 
 const isListView = computed(() =>
   defaultView.value === itemsStore.TYPE_LIST_ITEMS
