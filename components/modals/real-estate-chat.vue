@@ -2,9 +2,7 @@
   <div class="h-full w-full bg-white flex flex-col">
     <div class="bg-blue-500 text-white px-4 rounded-tl-lg flex items-center">
       <MessageCircleQuestion />
-      <h1 class="text-lg py-2 bg-blue-500 text-white font-semibold leading-6 pl-2">
-        Pune orice întrebare
-      </h1>
+      <h1 class="text-lg py-2 font-semibold leading-6 pl-2">Pune orice întrebare</h1>
     </div>
 
     <div>
@@ -18,7 +16,7 @@
             :key="tab.title"
             class="cursor-pointer py-4 px-1 flex items-center"
             @click="selectTab(tab.slug)"
-            :class="{ 'border-b border-gray-500 text-blue-500': activeTab === index }"
+            :class="{ 'border-b border-gray-500 text-blue-500': activeTab === tab.slug }"
           >
             <span
               v-html="tab.icon"
@@ -44,7 +42,7 @@
       <div class="mx-auto flex flex-wrap justify-center my-2">
         <span
           v-for="(prompt, index) in prompts"
-          @click="() => handleSelectPrompt(prompt)"
+          @click="handleSelectPrompt(prompt)"
           :key="index"
           class="cursor-pointer text-center inline-flex items-center mt-2 rounded-md bg-gray-100 px-4 py-2 text-xs font-medium text-gray-600 mr-2"
         >
@@ -72,9 +70,9 @@
     <div class="w-full rounded-b-lg flex justify-between relative">
       <input
         v-model="message"
-        @keyup.enter="() => handleSendMessage(message)"
+        @keyup.enter="handleSendMessage(message)"
         type="text"
-        placeholder="Scrie ce cauți..."
+        :placeholder="loading ? 'Se trimite întrebarea...' : 'Scrie ce cauți...'"
         class="py-2 px-4 focus:ring-0 border-0 w-full focus:outline-none"
       />
     </div>
@@ -121,27 +119,32 @@ const tabs = ref([
 const activeTab = ref('buyer')
 
 const triggerShuffle = ref(0)
-const prompts = computed(() => {
-  triggerShuffle.value
-  return shuffleArray(propertyQuestionStore.getPromptsByTab(activeTab.value)).slice(0, 5)
-})
+const prompts = ref([])
+watch(
+  triggerShuffle,
+  () => {
+    prompts.value = shuffleArray(propertyQuestionStore.getPromptsByTab(activeTab.value)).slice(0, 5)
+  },
+  { immediate: true },
+)
 
 const defaultThreadMessages = computed(() => {
   return propertyQuestionStore.getMessagesByPropertyId(props.item.id)
 })
 
-const handleSendMessage = async (message) => {
-  try {
-    let trimmedMessage = message.trim()
-    if (!trimmedMessage) return
+const handleSendMessage = async (msg) => {
+  const trimmedMessage = msg.trim()
+  if (!trimmedMessage) return
 
-    const { meta: { intent, amenities, nearby_places } = {} } =
-      await propertyQuestionStore.sendQuestion(props.item.id, trimmedMessage)
+  const { meta: { intent, amenities, nearby_places } = {} } =
+    await propertyQuestionStore.sendQuestion({
+        propertyId: props.item.id,
+        question: trimmedMessage,
+    })
 
-    emit('select', amenities ? 'map' : 'general', amenities)
-  } catch (err) {
-    throw err
-  }
+  message.value = null
+  
+  emit('select', amenities ? 'map' : 'general', amenities)
 }
 
 const handleSelectPrompt = (prompt) => {
