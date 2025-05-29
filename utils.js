@@ -127,6 +127,14 @@ export const chunkArray = (array, size) => {
   return chunks;
 }
 
+export const shuffleArray = (arr) => {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1))
+    ;[arr[i], arr[j]] = [arr[j], arr[i]]
+  }
+  return arr
+}
+
 export const distributeArray = (array, groups) => {
   if (groups <= 0) {
     throw new Error("Number of groups must be greater than 0");

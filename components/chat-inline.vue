@@ -137,7 +137,6 @@ import { formatDistanceToNow } from 'date-fns'
 import { ro } from 'date-fns/locale';
 
 import { useItemsStore } from '@/stores/itemsStore';
-import { useChatStore } from '@/stores/chat';
 import { useSubscriptionStore } from '@/stores/subscriptionStore'
 
 import { throttle } from 'lodash';
@@ -148,8 +147,6 @@ import Fuse from 'fuse.js'
 
 const itemsStore = useItemsStore()
 const { isQueryLoadingChat } = storeToRefs(itemsStore)
-
-const chatStore = useChatStore()
 
 const { notify } = useNotification();
 
@@ -473,13 +470,14 @@ const handleDeletRecentQuries = async () => {
 
 await searchQueryStore.fetchCombinedQueries()
 
+let isChatInlineHasBeenMounted = false
 if (process.client) {
     setTimeout(() => {
-        if (!chatStore.isChatInlineHasBeenMounted) {
+        if (!isChatInlineHasBeenMounted) {
             inputField.value.focus()
 
             localStorage.setItem('inputHasBeenMounted', 'true');
-            chatStore.isChatInlineHasBeenMounted = true
+            isChatInlineHasBeenMounted = true
         }
     })
 }

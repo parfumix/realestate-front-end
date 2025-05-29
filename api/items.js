@@ -36,15 +36,4 @@ const fetchItems = async (
   return { data, error }
 }
 
-const requestDetails = async (uuid, question) => {
-  const { data, error } = await useCustomFetch(`property-questions/ask/${uuid}`, {
-    method: 'POST',
-    body: JSON.stringify({ question }),
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  })
-  return { data, error }
-}
-
-export { fetchItems, requestDetails }
+export { fetchItems }

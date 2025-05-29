@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 
-import { fetchItems, requestDetails } from '../api/items'
+import { fetchItems } from '../api/items'
 import { removeEmptyValues } from '../utils'
 
 export const useItemsStore = defineStore('itemsStore', () => {
@@ -19,7 +19,6 @@ export const useItemsStore = defineStore('itemsStore', () => {
   const isItemsLoaded = ref(false)
   const isQueryLoading = ref(false)
   const isQueryLoadingChat = ref(false)
-  const isQueryLoadingProperty = ref(false)
 
   // Items management
   const items = ref([])
@@ -137,20 +136,6 @@ export const useItemsStore = defineStore('itemsStore', () => {
     }
   }
 
-  const handleRequestDetails = async (uuid, q) => {
-    try {
-      isQueryLoadingProperty.value = true
-      const { data, error } = await requestDetails(uuid, q)
-      if (error.value) throw new Error(error.value)
-      return data.value?.data
-    } catch (err) {
-      console.error('Error in handleRequestDetails:', err)
-      throw err
-    } finally {
-      isQueryLoadingProperty.value = false
-    }
-  }
-
   const resetPagination = () => {
     paginationOffset.value = ITEMS_PER_PAGE
     noMoreValues.value = false
@@ -236,11 +221,9 @@ export const useItemsStore = defineStore('itemsStore', () => {
     isQueryLoading,
     isQueryLoadingChat,
     isItemsLoaded,
-    isQueryLoadingProperty,
 
     // API interactions
     handleFetchItems,
-    handleRequestDetails,
 
     // loading more pagination state
     paginationOffset,
