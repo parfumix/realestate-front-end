@@ -44,20 +44,23 @@
       </span>
     </div>
 
-    <!-- Messages list -->
-    <div class="flex-1 overflow-y-auto px-4 space-y-4 pb-28">
-      <div v-for="(message, index) in defaultThreadMessages" :key="index" class="flex">
+   <!-- Messages list -->
+    <div class="flex-1 overflow-y-auto px-4 pb-28">
+    <TransitionGroup name="fade-slide" tag="div" class="space-y-4">
+        <div v-for="(message, index) in defaultThreadMessages" :key="message.id || index" class="flex">
         <div class="ml-auto relative">
-          <p class="bg-blue-500 text-white py-2 px-4 rounded-lg shadow">
+            <p class="bg-blue-500 text-white py-2 px-4 rounded-lg shadow">
             <span>{{ message.text }}</span>
-          </p>
+            </p>
         </div>
-      </div>
+        </div>
+    </TransitionGroup>
 
-      <span @click="() => triggerShuffle++" class="cursor-pointer flex items-center justify-center pt-4">
+    <span @click="() => triggerShuffle++" class="cursor-pointer flex items-center justify-center pt-4">
         <RefreshCcw class="size-4 text-gray-500" />
-      </span>
+    </span>
     </div>
+
 
     <!-- Sticky input area -->
     <div class="w-full px-4 py-3 bg-white border-t sticky bottom-0 z-10">
@@ -101,7 +104,7 @@ const props = defineProps({
 
 const emit = defineEmits(['select'])
 
-const message = ref(null)
+const message = ref('')
 
 const transactionType = computed(() => props.item.transaction_type)
 const isForSale = computed(() => transactionType.value === 'for-sale')
@@ -147,7 +150,7 @@ const handleSendMessage = async (msg) => {
         question: trimmedMessage,
     })
 
-  message.value = null
+  message.value = ''
 
   emit('select', amenities ? 'map' : 'general', amenities)
 }
@@ -160,3 +163,27 @@ const selectTab = (slug) => {
   activeTab.value = slug
 }
 </script>
+
+<style scoped>
+.fade-slide-enter-active,
+.fade-slide-leave-active {
+  transition: all 0.4s ease;
+}
+.fade-slide-enter-from {
+  opacity: 0;
+  transform: translateY(10px);
+}
+.fade-slide-enter-to {
+  opacity: 1;
+  transform: translateY(0);
+}
+.fade-slide-leave-from {
+  opacity: 1;
+  transform: translateY(0);
+}
+.fade-slide-leave-to {
+  opacity: 0;
+  transform: translateY(10px);
+}
+</style>
+
