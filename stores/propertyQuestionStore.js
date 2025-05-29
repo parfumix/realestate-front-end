@@ -39,13 +39,19 @@ export const usePropertyQuestionStore = defineStore('propertyQuestion', () => {
     try {
       const { data, error } = await askQuestionApi(propertyId, question)
       if (error.value) throw new Error(error.value)
+
+      // Add the new question and answer to the messages
+      const { id, question: receivedQuestion, answer } = data.value?.data
+      messages.value[propertyId] ||= []
+      messages.value[propertyId].push({ id, question: receivedQuestion, answer })
+
       return data.value?.data
     } finally {
       loading.value = false
     }
   }
 
-  const fetchMessages = async ({ propertyId }) => {
+  const fetchMessages = async (propertyId) => {
     if (fetched.value[propertyId]) return messages.value[propertyId]
 
     loading.value = true
@@ -54,26 +60,19 @@ export const usePropertyQuestionStore = defineStore('propertyQuestion', () => {
       if (error.value) throw new Error(error.value)
 
       const result = data.value?.data || []
-      messages.value[propertyId] = result
+
+      // Ensure messages is initialized for the propertyId
+      messages.value[propertyId] = result.map((item) => ({
+        id: item.id,
+        question: item.question,
+        answer: item.answer,
+      }))
+
       fetched.value[propertyId] = true
 
       return result
     } finally {
       loading.value = false
-    }
-  }
-
-  const addMessage = (propertyId, message) => {
-    messages.value[propertyId] ||= []
-    messages.value[propertyId].push(message)
-  }
-
-  // clearMessages (more readable)
-  const clearMessages = (propertyId = null) => {
-    if (propertyId) {
-      messages.value[propertyId] = []
-    } else {
-      messages.value = []
     }
   }
 
@@ -87,6 +86,7 @@ export const usePropertyQuestionStore = defineStore('propertyQuestion', () => {
   }
 
   return {
+    // State
     loading,
     prompts,
 
@@ -95,8 +95,6 @@ export const usePropertyQuestionStore = defineStore('propertyQuestion', () => {
 
     // Messages
     messages,
-    addMessage,
-    clearMessages,
     getMessagesByPropertyId,
 
     // API

@@ -47,10 +47,10 @@
     <!-- Messages list -->
     <div class="flex-1 overflow-y-auto px-4 pb-28">
     <TransitionGroup name="fade-slide" tag="div" class="space-y-4">
-        <div v-for="(message, index) in defaultThreadMessages" :key="message.id || index" class="flex">
+        <div v-for="({ answer, id }, index) in defaultThreadMessages" :key="id || index" class="flex">
         <div class="ml-auto relative">
             <p class="bg-blue-500 text-white py-2 px-4 rounded-lg shadow">
-            <span>{{ message.text }}</span>
+            <span>{{ answer }}</span>
             </p>
         </div>
         </div>
@@ -137,6 +137,10 @@ watch(
 
 const defaultThreadMessages = computed(() => {
   return propertyQuestionStore.getMessagesByPropertyId(props.item.id)
+})
+
+onMounted(() => {
+  propertyQuestionStore.fetchMessages(props.item.id)
 })
 
 const handleSendMessage = async (msg) => {
