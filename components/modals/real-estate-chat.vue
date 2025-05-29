@@ -75,11 +75,11 @@ const activeTab = ref('buyer');
 const triggerShuffle = ref(0);
 const prompts = computed(() => {
     triggerShuffle.value
-    return shuffleArray(propertyQuestionStore.handleGetPromptsByTab(activeTab.value)).slice(0, 5);
+    return shuffleArray(propertyQuestionStore.getPromptsByTab(activeTab.value)).slice(0, 5);
 });
 
 const defaultThreadMessages = computed(() => {
-  return propertyQuestionStore.handleGetMessagesByPropertyId(props.item.id)
+  return propertyQuestionStore.getMessagesByPropertyId(props.item.id)
 })
 
 const handleSendMessage = async(message) => {
@@ -87,7 +87,7 @@ const handleSendMessage = async(message) => {
         let trimmedMessage = message.trim()
         if(! trimmedMessage) return
 
-        const { answer = null, meta: { intent, amenities, nearby_places } = {} } = await propertyQuestionStore.sendQuestion(props.item.id, trimmedMessage)
+        const { meta: { intent, amenities, nearby_places } = {} } = await propertyQuestionStore.sendQuestion(props.item.id, trimmedMessage)
         
         emit('select', amenities ? 'map' : 'general', amenities)
   } catch(err) {
