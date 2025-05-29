@@ -44,7 +44,7 @@
       </span>
     </div>
 
-   <!-- Messages list -->
+    <!-- Messages list -->
     <div class="flex-1 overflow-y-auto px-4 pb-28">
     <TransitionGroup name="fade-slide" tag="div" class="space-y-4">
         <div v-for="(message, index) in defaultThreadMessages" :key="message.id || index" class="flex">
@@ -60,7 +60,6 @@
         <RefreshCcw class="size-4 text-gray-500" />
     </span>
     </div>
-
 
     <!-- Sticky input area -->
     <div class="w-full px-4 py-3 bg-white border-t sticky bottom-0 z-10">
