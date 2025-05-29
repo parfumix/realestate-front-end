@@ -1,8 +1,8 @@
 <template>
-  <div class="w-2/6 pb-4 sm:pb-4 bg-white">
+  <div class="w-2/6 bg-white">
     <ModalsRealEstateChat :item="item" @select="handleSelectTab" />
   </div>
-  <div class="w-4/6 bg-transparent pb-4 sm:pb-4">
+  <div class="w-4/6 bg-transparent">
     <div class="mt-3 text-center sm:mt-0 sm:text-left">
       <ModalsRealEstateTabs :tabs="tabs" :activeTab="activeTab" @select="(tab) => activeTab = tab.slug" />
 
