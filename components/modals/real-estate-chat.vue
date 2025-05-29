@@ -1,11 +1,14 @@
 <template>
   <div class="h-full w-full bg-white flex flex-col">
+    <!-- Header -->
     <div class="bg-blue-500 text-white px-4 rounded-tl-lg flex items-center">
       <MessageCircleQuestion />
       <h1 class="text-lg py-2 font-semibold leading-6 pl-2">Pune orice întrebare</h1>
     </div>
 
-    <div>
+    <!-- Content + messages + prompts (scrollable area) -->
+    <div class="flex-1 flex flex-col overflow-y-auto">
+      <!-- Tabs -->
       <div
         v-if="!defaultThreadMessages.length"
         :class="[tabs.length > 1 ? 'border-b border-gray-200' : '', 'mx-auto flex justify-center']"
@@ -39,6 +42,7 @@
         </nav>
       </div>
 
+      <!-- Prompts -->
       <div class="mx-auto flex flex-wrap justify-center my-2">
         <span
           v-for="(prompt, index) in prompts"
@@ -50,6 +54,7 @@
         </span>
       </div>
 
+      <!-- Messages list -->
       <div class="flex-1 p-4 overflow-y-auto">
         <div class="space-y-4">
           <div v-for="(message, index) in defaultThreadMessages" :key="index" class="flex">
@@ -62,18 +67,20 @@
         </div>
       </div>
 
-      <span @click="() => triggerShuffle++" class="cursor-pointer flex items-center justify-center">
+      <!-- Shuffle button -->
+      <span @click="() => triggerShuffle++" class="cursor-pointer flex items-center justify-center py-2">
         <RefreshCcw class="size-4 text-gray-500" />
       </span>
     </div>
 
-    <div class="w-full rounded-b-lg flex justify-between relative">
+    <!-- Input fixed at the bottom -->
+    <div class="w-full border-t px-4 py-2">
       <input
         v-model="message"
         @keyup.enter="handleSendMessage(message)"
         type="text"
         :placeholder="loading ? 'Se trimite întrebarea...' : 'Scrie ce cauți...'"
-        class="py-2 px-4 focus:ring-0 border-0 w-full focus:outline-none"
+        class="w-full py-2 px-4 rounded-md border border-gray-300 focus:outline-none focus:ring-0"
       />
     </div>
   </div>
@@ -143,7 +150,7 @@ const handleSendMessage = async (msg) => {
     })
 
   message.value = null
-  
+
   emit('select', amenities ? 'map' : 'general', amenities)
 }
 
