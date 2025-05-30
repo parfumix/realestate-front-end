@@ -33,7 +33,7 @@
     </div>
 
     <!-- Prompt bubbles -->
-    <div class="mx-auto flex flex-wrap justify-center my-2">
+    <div v-if="! defaultThreadMessages.length" class="mx-auto flex flex-wrap justify-center my-2">
       <span
         v-for="(prompt, index) in prompts"
         @click="handleSelectPrompt(prompt)"
@@ -45,21 +45,45 @@
     </div>
 
     <!-- Messages list -->
-    <div class="flex-1 overflow-y-auto px-4 pb-28">
-    <TransitionGroup name="fade-slide" tag="div" class="space-y-4">
-        <div v-for="({ answer, id }, index) in defaultThreadMessages" :key="id || index" class="flex">
-        <div class="ml-auto relative">
-            <p class="bg-blue-500 text-white py-2 px-4 rounded-lg shadow">
-            <span>{{ answer }}</span>
-            </p>
-        </div>
-        </div>
-    </TransitionGroup>
+    <div class="flex-1 overflow-y-auto px-4 pt-4 pb-28">
+      <TransitionGroup name="fade-slide" tag="div" class="space-y-4">
+        <div
+          v-for="({ isLoading, question, answer, id }, index) in defaultThreadMessages"
+          :key="id || index"
+          class="flex flex-col gap-2"
+        >
+          <!-- Question (right-aligned) -->
+          <div class="flex justify-end">
+            <span
+              class="max-w-[75%] bg-blue-500 text-white px-4 py-2 rounded-lg shadow text-sm"
+            >
+              {{ question }}
+            </span>
+          </div>
 
-    <span @click="() => triggerShuffle++" class="cursor-pointer flex items-center justify-center pt-4">
+          <!-- Answer (left-aligned) -->
+          <div class="flex justify-start">
+            <span
+              v-if="!isLoading"
+              class="max-w-[75%] bg-blue-500 text-white px-4 py-2 rounded-lg shadow text-sm"
+            >
+              {{ answer }}
+            </span>
+            <Ellipsis v-else class="text-blue-500 size-4 animate-spin" />
+          </div>
+        </div>
+      </TransitionGroup>
+
+      <!-- No messages trigger -->
+      <span
+        v-if="!defaultThreadMessages.length"
+        @click="() => triggerShuffle++"
+        class="cursor-pointer flex items-center justify-center pt-4"
+      >
         <RefreshCcw class="size-4 text-gray-500" />
-    </span>
+      </span>
     </div>
+
 
     <!-- Sticky input area -->
     <div class="w-full px-4 py-3 bg-white border-t sticky bottom-0 z-10">
@@ -89,7 +113,7 @@
 <script setup>
 import { usePropertyQuestionStore } from '~/stores/propertyQuestionStore'
 import { shuffleArray } from '../../utils'
-import { RefreshCcw, MessageCircleQuestion } from 'lucide-vue-next'
+import { RefreshCcw, MessageCircleQuestion, Ellipsis } from 'lucide-vue-next'
 
 const propertyQuestionStore = usePropertyQuestionStore()
 const { loading } = storeToRefs(propertyQuestionStore)
@@ -140,22 +164,49 @@ const defaultThreadMessages = computed(() => {
 })
 
 onMounted(() => {
-  propertyQuestionStore.fetchMessages(props.item.id)
+  //propertyQuestionStore.fetchMessages(props.item.id)
 })
 
 const handleSendMessage = async (msg) => {
   const trimmedMessage = msg.trim()
   if (!trimmedMessage) return
 
-  const { meta: { intent, amenities, nearby_places } = {} } =
-    await propertyQuestionStore.sendQuestion({
-        propertyId: props.item.id,
-        question: trimmedMessage,
+  try {
+    // Clear the input field
+    message.value = ''
+
+    // Add the message to the store with loading state
+    propertyQuestionStore.addMessage(props.item.id, {
+      isLoading: true,
+      question: trimmedMessage,
     })
 
-  message.value = ''
 
-  emit('select', amenities ? 'map' : 'general', amenities)
+    // Send the question to the store
+    const { answer, meta: { intent, amenities, nearby_places } = {} } =
+      await propertyQuestionStore.sendQuestion({
+          propertyId: props.item.id,
+          question: trimmedMessage,
+      })
+
+    const messageIndex = defaultThreadMessages.value.length - 1
+    propertyQuestionStore.messages[props.item.id].splice(messageIndex, 1, {
+      id: props.item.id,
+      isLoading: false,
+      question: trimmedMessage,
+      answer: answer || 'Nu am găsit un răspuns la întrebarea ta.',
+    })
+
+    emit('select', amenities.length > 0 ? 'map' : 'general', amenities)
+  } catch (error) {
+    console.error('Error sending message:', error)
+
+    if (propertyQuestionStore.messages[props.item.id]?.length) {
+      propertyQuestionStore.messages[props.item.id].pop()
+    }
+
+    message.value = trimmedMessage
+  }
 }
 
 const handleSelectPrompt = (prompt) => {
@@ -189,4 +240,3 @@ const selectTab = (slug) => {
   transform: translateY(10px);
 }
 </style>
-
