@@ -1,12 +1,20 @@
 <template>
   <div>
     <div ref="container" class="keen-slider">
-      <div :class="`keen-slider__slide number-slide${index}`" :key="index" v-for="(item, index) in props.items">
+      <div
+        :class="`keen-slider__slide number-slide${index}`"
+        :key="index"
+        v-for="(item, index) in props.items"
+      >
         <img :src="item" />
       </div>
     </div>
     <div ref="thumbnail" class="keen-slider thumbnail">
-      <div :class="`keen-slider__slide number-slide${index}`" :key="index" v-for="(item, index) in props.items">
+      <div
+        :class="`keen-slider__slide number-slide${index}`"
+        :key="index"
+        v-for="(item, index) in props.items"
+      >
         <img :src="item" />
       </div>
     </div>
@@ -14,32 +22,32 @@
 </template>
 
 <script setup>
-import { useKeenSlider } from "keen-slider/vue.es"
-import "keen-slider/keen-slider.min.css"
+import { useKeenSlider } from 'keen-slider/vue.es'
+import 'keen-slider/keen-slider.min.css'
 
 function ThumbnailPlugin(main) {
   return (slider) => {
     function removeActive() {
       slider.slides.forEach((slide) => {
-        slide.classList.remove("active")
+        slide.classList.remove('active')
       })
     }
     function addActive(idx) {
-      slider.slides[idx].classList.add("active")
+      slider.slides[idx].classList.add('active')
     }
 
     function addClickEvents() {
       slider.slides.forEach((slide, idx) => {
-        slide.addEventListener("click", () => {
+        slide.addEventListener('click', () => {
           main.value.moveToIdx(idx)
         })
       })
     }
 
-    slider.on("created", () => {
+    slider.on('created', () => {
       addActive(slider.track.details.rel)
       addClickEvents()
-      main.value.on("animationStarted", () => {
+      main.value.on('animationStarted', () => {
         removeActive()
         const next = main.value.animator.targetIdx || 0
         addActive(main.value.track.absToRel(next))
@@ -60,20 +68,20 @@ const [thumbnail] = useKeenSlider(
       spacing: 10,
     },
   },
-  [ThumbnailPlugin(slider)]
+  [ThumbnailPlugin(slider)],
 )
 </script>
 
 <style>
 body {
   margin: 0;
-  font-family: "Inter", sans-serif;
+  font-family: 'Inter', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-[class^="number-slide"],
-[class*=" number-slide"] {
+[class^='number-slide'],
+[class*=' number-slide'] {
   background: grey;
   display: flex;
   align-items: center;

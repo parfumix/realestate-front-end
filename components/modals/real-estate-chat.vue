@@ -33,7 +33,7 @@
     </div>
 
     <!-- Prompt bubbles -->
-    <div v-if="! defaultThreadMessages.length" class="mx-auto flex flex-wrap justify-center my-2">
+    <div v-if="!defaultThreadMessages.length" class="mx-auto flex flex-wrap justify-center my-2">
       <span
         v-for="(prompt, index) in prompts"
         @click="handleSelectPrompt(prompt)"
@@ -45,7 +45,10 @@
     </div>
 
     <!-- Messages list -->
-    <div class="flex-1 overflow-y-auto px-4 pt-6 pb-32 bg-gray-50 rounded-t-2xl" ref="messagesContainer">
+    <div
+      class="flex-1 overflow-y-auto px-4 pt-6 pb-32 bg-gray-50 rounded-t-2xl"
+      ref="messagesContainer"
+    >
       <TransitionGroup name="fade-slide" tag="div" class="space-y-4">
         <div
           v-for="({ isLoading, question, answer, id, timestamp }, index) in defaultThreadMessages"
@@ -54,7 +57,9 @@
         >
           <!-- User Question -->
           <div class="flex justify-end mb-2">
-            <div class="bg-blue-600 text-white px-4 py-2 rounded-xl shadow max-w-[75%] text-sm animate-fade-in">
+            <div
+              class="bg-blue-600 text-white px-4 py-2 rounded-xl shadow max-w-[75%] text-sm animate-fade-in"
+            >
               {{ question }}
             </div>
           </div>
@@ -89,31 +94,32 @@
       </div>
     </div>
 
-   <!-- Sticky input area -->
-  <div class="w-full px-4 py-3 bg-white/80 backdrop-blur-sm border-t sticky bottom-0 z-20 shadow-md rounded-t-2xl">
-    <div class="flex items-center gap-2">
-      <!-- Input field -->
-      <input
-        v-model="message"
-        :placeholder="loading ? 'Se trimite întrebarea…' : 'Scrie ce întrebări ai'"
-        maxlength="50"
-        @keyup.enter="handleSendMessage(message)"
-        class="w-full py-2.5 px-4 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-300 text-sm shadow-sm bg-white transition-all"
-        type="text"
-      />
+    <!-- Sticky input area -->
+    <div
+      class="w-full px-4 py-3 bg-white/80 backdrop-blur-sm border-t sticky bottom-0 z-20 shadow-md rounded-t-2xl"
+    >
+      <div class="flex items-center gap-2">
+        <!-- Input field -->
+        <input
+          v-model="message"
+          :placeholder="loading ? 'Se trimite întrebarea…' : 'Scrie ce întrebări ai'"
+          maxlength="50"
+          @keyup.enter="handleSendMessage(message)"
+          class="w-full py-2.5 px-4 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-300 text-sm shadow-sm bg-white transition-all"
+          type="text"
+        />
 
-      <!-- Send button -->
-      <button
-        @click="handleSendMessage(message)"
-        :disabled="!message.trim() || loading"
-        class="bg-blue-600 hover:bg-blue-700 disabled:opacity-40 text-white px-4 py-2.5 rounded-xl text-sm font-medium shadow transition-all flex items-center gap-1"
-      >
-        <SendIcon class="w-4 h-4" />
-        <span>Trimite</span>
-      </button>
+        <!-- Send button -->
+        <button
+          @click="handleSendMessage(message)"
+          :disabled="!message.trim() || loading"
+          class="bg-blue-600 hover:bg-blue-700 disabled:opacity-40 text-white px-4 py-2.5 rounded-xl text-sm font-medium shadow transition-all flex items-center gap-1"
+        >
+          <SendIcon class="w-4 h-4" />
+          <span>Trimite</span>
+        </button>
+      </div>
     </div>
-  </div>
-
   </div>
 </template>
 
@@ -123,7 +129,7 @@ import { shuffleArray, scrollToBottom } from '../../utils'
 import { RefreshCcw, MessageCircleQuestion, SendIcon } from 'lucide-vue-next'
 
 const propertyQuestionStore = usePropertyQuestionStore()
-const { loading, messages} = storeToRefs(propertyQuestionStore)
+const { loading, messages } = storeToRefs(propertyQuestionStore)
 
 const props = defineProps({
   item: {
@@ -193,8 +199,8 @@ const handleSendMessage = async (msg) => {
     // Send the question to the store
     const { answer, meta: { intent, amenities, nearby_places } = {} } =
       await propertyQuestionStore.sendQuestion({
-          propertyId: props.item.id,
-          question: trimmedMessage,
+        propertyId: props.item.id,
+        question: trimmedMessage,
       })
 
     const messageIndex = messages.value[props.item.id]?.length - 1
@@ -208,8 +214,8 @@ const handleSendMessage = async (msg) => {
     scrollToBottom(messagesContainer)
 
     // Emit the intent if it matches a specific case
-    if(intent == 'request_nearest_amenties_property') {
-      emit('map', { amenities, nearby_places } )
+    if (intent == 'request_nearest_amenties_property') {
+      emit('map', { amenities, nearby_places })
     }
   } catch (error) {
     console.error('Error sending message:', error)
@@ -272,7 +278,9 @@ const selectTab = (slug) => {
 }
 
 @keyframes bounce {
-  0%, 80%, 100% {
+  0%,
+  80%,
+  100% {
     transform: scale(0);
     opacity: 0.3;
   }
@@ -297,5 +305,4 @@ const selectTab = (slug) => {
     transform: translateY(0);
   }
 }
-
 </style>
