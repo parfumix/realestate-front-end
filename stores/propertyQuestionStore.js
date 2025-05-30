@@ -9,7 +9,6 @@ export const usePropertyQuestionStore = defineStore('propertyQuestion', () => {
   const loading = ref(false)
   const messages = ref([])
 
-  // Unified prompts by thread name
   const prompts = ref({
     default: [
       '🏙️ Apartamente cu 2 dormitoare aproape de centru',
@@ -24,6 +23,22 @@ export const usePropertyQuestionStore = defineStore('propertyQuestion', () => {
       '🛍️ Care sunt cele mai apropiate centre comerciale?',
       '🌳 Care sunt cele mai apropiate parcuri?',
       '🚘 Este inclus un loc de parcare?',
+      '🔌 Care sunt costurile medii de întreținere?',
+      '🪟 Care este orientarea apartamentului?',
+      '🏢 Care este anul construcției imobilului?',
+      '🧱 Este izolat termic?',
+      '🚪 Câte camere are în total?',
+      '🏙️ Este situat la un etaj superior?',
+      '📦 Există spațiu de depozitare sau boxă?',
+      '🛠️ Necesită renovări?',
+      '👮 Zona este sigură?',
+      '🌐 Are conexiune la internet de mare viteză?',
+      '🛌 Dormitoarele sunt mobilate?',
+      '🍽️ Bucătăria este utilată complet?',
+      '🏘️ Care sunt vecinii / comunitatea din zonă?',
+      '🌡️ Cum se face încălzirea (centrală, termoficare, etc)?',
+      '🐾 Este permis cu animale de companie?',
+      '📍 Exact unde este localizată proprietatea?',
     ],
     // investor: [
     //   '📈 Care este randamentul chiriei?',

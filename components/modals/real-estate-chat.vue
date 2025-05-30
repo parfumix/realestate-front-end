@@ -89,38 +89,41 @@
       </div>
     </div>
 
-    <!-- Sticky input area -->
-    <div class="w-full px-4 py-3 bg-white border-t sticky bottom-0 z-10">
-      <div class="flex items-center gap-2">
-        <!-- Input field -->
-        <input
-          v-model="message"
-          @keyup.enter="handleSendMessage(message)"
-          :placeholder="loading ? 'Se trimite întrebarea...' : 'Scrie ce cauți...'"
-          class="w-full py-2 px-4 rounded-md border border-gray-300 focus:outline-none focus:ring-0"
-          type="text"
-        />
+   <!-- Sticky input area -->
+  <div class="w-full px-4 py-3 bg-white/80 backdrop-blur-sm border-t sticky bottom-0 z-20 shadow-md rounded-t-2xl">
+    <div class="flex items-center gap-2">
+      <!-- Input field -->
+      <input
+        v-model="message"
+        :placeholder="loading ? 'Se trimite întrebarea…' : 'Scrie ce întrebări ai'"
+        maxlength="50"
+        @keyup.enter="handleSendMessage(message)"
+        class="w-full py-2.5 px-4 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-300 text-sm shadow-sm bg-white transition-all"
+        type="text"
+      />
 
-        <!-- Send button -->
-        <button
-          @click="handleSendMessage(message)"
-          :disabled="!message.trim() || loading"
-          class="bg-blue-500 hover:bg-blue-600 disabled:opacity-40 text-white font-medium px-4 py-2 rounded-md transition"
-        >
-          Trimite
-        </button>
-      </div>
+      <!-- Send button -->
+      <button
+        @click="handleSendMessage(message)"
+        :disabled="!message.trim() || loading"
+        class="bg-blue-600 hover:bg-blue-700 disabled:opacity-40 text-white px-4 py-2.5 rounded-xl text-sm font-medium shadow transition-all flex items-center gap-1"
+      >
+        <SendIcon class="w-4 h-4" />
+        <span>Trimite</span>
+      </button>
     </div>
+  </div>
+
   </div>
 </template>
 
 <script setup>
 import { usePropertyQuestionStore } from '~/stores/propertyQuestionStore'
 import { shuffleArray, scrollToBottom } from '../../utils'
-import { RefreshCcw, MessageCircleQuestion } from 'lucide-vue-next'
+import { RefreshCcw, MessageCircleQuestion, SendIcon } from 'lucide-vue-next'
 
 const propertyQuestionStore = usePropertyQuestionStore()
-const { loading } = storeToRefs(propertyQuestionStore)
+const { loading, messages} = storeToRefs(propertyQuestionStore)
 
 const props = defineProps({
   item: {
@@ -194,13 +197,13 @@ const handleSendMessage = async (msg) => {
           question: trimmedMessage,
       })
 
-    const messageIndex = defaultThreadMessages.value.length - 1
-    propertyQuestionStore.messages[props.item.id].splice(messageIndex, 1, {
+    const messageIndex = messages.value[props.item.id]?.length - 1
+    messages.value[props.item.id][messageIndex] = {
       id: props.item.id,
       isLoading: false,
       question: trimmedMessage,
       answer: answer || 'Nu am găsit un răspuns la întrebarea ta.',
-    })
+    }
 
     scrollToBottom(messagesContainer)
 
@@ -208,8 +211,8 @@ const handleSendMessage = async (msg) => {
   } catch (error) {
     console.error('Error sending message:', error)
 
-    if (propertyQuestionStore.messages[props.item.id]?.length) {
-      propertyQuestionStore.messages[props.item.id].pop()
+    if (messages.value[props.item.id]?.length) {
+      messages.value[props.item.id] = messages.value[props.item.id].pop()
     }
 
     message.value = trimmedMessage
