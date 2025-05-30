@@ -87,8 +87,8 @@ const props = defineProps({
     type: Object,
     default: () => ({}),
   },
-  activeTab: {
-    type: String,
+  triggerMap: {
+    type: Number,
   },
   amenity: {
     type: String,
@@ -173,8 +173,6 @@ const selectedAmenityType = ref(null)
 
 const isLoading = ref(false)
 
-import { fetchNearestPlaces } from '../../api/map.js'
-
 const initializeMap = async () => {
   const romaniaBounds = getRomanianBounds()
 
@@ -228,11 +226,6 @@ const loadAmenities = async () => {
       updateAmenitiesMarkers(amenityCache.value[cacheKey])
       return
     }
-
-    // Fetch data if not cached
-    const {
-      data: { value: places },
-    } = await fetchNearestPlaces(lat, lng, selectedAmenityType.value, 5000)
 
     // Cache the data
     amenityCache.value[cacheKey] = places
@@ -353,7 +346,7 @@ watch(
 )
 
 watch(
-  () => props.activeTab,
+  () => props.triggerMap,
   (newTab) => {
     if (newTab == 'map' && !map) {
       nextTick(async () => {

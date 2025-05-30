@@ -22,6 +22,7 @@
         <ModalsRealEstateMap
           v-if="item.meta?.lng && item.meta?.lat"
           :item="item"
+          :trigger="triggerMap"
           :amenity="activeAmenity"
           :nearbyPlaces="nearbyPlaces"
         />
@@ -37,11 +38,13 @@ const { selectedItem: item } = storeToRefs(itemsStore)
 
 const activeAmenity = ref(null)
 const nearbyPlaces = ref([])
+const triggerMap = ref(0)
 
 // Set the active amenity to the first one if available
 const handleMap = ({ amenities, nearby_places }) => {
   activeAmenity.value = amenities.length ? amenities[0] : null
   nearbyPlaces.value = nearby_places || []
+  triggerMap.value += 1 // Trigger re-render
 }
 
 const propertyTitle = computed(() => {
