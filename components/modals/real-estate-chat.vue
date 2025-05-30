@@ -1,5 +1,5 @@
 <template>
-  <div class="h-full w-full bg-white flex flex-col relative">
+  <div class="h-full w-full flex flex-col relative">
     <!-- Header -->
     <div class="bg-blue-500 text-white px-4 rounded-tl-lg flex items-center">
       <MessageCircleQuestion />
@@ -38,15 +38,24 @@
         v-for="(prompt, index) in prompts"
         @click="handleSelectPrompt(prompt)"
         :key="index"
-        class="cursor-pointer text-center inline-flex items-center mt-2 rounded-md bg-gray-100 px-4 py-2 text-xs font-medium text-gray-600 mr-2"
+        class="cursor-pointer hover:bg-gray-200 text-center inline-flex items-center mt-2 rounded-md bg-gray-100 px-4 py-2 text-xs font-medium text-gray-600 mr-2"
       >
         {{ prompt }}
       </span>
     </div>
 
+    <!-- No messages trigger -->
+    <div
+        v-if="!defaultThreadMessages.length"
+        @click="() => triggerShuffle++"
+        class="cursor-pointer flex items-center justify-center pt-6"
+      >
+        <RefreshCcw class="size-4 text-gray-400 hover:text-gray-600 transition" />
+    </div>
+
     <!-- Messages list -->
     <div
-      class="flex-1 overflow-y-auto px-4 pt-6 pb-32 bg-gray-50 rounded-t-2xl"
+      class="flex-1 overflow-y-auto px-4 pt-6 pb-32 rounded-t-2xl"
       ref="messagesContainer"
     >
       <TransitionGroup name="fade-slide" tag="div" class="space-y-4">
@@ -83,15 +92,6 @@
           </div>
         </div>
       </TransitionGroup>
-
-      <!-- No messages trigger -->
-      <div
-        v-if="!defaultThreadMessages.length"
-        @click="() => triggerShuffle++"
-        class="cursor-pointer flex items-center justify-center pt-6"
-      >
-        <RefreshCcw class="size-4 text-gray-400 hover:text-gray-600 transition" />
-      </div>
     </div>
 
     <!-- Sticky input area -->
@@ -103,6 +103,7 @@
         <input
           v-model="message"
           :placeholder="loading ? 'Se trimite întrebarea…' : 'Scrie ce întrebări ai'"
+          minxlength="5"
           maxlength="50"
           @keyup.enter="handleSendMessage(message)"
           class="w-full py-2.5 px-4 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-300 text-sm shadow-sm bg-white transition-all"
@@ -112,7 +113,7 @@
         <!-- Send button -->
         <button
           @click="handleSendMessage(message)"
-          :disabled="!message.trim() || loading"
+          :disabled="(!message.trim() || message.length < 7) || loading"
           class="bg-blue-600 hover:bg-blue-700 disabled:opacity-40 text-white px-4 py-2.5 rounded-xl text-sm font-medium shadow transition-all flex items-center gap-1"
         >
           <SendIcon class="w-4 h-4" />

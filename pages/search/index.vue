@@ -174,23 +174,23 @@ onUnmounted(() => {
 
 // emulate triggering handleCloseModal
 watch(() => selectedItem.value, newVal => {
-if(! newVal?.id) {
-  router.replace('/search')
-}
+  if(! newVal?.id) {
+    router.replace('/search')
+  }
 })
 
 watch(() => route.params.slug, async(newSlug) => {
-if(! newSlug) {
-  setHead('Main page')
-  return
-}
+  if(! newSlug) {
+    setHead('Main page')
+    return
+  }
 
-const foundItem = await itemsStore.findItemBySlug(newSlug)
-if(! foundItem) return
+  const foundItem = await itemsStore.findItemBySlug(newSlug)
+  if(! foundItem) return
 
-setHead(foundItem.title)
-itemsStore.handleSelectItem(foundItem)
-openRealEstatePropertyModal()
+  setHead(foundItem.title)
+  itemsStore.handleSelectItem(foundItem)
+  openRealEstatePropertyModal()
 }, { immediate: true })
 
 const initialFetchDone = ref(false);

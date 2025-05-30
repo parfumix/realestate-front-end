@@ -2,7 +2,7 @@
   <div class="w-2/6 bg-white">
     <ModalsRealEstateChat :item="item" @map="handleMap" />
   </div>
-  <div class="w-4/6 bg-transparent">
+  <div class="w-3/6 bg-transparent">
     <div class="mt-3 text-center sm:mt-0 sm:text-left">
       <div class="h-full" key="general">
         <h3
@@ -28,6 +28,9 @@
         />
       </ClientOnly>
     </div>
+  </div>
+  <div class="w-1/6 bg-white">
+    <ModalsRealEstateRightSidebar :item="item" />
   </div>
 </template>
 
