@@ -60,6 +60,10 @@ const props = defineProps({
   amenity: {
     type: String,
   },
+  nearbyPlaces: {
+    type: Array,
+    default: () => []
+  }
 });
 
 const templateRef = ref(null);

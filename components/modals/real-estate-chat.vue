@@ -207,7 +207,7 @@ const handleSendMessage = async (msg) => {
 
     scrollToBottom(messagesContainer)
 
-    emit('select', amenities.length > 0 ? 'map' : 'general', amenities)
+    emit('select', intent == 'request_nearest_amenties_property' ? 'map' : 'general', { amenities, nearby_places })
   } catch (error) {
     console.error('Error sending message:', error)
 

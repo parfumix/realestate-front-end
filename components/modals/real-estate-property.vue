@@ -22,7 +22,7 @@
       <transition name="fade">
         <div v-show="activeTab == 'map'" key="map">
           <ClientOnly>
-            <ModalsRealEstateMap v-if="item.meta?.lng && item.meta?.lat" :activeTab="activeTab" :item="item" :amenity="activeAmenity" />  
+            <ModalsRealEstateMap v-if="item.meta?.lng && item.meta?.lat" :activeTab="activeTab" :item="item" :amenity="activeAmenity" :nearbyPlaces="nearbyPlaces" />  
           </ClientOnly>
         </div>
       </transition>
@@ -41,11 +41,16 @@ const tabs = ref([
 ])
 
 const activeTab = ref('general')
-const activeAmenity = ref(null)
 
-const handleSelectTab = (tab, amenities = null) => {
+const activeAmenity = ref(null)
+const nearbyPlaces = ref([])
+
+const handleSelectTab = (tab, { amenities, nearby_places }) => {
       activeTab.value = tab
+
+      // Set the active amenity to the first one if available
       activeAmenity.value = amenities.length ? amenities[0] : null
+      nearbyPlaces.value = nearby_places || []
   }
 
 const propertyTitle = computed(() => {
