@@ -132,7 +132,7 @@ const props = defineProps({
   },
 })
 
-const emit = defineEmits(['select'])
+const emit = defineEmits(['map'])
 
 const message = ref('')
 
@@ -207,7 +207,10 @@ const handleSendMessage = async (msg) => {
 
     scrollToBottom(messagesContainer)
 
-    emit('select', intent == 'request_nearest_amenties_property' ? 'map' : 'general', { amenities, nearby_places })
+    // Emit the intent if it matches a specific case
+    if(intent == 'request_nearest_amenties_property') {
+      emit('map', { amenities, nearby_places } )
+    }
   } catch (error) {
     console.error('Error sending message:', error)
 
