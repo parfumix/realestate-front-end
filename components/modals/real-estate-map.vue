@@ -104,6 +104,7 @@ const templateRef = ref(null)
 const templateSlideNext = () => {
   return templateRef.value.slideNext()
 }
+
 const templateSlidePrev = () => {
   return templateRef.value.slidePrev()
 }
