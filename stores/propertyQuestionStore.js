@@ -12,24 +12,24 @@ export const usePropertyQuestionStore = defineStore('propertyQuestion', () => {
   // Unified prompts by thread name
   const prompts = ref({
     default: [
-      'Apartamente cu 2 dormitoare aproape de centru',
-      'Case cu grădină în București',
-      'Apartamente moderne în București cu parcare',
-      'Proprietăți comerciale de vânzare în București',
-      'Proprietăți de închiriat disponibile în București',
+      '🏙️ Apartamente cu 2 dormitoare aproape de centru',
+      '🏡 Case cu grădină în București',
+      '🚗 Apartamente moderne în București cu parcare',
+      '🏢 Proprietăți comerciale de vânzare în București',
+      '📅 Proprietăți de închiriat disponibile în București',
     ],
     buyer: [
-      'Cât de aproape este de transportul public?',
-      'Există școli sau spitale în apropiere?',
-      'Care sunt cele mai apropiate centre comerciale?',
-      'Care sunt cele mai apropiate parcuri?',
-      'Este inclus un loc de parcare?',
+      '🚇 Cât de aproape este de transportul public?',
+      '🏫 Există școli sau spitale în apropiere?',
+      '🛍️ Care sunt cele mai apropiate centre comerciale?',
+      '🌳 Care sunt cele mai apropiate parcuri?',
+      '🚘 Este inclus un loc de parcare?',
     ],
     // investor: [
-    //   'Care este randamentul chiriei?',
-    //   'Care a fost rata istorică de apreciere din această zonă?',
-    //   'Care este venitul mediu lunar din chirie?',
-    //   'Cât de stabilă este piața de închiriere din această zonă?',
+    //   '📈 Care este randamentul chiriei?',
+    //   '📊 Care a fost rata istorică de apreciere din această zonă?',
+    //   '💶 Care este venitul mediu lunar din chirie?',
+    //   '📉 Cât de stabilă este piața de închiriere din această zonă?',
     // ],
   })
 

@@ -395,3 +395,12 @@ export const normalizeQuery = (query) => {
 };
 
 export const capitalizeFirst = str => str.charAt(0).toUpperCase() + str.slice(1);
+
+export const scrollToBottom = (refContainer) => {
+  if (refContainer.value) {
+      refContainer.value.scrollTo({
+          top: refContainer.value.scrollHeight,
+          behavior: "smooth",
+      });
+  }
+}

@@ -45,45 +45,49 @@
     </div>
 
     <!-- Messages list -->
-    <div class="flex-1 overflow-y-auto px-4 pt-4 pb-28">
+    <div class="flex-1 overflow-y-auto px-4 pt-6 pb-32 bg-gray-50 rounded-t-2xl" ref="messagesContainer">
       <TransitionGroup name="fade-slide" tag="div" class="space-y-4">
         <div
-          v-for="({ isLoading, question, answer, id }, index) in defaultThreadMessages"
+          v-for="({ isLoading, question, answer, id, timestamp }, index) in defaultThreadMessages"
           :key="id || index"
-          class="flex flex-col gap-2"
+          class="flex flex-col gap-1"
         >
-          <!-- Question (right-aligned) -->
-          <div class="flex justify-end">
-            <span
-              class="max-w-[75%] bg-blue-500 text-white px-4 py-2 rounded-lg shadow text-sm"
-            >
+          <!-- User Question -->
+          <div class="flex justify-end mb-2">
+            <div class="bg-blue-600 text-white px-4 py-2 rounded-xl shadow max-w-[75%] text-sm animate-fade-in">
               {{ question }}
-            </span>
+            </div>
           </div>
 
-          <!-- Answer (left-aligned) -->
+          <!-- Assistant Answer -->
           <div class="flex justify-start">
-            <span
+            <div
               v-if="!isLoading"
-              class="max-w-[75%] bg-blue-500 text-white px-4 py-2 rounded-lg shadow text-sm"
+              class="bg-white text-gray-800 px-4 py-2 rounded-xl shadow max-w-[75%] text-sm animate-fade-in"
             >
               {{ answer }}
-            </span>
-            <Ellipsis v-else class="text-blue-500 size-4 animate-spin" />
+            </div>
+            <div
+              v-else
+              class="bg-white text-gray-400 px-4 py-2 rounded-xl shadow max-w-[75%] text-sm animate-pulse flex items-center gap-1"
+            >
+              <span class="dot dot1" />
+              <span class="dot dot2" />
+              <span class="dot dot3" />
+            </div>
           </div>
         </div>
       </TransitionGroup>
 
       <!-- No messages trigger -->
-      <span
+      <div
         v-if="!defaultThreadMessages.length"
         @click="() => triggerShuffle++"
-        class="cursor-pointer flex items-center justify-center pt-4"
+        class="cursor-pointer flex items-center justify-center pt-6"
       >
-        <RefreshCcw class="size-4 text-gray-500" />
-      </span>
+        <RefreshCcw class="size-4 text-gray-400 hover:text-gray-600 transition" />
+      </div>
     </div>
-
 
     <!-- Sticky input area -->
     <div class="w-full px-4 py-3 bg-white border-t sticky bottom-0 z-10">
@@ -112,8 +116,8 @@
 
 <script setup>
 import { usePropertyQuestionStore } from '~/stores/propertyQuestionStore'
-import { shuffleArray } from '../../utils'
-import { RefreshCcw, MessageCircleQuestion, Ellipsis } from 'lucide-vue-next'
+import { shuffleArray, scrollToBottom } from '../../utils'
+import { RefreshCcw, MessageCircleQuestion } from 'lucide-vue-next'
 
 const propertyQuestionStore = usePropertyQuestionStore()
 const { loading } = storeToRefs(propertyQuestionStore)
@@ -131,6 +135,8 @@ const message = ref('')
 
 const transactionType = computed(() => props.item.transaction_type)
 const isForSale = computed(() => transactionType.value === 'for-sale')
+
+const messagesContainer = ref(null)
 
 const tabs = ref([
   {
@@ -181,7 +187,6 @@ const handleSendMessage = async (msg) => {
       question: trimmedMessage,
     })
 
-
     // Send the question to the store
     const { answer, meta: { intent, amenities, nearby_places } = {} } =
       await propertyQuestionStore.sendQuestion({
@@ -196,6 +201,8 @@ const handleSendMessage = async (msg) => {
       question: trimmedMessage,
       answer: answer || 'Nu am găsit un răspuns la întrebarea ta.',
     })
+
+    scrollToBottom(messagesContainer)
 
     emit('select', amenities.length > 0 ? 'map' : 'general', amenities)
   } catch (error) {
@@ -239,4 +246,50 @@ const selectTab = (slug) => {
   opacity: 0;
   transform: translateY(10px);
 }
+
+.dot {
+  height: 6px;
+  width: 6px;
+  background-color: #94a3b8;
+  border-radius: 9999px;
+  display: inline-block;
+  animation: bounce 1.4s infinite;
+}
+.dot1 {
+  animation-delay: 0s;
+}
+.dot2 {
+  animation-delay: 0.2s;
+}
+.dot3 {
+  animation-delay: 0.4s;
+}
+
+@keyframes bounce {
+  0%, 80%, 100% {
+    transform: scale(0);
+    opacity: 0.3;
+  }
+  40% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Fade-in for messages */
+.animate-fade-in {
+  animation: fadeIn 0.4s ease-in;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 </style>
