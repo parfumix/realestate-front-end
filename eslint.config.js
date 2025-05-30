@@ -7,10 +7,14 @@ import { defineConfig } from 'eslint/config'
 
 export default defineConfig([
   {
-    files: ['**/*.{js,ts,vue}'],
+    files: ['**/*.vue'],
     languageOptions: {
-      ecmaVersion: 'latest',
-      sourceType: 'module',
+      parser: require.resolve('vue-eslint-parser'), // 👈 parse Vue SFCs
+      parserOptions: {
+        parser: require.resolve('@babel/eslint-parser'), // 👈 parse script block inside SFC
+        ecmaVersion: 'latest',
+        sourceType: 'module',
+      },
       globals: {
         ...globals.browser,
         ...globals.node,
@@ -24,7 +28,25 @@ export default defineConfig([
       ...js.configs.recommended.rules,
       ...vue.configs['flat/recommended'].rules,
       'vue/multi-word-component-names': 'off',
-      'prettier/prettier': 'warn', // Run Prettier through ESLint
+      'prettier/prettier': 'warn',
+    },
+  },
+  {
+    files: ['**/*.{js,ts}'], // JS/TS files only
+    languageOptions: {
+      ecmaVersion: 'latest',
+      sourceType: 'module',
+      globals: {
+        ...globals.browser,
+        ...globals.node,
+      },
+    },
+    plugins: {
+      prettier: prettierPlugin,
+    },
+    rules: {
+      ...js.configs.recommended.rules,
+      'prettier/prettier': 'warn',
     },
   },
 ])
