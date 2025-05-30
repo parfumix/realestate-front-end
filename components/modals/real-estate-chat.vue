@@ -46,18 +46,15 @@
 
     <!-- No messages trigger -->
     <div
-        v-if="!defaultThreadMessages.length"
-        @click="() => triggerShuffle++"
-        class="cursor-pointer flex items-center justify-center pt-6"
-      >
-        <RefreshCcw class="size-4 text-gray-400 hover:text-gray-600 transition" />
+      v-if="!defaultThreadMessages.length"
+      @click="() => triggerShuffle++"
+      class="cursor-pointer flex items-center justify-center pt-6"
+    >
+      <RefreshCcw class="size-4 text-gray-400 hover:text-gray-600 transition" />
     </div>
 
     <!-- Messages list -->
-    <div
-      class="flex-1 overflow-y-auto px-4 pt-6 pb-32 rounded-t-2xl"
-      ref="messagesContainer"
-    >
+    <div class="flex-1 overflow-y-auto px-4 pt-6 pb-32 rounded-t-2xl" ref="messagesContainer">
       <TransitionGroup name="fade-slide" tag="div" class="space-y-4">
         <div
           v-for="({ isLoading, question, answer, id, timestamp }, index) in defaultThreadMessages"
@@ -113,7 +110,7 @@
         <!-- Send button -->
         <button
           @click="handleSendMessage(message)"
-          :disabled="(!message.trim() || message.length < 7) || loading"
+          :disabled="!message.trim() || message.length < 7 || loading"
           class="bg-blue-600 hover:bg-blue-700 disabled:opacity-40 text-white px-4 py-2.5 rounded-xl text-sm font-medium shadow transition-all flex items-center gap-1"
         >
           <SendIcon class="w-4 h-4" />
