@@ -8,7 +8,6 @@ import { askQuestion as askQuestionApi, getQuestions as getQuestionsApi } from '
 export const usePropertyQuestionStore = defineStore('propertyQuestion', () => {
   const loading = ref(false)
   const messages = ref([])
-  const fetched = ref({})
 
   // Unified prompts by thread name
   const prompts = ref({
@@ -40,11 +39,6 @@ export const usePropertyQuestionStore = defineStore('propertyQuestion', () => {
       const { data, error } = await askQuestionApi(propertyId, question)
       if (error.value) throw new Error(error.value)
 
-      // Add the new question and answer to the messages
-      const { id, question: receivedQuestion, answer } = data.value?.data
-      messages.value[propertyId] ||= []
-      messages.value[propertyId].push({ id, question: receivedQuestion, answer })
-
       return data.value?.data
     } finally {
       loading.value = false
@@ -52,8 +46,6 @@ export const usePropertyQuestionStore = defineStore('propertyQuestion', () => {
   }
 
   const fetchMessages = async (propertyId) => {
-    if (fetched.value[propertyId]) return messages.value[propertyId]
-
     loading.value = true
     try {
       const { data, error } = await getQuestionsApi(propertyId)
@@ -61,19 +53,17 @@ export const usePropertyQuestionStore = defineStore('propertyQuestion', () => {
 
       const result = data.value?.data || []
 
-      // Ensure messages is initialized for the propertyId
-      messages.value[propertyId] = result.map((item) => ({
-        id: item.id,
-        question: item.question,
-        answer: item.answer,
-      }))
-
-      fetched.value[propertyId] = true
-
       return result
     } finally {
       loading.value = false
     }
+  }
+
+  const addMessage = (propertyId, message) => {
+    if (!messages.value[propertyId]) {
+      messages.value[propertyId] = []
+    }
+    messages.value[propertyId].push(message)
   }
 
   const getMessagesByPropertyId = (propertyId) => {
@@ -95,6 +85,7 @@ export const usePropertyQuestionStore = defineStore('propertyQuestion', () => {
 
     // Messages
     messages,
+    addMessage,
     getMessagesByPropertyId,
 
     // API
