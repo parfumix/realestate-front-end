@@ -14,8 +14,8 @@
   "dependencies": {
     "@headlessui/vue": "^1.7.23",
     "@heroicons/vue": "^2.1.5",
-    "@nuxt/scripts": "^0.9.5",
-    "@nuxtjs/turnstile": "^0.9.11",
+    "@nuxt/scripts": "^0.11.8",
+    "@nuxtjs/turnstile": "^1.0.0",
     "@pinia/nuxt": "^0.5.4",
     "canvas-confetti": "^1.9.3",
     "date-fns": "^4.1.0",
