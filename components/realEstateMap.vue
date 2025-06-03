@@ -9,6 +9,7 @@
 
 <script setup>
 import L from 'leaflet';
+import 'leaflet/dist/leaflet.css'
 import "overlapping-marker-spiderfier-leaflet/dist/oms";
 const OverlappingMarkerSpiderfier = window.OverlappingMarkerSpiderfier;
 
