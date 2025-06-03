@@ -7,7 +7,7 @@
     </div>
 
     <!-- View Mode Switcher -->
-    <div class="w-full flex justify-center p-2 border-b bg-white">
+    <div class="w-full flex justify-center p-2 border-b border-gray-200 bg-white">
       <SwitchView @change="handleSwitchView" />
     </div>
 
@@ -53,31 +53,16 @@
 //TODO adding translation
 
 // TODO use search query params to store filters and search query
-
-import RealEstatePropertyModal from '@/components/modals/real-estate-property.vue';
-
 import { useItemsStore } from '@/stores/itemsStore';
 import { useFilterStore } from '@/stores/filters';
-import { useModalStore } from '@/stores/modals';
 import { useSearchQueryStore } from '@/stores/searchQueryStore';
 
 const filterStore = useFilterStore()
 const itemsStore = useItemsStore()
-const modalStore = useModalStore();
 const searchQueryStore = useSearchQueryStore()
 
-const route = useRoute();
-const router = useRouter();
-
-import { setHead } from '../utils'
-
 const defaultView = computed(() => itemsStore.defaultView);
-const selectedItem = computed(() => itemsStore.selectedItem);
-const isModalVisible = computed(() => modalStore.isModalVisible);
 
-const openRealEstatePropertyModal = () => {
-  modalStore.openModal(RealEstatePropertyModal);
-}
 const { activeMessage, mapZoom, mapBbox, parsequery, activeSorting } = storeToRefs(filterStore)
 
 const isListView = computed(() =>
@@ -89,10 +74,6 @@ const isMapView = computed(() =>
 const isHybridView = computed(() =>
   defaultView.value === itemsStore.TYPE_LIST_HYBRID
 )
-
-watch(() => isModalVisible.value, newval => {
-  if(! newval) itemsStore.handleResetSelectedItem()
-})
 
 /**
 * In case of map while user moing map around, I have to keep items list as it is and just fetch new items from map
@@ -107,8 +88,7 @@ const handleFetchItems = async(trimmedMessage = null, appliedFilters = null, map
   const filtersCopy = { ...appliedFilters }; 
   const mapFiltersCopy = { ...mapFilters }; 
 
-  const { reply, items = null, map: { items: mapItems = [], bounds = [], zoom = null } = {}, filters } = 
-    await itemsStore.handleFetchItems(trimmedMessage, filtersCopy, mapFiltersCopy, null, parsequery, activeSorting) 
+  const { items, map: { items: mapItems = [], bounds = [], zoom = null } = {}, filters } = await itemsStore.handleFetchItems(trimmedMessage, filtersCopy, mapFiltersCopy, null, parsequery, activeSorting) 
 
   itemsStore.handleResetItems()
   itemsStore.handlePushItems({ items, mapItems })
@@ -118,7 +98,7 @@ const handleFetchItems = async(trimmedMessage = null, appliedFilters = null, map
     filterStore.setMapFilters(zoom, bounds)
   }
 
-  return { reply, items, mapItems, filters }
+  return { items, mapItems, filters }
 }
 
 // if user manually set filters, than we should omit user query and search through properties using just filters
@@ -144,8 +124,7 @@ const handleSendMessage = async (message) => {
     itemsStore.isQueryLoadingChat = true
 
     // we're usign all romanian bbox because search can contain new locations so we need to clusterize items by whole country
-    const { reply, items, filters } = await handleFetchItems(trimmedMessage, null, null, true)
-    if(! items) throw new Error('No results found for' + trimmedMessage)
+    const { filters } = await handleFetchItems(trimmedMessage, null, null, true)
     
     // apply filters automatically
     let parsedFilters = JSON.parse(JSON.stringify(filters ?? {}))
@@ -172,30 +151,17 @@ onUnmounted(() => {
   itemsStore.handleResetItems()
 })
 
-// emulate triggering handleCloseModal
-watch(() => selectedItem.value, newVal => {
-  if(! newVal?.id) {
-    router.replace('/search')
-  }
-})
-
-watch(() => route.params.slug, async(newSlug) => {
-  if(! newSlug) {
-    setHead('Main page')
-    return
-  }
-
-  const foundItem = await itemsStore.findItemBySlug(newSlug)
-  if(! foundItem) return
-
-  setHead(foundItem.title)
-  itemsStore.handleSelectItem(foundItem)
-  openRealEstatePropertyModal()
-}, { immediate: true })
-
 const initialFetchDone = ref(false);
 if(! initialFetchDone.value) {
-  await handleFetchItems(activeMessage.value, filterStore.activeFilters, null, null, activeSorting.value)
-  initialFetchDone.value = true
+  try {
+    await handleFetchItems(
+      activeMessage.value, filterStore.activeFilters, null, null, activeSorting.value
+    )
+
+    initialFetchDone.value = true
+  } catch (error) {
+    console.error('Initial fetch error:', error);
+  }
 }
+
 </script>

@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 
-import { fetchItems } from '../api/items'
+import { fetchItems, fetchItemBySlug } from '../api/items'
 import { removeEmptyValues } from '../utils'
 
 export const useItemsStore = defineStore('itemsStore', () => {
@@ -11,9 +11,7 @@ export const useItemsStore = defineStore('itemsStore', () => {
   const TYPE_LIST_HYBRID = 'hybrid'
 
   // Default view mode state
-  const defaultView = process.client
-    ? ref(localStorage.getItem('defaultView') ?? TYPE_LIST_HYBRID)
-    : ref(TYPE_LIST_HYBRID)
+  const defaultView = ref(TYPE_LIST_HYBRID)
 
   // Loading states
   const isItemsLoaded = ref(false)
@@ -23,10 +21,10 @@ export const useItemsStore = defineStore('itemsStore', () => {
   // Items management
   const items = ref([])
   const mapItems = ref([])
-  const selectedItem = ref(null)
   const hoveredItem = ref(null)
 
   const resetTrigger = ref(0)
+  const isChatInlineHasBeenMounted = ref(false)
 
   const paginationOffset = ref(12) // Initial offset
   const isLoadingMore = ref(false)
@@ -40,30 +38,24 @@ export const useItemsStore = defineStore('itemsStore', () => {
     triggeredRefreshMap.value = mode
   }
 
-  const handleSelectItem = (item) => {
-    selectedItem.value = item
-  }
-
   const handleHoverItem = (item) => {
     hoveredItem.value = item
   }
 
   const findItemBySlug = async (slug) => {
-    return items.value.find((el) => el.slug == slug)
-  }
-
-  const handleResetSelectedItem = () => {
-    selectedItem.value = null
+    let item = items.value.find((el) => el.slug == slug)
+    if(! item) {
+      const { data, error } = await fetchItemBySlug(slug)
+      if (error.value) throw new Error(error.value)
+      item = data.value?.data || null
+    }
+    return item
   }
 
   const handleUpdateItem = (itemId, newData) => {
     const index = items.value.findIndex((el) => el.id === itemId)
     if (index == -1) return
     items.value[index] = { ...items.value[index], ...newData }
-
-    if (selectedItem.value?.id && selectedItem.value?.id == itemId) {
-      selectedItem.value = { ...selectedItem.value, ...newData }
-    }
   }
 
   const handleRemoveItem = (itemId) => {
@@ -104,9 +96,7 @@ export const useItemsStore = defineStore('itemsStore', () => {
     try {
       isQueryLoading.value = true
 
-      const viewMode = process.client
-        ? localStorage.getItem('defaultView') || TYPE_LIST_HYBRID
-        : TYPE_LIST_HYBRID
+      const viewMode = TYPE_LIST_HYBRID
 
       const filteredFilters = removeEmptyValues(filters)
       const haveAnyFilters = Object.keys(filteredFilters).length
@@ -126,7 +116,7 @@ export const useItemsStore = defineStore('itemsStore', () => {
       )
 
       if (error.value) throw new Error(error.value)
-      return data.value
+      return data.value // Deep clone to avoid reactivity issues
     } catch (err) {
       console.error('Error in handleFetchItems:', err)
       throw err
@@ -187,7 +177,7 @@ export const useItemsStore = defineStore('itemsStore', () => {
   const setDefaultView = (newViewMode) => {
     if (defaultView.value !== newViewMode) {
       defaultView.value = newViewMode
-      localStorage.setItem('defaultView', newViewMode)
+      //localStorage.setItem('defaultView', newViewMode)
     }
   }
 
@@ -205,13 +195,10 @@ export const useItemsStore = defineStore('itemsStore', () => {
     // Items
     items,
     mapItems,
-    selectedItem,
     hoveredItem,
     handleUpdateItem,
     handleRemoveItem,
-    handleSelectItem,
     handleHoverItem,
-    handleResetSelectedItem,
     handleResetItems,
     handlePushItem,
     handlePushItems,
@@ -237,5 +224,6 @@ export const useItemsStore = defineStore('itemsStore', () => {
     setDefaultView,
     defaultView,
     resetTrigger,
+    isChatInlineHasBeenMounted,
   }
 })

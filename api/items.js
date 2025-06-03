@@ -1,6 +1,6 @@
 import { useCustomFetch } from '~/composables/useCustomFetch'
 
-const fetchItems = async (
+export const fetchItems = async (
   q = null,
   filters = null,
   mapFilters = null,
@@ -36,4 +36,23 @@ const fetchItems = async (
   return { data, error }
 }
 
-export { fetchItems }
+export const fetchItemBySlug = async (slug) => {
+  const { data, error } = await useCustomFetch(`listings/i/${slug}`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  })
+  return { data, error }
+}
+
+export const getNearbyPlaces = async (uuid, queryParams) => {
+  const { data, error } = await useCustomFetch(`listings/nearby-places/${uuid}`, {
+    method: 'GET',
+    query: queryParams,
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  })
+  return { data, error }
+}

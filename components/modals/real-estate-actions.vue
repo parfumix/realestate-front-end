@@ -60,29 +60,35 @@
 import { format } from 'date-fns'
 import { ro } from 'date-fns/locale'
 
+const props = defineProps({
+  item: {
+    type: Object,
+    default: () => ({}),
+  },
+})
+
 const itemsStore = useItemsStore()
-const { selectedItem: item } = storeToRefs(itemsStore)
 const { removeFavorite, addFavorite } = useFavoritesService()
 
 const route = useRoute()
 const currentPageType = route.name
 
 const formattedDate = computed(() => {
-  return format(new Date(item.value.created_at), 'd MMMM yyyy', { locale: ro })
+  return format(new Date(props.item.created_at), 'd MMMM yyyy', { locale: ro })
 })
 
 const handleTogglFavorite = async () => {
-  const isFavorited = item.value.is_favorited
+  const isFavorited = props.item.is_favorited
 
   if (currentPageType == 'saved') {
     itemsStore.handleTriggerRefreshMap(true)
-    itemsStore.handleRemoveItem(item.value.id)
+    itemsStore.handleRemoveItem(props.item.id)
   } else {
-    itemsStore.handleUpdateItem(item.value.id, {
+    itemsStore.handleUpdateItem(props.item.id, {
       is_favorited: !isFavorited,
     })
   }
 
-  return isFavorited ? await removeFavorite(item.value.id) : await addFavorite(item.value.id)
+  return isFavorited ? await removeFavorite(props.item.id) : await addFavorite(props.item.id)
 }
 </script>
