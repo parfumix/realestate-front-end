@@ -7,7 +7,8 @@ export default defineNuxtConfig({
     '@pinia/nuxt',
     'nuxt-keen-slider',
     'nuxt3-notifications',
-    '@nuxtjs/turnstile'
+    '@nuxtjs/turnstile',
+    
   ],
   runtimeConfig: {
     jwtSecret: process.env.JWT_SECRET,
@@ -19,30 +20,6 @@ export default defineNuxtConfig({
     storesDirs: ['./stores/**'],
   },
   ssr: true,
-  hooks: {
-    'pages:extend'(pages) {
-      pages.push({
-        name: 'saved',
-        path: '/saved',
-        file: '~/pages/index.vue', 
-        meta: {key: 'saved'}
-      });
-
-      pages.push({
-        name: 'property',
-        path: '/property/:slug',
-        file: '~/pages/index.vue', 
-        meta: {key: 'index'}
-      });
-
-      pages.push({
-        name: 'index',
-        path: '/',
-        file: '~/pages/index.vue', 
-        meta: {key: 'index'}
-      });
-    },
-  },
   turnstile: {
     siteKey: process.env.TURNSTILE_SITE_KEY,
   },
@@ -50,7 +27,7 @@ export default defineNuxtConfig({
     prefix: 'Headless'
   },
   tailwindcss: {
-    configPath: 'tailwind.config',
+    editorSupport: true,
   },
   compatibilityDate: '2024-04-03',
   devtools: { enabled: true }

@@ -1,8 +1,17 @@
 /** @type {import('tailwindcss').Config} */
 export default {
-  content: [],
+  content: [
+    './components/**/*.{vue,js,ts}',
+    './layouts/**/*.{vue,js,ts}',
+    './pages/**/*.{vue,js,ts}',
+    './app.vue',
+    './plugins/**/*.{js,ts}',
+  ],
   theme: {
     extend: {
+      fontFamily: {
+        sans: ['Inter', 'sans-serif'],
+      },
       keyframes: {
         ring: {
           '0%': { transform: 'rotate(0deg)' },
@@ -23,4 +32,3 @@ export default {
     require('@tailwindcss/aspect-ratio'),
   ],
 }
-
