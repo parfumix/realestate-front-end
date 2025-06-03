@@ -2,7 +2,7 @@
     <div class="w-full relative">
         <div class="w-full rounded-b-lg flex justify-between relative" v-click-outside="handleClickOutside">
             <!-- Input field -->
-            <div class="relative flex items-center w-full shadow-md">
+            <div class="relative flex items-center w-full shadow-md bg-white">
 
                 <!-- Search Icon -->
                 <div class="absolute top-0 left-[5px] flex items-center w-[30px] h-full">
@@ -72,7 +72,7 @@
             </div>
 
             <!-- Autocomplete -->
-            <div v-if="inputIsFocused" class="absolute w-full bottom-full rounded-t-md left-0 bg-white border max-h-48 overflow-y-auto z-10 mb-.5">
+            <div v-if="inputIsFocused" class="absolute w-full bottom-full rounded-t-md left-0 bg-white border-0 max-h-48 overflow-y-auto z-10 mb-.5">
 
                 <!-- Popular or Search suggestions -->
                 <ul v-if="filteredCombinedQueries.length > 0 && inputIsFocused">
@@ -470,14 +470,13 @@ const handleDeletRecentQuries = async () => {
 
 await searchQueryStore.fetchCombinedQueries()
 
-let isChatInlineHasBeenMounted = false
 if (process.client) {
     setTimeout(() => {
-        if (!isChatInlineHasBeenMounted) {
+        if (!itemsStore.isChatInlineHasBeenMounted) {
             inputField.value.focus()
 
             localStorage.setItem('inputHasBeenMounted', 'true');
-            isChatInlineHasBeenMounted = true
+            itemsStore.isChatInlineHasBeenMounted = true
         }
     })
 }
