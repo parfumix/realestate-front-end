@@ -115,13 +115,70 @@ export const useFilterStore = defineStore('filtersStore', () => {
   let activeMessage = ref(null)
   let parsequery = ref(null)
 
-  const activeFilters = reactive(defaultFilters)
+  const route = useRoute()
+  const router = useRouter()
+  const query = computed(() => route.query)
+
+  // parse filters from route params
+  // parse query params from the URL
+  const parseSegmentsToFilters = (segments = []) => {
+    const filters = {}
+
+    for (const raw of segments) {
+      const values = raw.split(',')
+
+      for (let value of values) {
+        if (['for-sale', 'for-rent'].includes(value)) {
+          filters.transaction_type = [...(filters.transaction_type || []), value]
+        } else if (['apartamente', 'case', 'garsoniere'].includes(value)) {
+          filters.property_type = [...(filters.property_type || []), value]
+        } else if (value.includes('-camere')) {
+          filters.room_count = [...(filters.room_count || []), value.replace('-camere', '')]
+        } else if (value.match(/^\d+-\d+\+?$/) || value.endsWith('+')) {
+          filters.price = [...(filters.price || []), value]
+        } else {
+          filters.location = [...(filters.location || []), value]
+        }
+      }
+    }
+
+    return filters
+  }
+
+  const buildSegmentsFromFilters = (filters) => {
+    const segments = []
+
+    if (filters.transaction_type?.length) segments.push(filters.transaction_type.join(','))
+
+    if (filters.property_type?.length) segments.push(filters.property_type.join(','))
+
+    if (filters.location?.length) segments.push(filters.location.join(','))
+
+    if (filters.room_count?.length)
+      segments.push(filters.room_count.map((v) => `${v}-camere`).join(','))
+
+    if (filters.price?.length) segments.push(filters.price.join(','))
+
+    return segments
+  }
+
+  const mappedFilters = parseSegmentsToFilters(route.params.filters || [])
+  const activeFilters = reactive(mappedFilters)
+
+  watch(() => activeFilters, (newFilters) => {
+    // Update the query params in the route
+    const segments = buildSegmentsFromFilters(newFilters)
+    const newQuery = { ...query.value, filters: segments.join('/') }
+
+    router.replace(`/search/${segments.join('/')}`)
+  }, { deep: true })
 
   const mapZoom = ref(null)
   const mapBbox = ref(null)
   const manualMovement = ref(null)
 
   const hasFiltersChanged = ref(false)
+
   const resetHasFiltersChanged = () => {
     hasFiltersChanged.value = false
   }
