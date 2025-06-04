@@ -21,6 +21,19 @@ export const useFilterStore = defineStore('filtersStore', () => {
     hasFiltersChanged.value = true
   }
 
+  const locations = [
+      { value: 'bucuresti', label: 'București' },
+      { value: 'cluj-napoca', label: 'Cluj-Napoca' },
+      { value: 'iasi', label: 'Iași' },
+      { value: 'timisoara', label: 'Timișoara' },
+      { value: 'constanta', label: 'Constanța' },
+      { value: 'brasov', label: 'Brașov' },
+      { value: 'sibiu', label: 'Sibiu' },
+      { value: 'ploiesti', label: 'Ploiești' },
+      { value: 'craiova', label: 'Craiova' },
+      { value: 'oradea', label: 'Oradea' },
+    ]
+
   const filters = ref([
     {
       id: 'transaction_type',
@@ -87,18 +100,7 @@ export const useFilterStore = defineStore('filtersStore', () => {
     {
       id: 'location',
       name: 'Locație',
-      options: [
-        { value: 'bucuresti', label: 'București' },
-        { value: 'cluj-napoca', label: 'Cluj-Napoca' },
-        { value: 'iasi', label: 'Iași' },
-        { value: 'timisoara', label: 'Timișoara' },
-        { value: 'constanta', label: 'Constanța' },
-        { value: 'brasov', label: 'Brașov' },
-        { value: 'sibiu', label: 'Sibiu' },
-        { value: 'ploiesti', label: 'Ploiești' },
-        { value: 'craiova', label: 'Craiova' },
-        { value: 'oradea', label: 'Oradea' },
-      ],
+      options: locations
     },
   ])
 
@@ -145,18 +147,7 @@ export const useFilterStore = defineStore('filtersStore', () => {
         } else if (value === '7plus-etaj') {
           filters.floor = [...(filters.floor || []), '7+']
         } else if (
-          [
-            'bucuresti',
-            'cluj-napoca',
-            'iasi',
-            'timisoara',
-            'constanta',
-            'brasov',
-            'sibiu',
-            'ploiesti',
-            'craiova',
-            'oradea',
-          ].includes(value)
+          locations.map(el => el.value).includes(value)
         ) {
           filters.location = [...(filters.location || []), value]
         }
@@ -170,18 +161,12 @@ export const useFilterStore = defineStore('filtersStore', () => {
     const segments = []
 
     if (filters.transaction_type?.length) segments.push(filters.transaction_type.join(','))
-
     if (filters.property_type?.length) segments.push(filters.property_type.join(','))
-
     if (filters.location?.length) segments.push(filters.location.join(','))
-
     if (filters.room_count?.length)
       segments.push(filters.room_count.map((v) => `${v}-camere`).join(','))
-
     if (filters.price?.length) segments.push(filters.price.join(','))
-
     if (filters.area?.length) segments.push(filters.area.map((v) => `${v}-mp`).join(','))
-
     if (filters.floor?.length)
       segments.push(
         filters.floor
