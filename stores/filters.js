@@ -132,11 +132,32 @@ export const useFilterStore = defineStore('filtersStore', () => {
           filters.transaction_type = [...(filters.transaction_type || []), value]
         } else if (['apartamente', 'case', 'garsoniere'].includes(value)) {
           filters.property_type = [...(filters.property_type || []), value]
-        } else if (value.includes('-camere')) {
-          filters.room_count = [...(filters.room_count || []), value.replace('-camere', '')]
         } else if (value.match(/^\d+-\d+\+?$/) || value.endsWith('+')) {
           filters.price = [...(filters.price || []), value]
-        } else {
+        } else if (value.endsWith('-camere')) {
+          filters.room_count = [...(filters.room_count || []), value.replace('-camere', '')]
+        } else if (value.endsWith('-mp')) {
+          filters.area = [...(filters.area || []), value.replace('-mp', '')]
+        } else if (value.startsWith('etaj-')) {
+          filters.floor = [...(filters.floor || []), value.replace('etaj-', '')]
+        } else if (value === 'parter') {
+          filters.floor = [...(filters.floor || []), '0']
+        } else if (value === '7plus-etaj') {
+          filters.floor = [...(filters.floor || []), '7+']
+        } else if (
+          [
+            'bucuresti',
+            'cluj-napoca',
+            'iasi',
+            'timisoara',
+            'constanta',
+            'brasov',
+            'sibiu',
+            'ploiesti',
+            'craiova',
+            'oradea',
+          ].includes(value)
+        ) {
           filters.location = [...(filters.location || []), value]
         }
       }
@@ -159,19 +180,33 @@ export const useFilterStore = defineStore('filtersStore', () => {
 
     if (filters.price?.length) segments.push(filters.price.join(','))
 
+    if (filters.area?.length) segments.push(filters.area.map((v) => `${v}-mp`).join(','))
+
+    if (filters.floor?.length)
+      segments.push(
+        filters.floor
+          .map((v) => (v === '0' ? 'parter' : v === '7+' ? '7plus-etaj' : `etaj-${v}`))
+          .join(','),
+      )
+
     return segments
   }
 
   const mappedFilters = parseSegmentsToFilters(route.params.filters || [])
   const activeFilters = reactive(mappedFilters)
 
-  watch(() => activeFilters, (newFilters) => {
-    // Update the query params in the route
-    const segments = buildSegmentsFromFilters(newFilters)
-    const newQuery = { ...query.value, filters: segments.join('/') }
+  // Watch for changes in activeFilters and update the route params
+  watch(
+    () => activeFilters,
+    (newFilters) => {
+      // Update the query params in the route
+      const segments = buildSegmentsFromFilters(newFilters)
+      const newQuery = { ...query.value, filters: segments.join('/') }
 
-    router.replace(`/search/${segments.join('/')}`)
-  }, { deep: true })
+      router.replace(`/search/${segments.join('/')}`)
+    },
+    { deep: true },
+  )
 
   const mapZoom = ref(null)
   const mapBbox = ref(null)
