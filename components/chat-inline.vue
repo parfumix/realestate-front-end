@@ -474,8 +474,6 @@ if (process.client) {
     setTimeout(() => {
         if (!itemsStore.isChatInlineHasBeenMounted) {
             inputField.value.focus()
-
-            localStorage.setItem('inputHasBeenMounted', 'true');
             itemsStore.isChatInlineHasBeenMounted = true
         }
     })

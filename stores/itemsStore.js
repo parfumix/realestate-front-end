@@ -173,11 +173,10 @@ export const useItemsStore = defineStore('itemsStore', () => {
     }
   }
 
-  // Set view mode and save to localStorage
+  // Set view mode and save
   const setDefaultView = (newViewMode) => {
     if (defaultView.value !== newViewMode) {
       defaultView.value = newViewMode
-      //localStorage.setItem('defaultView', newViewMode)
     }
   }
 
