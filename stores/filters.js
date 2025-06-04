@@ -121,8 +121,7 @@ export const useFilterStore = defineStore('filtersStore', () => {
   const router = useRouter()
   const query = computed(() => route.query)
 
-  // parse filters from route params
-  // parse query params from the URL
+  // parse query params from the URL (viewMode, sortMode, activeMessage)
   const parseSegmentsToFilters = (segments = []) => {
     const filters = {}
 
@@ -177,18 +176,17 @@ export const useFilterStore = defineStore('filtersStore', () => {
     return segments
   }
 
+  // first time we initialize filters from the URL params + query params
   const mappedFilters = parseSegmentsToFilters(route.params.filters || [])
   const activeFilters = reactive(mappedFilters)
 
-  // Watch for changes in activeFilters and update the route params
+  // Watch for changes in activeFilters and update the route params using router.replace
   watch(
     () => activeFilters,
     (newFilters) => {
       // Update the query params in the route
       const segments = buildSegmentsFromFilters(newFilters)
-      const newQuery = { ...query.value, filters: segments.join('/') }
-
-      router.replace(`/search/${segments.join('/')}`)
+      router.push(`/search/${segments.join('/')}`)
     },
     { deep: true },
   )
@@ -233,6 +231,10 @@ export const useFilterStore = defineStore('filtersStore', () => {
 
   const resetActiveMessage = () => {
     activeMessage.value = null
+  }
+
+  const setActiveFilters = (newFilters) => {
+    Object.assign(activeFilters, newFilters)
   }
 
   const resetActiveFilters = () => {
@@ -323,6 +325,7 @@ export const useFilterStore = defineStore('filtersStore', () => {
 
     handleSortOption,
 
+    setActiveFilters,
     setActiveFilter,
     setActiveMessage,
 

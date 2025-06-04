@@ -127,15 +127,14 @@ const handleSendMessage = async (message) => {
     const { filters } = await handleFetchItems(trimmedMessage, null, null, true)
     
     // apply filters automatically
-    let parsedFilters = JSON.parse(JSON.stringify(filters ?? {}))
+    const parsedFilters = JSON.parse(JSON.stringify(filters ?? {}))
 
     // adding query to recent queries
     searchQueryStore.addToRecentQueries(trimmedMessage)
 
-    Object.keys(parsedFilters).forEach(key => {
-      if(! parsedFilters?.[key]) return
-      filterStore.setActiveFilter(key, parsedFilters[key])
-    });
+    // set active filters
+    console.log('Parsed filters:', parsedFilters)
+    filterStore.setActiveFilters(parsedFilters)
 
     filterStore.setActiveMessage(trimmedMessage)
 
@@ -154,6 +153,7 @@ onUnmounted(() => {
 const initialFetchDone = ref(false);
 if(! initialFetchDone.value) {
   try {
+
     await handleFetchItems(
       activeMessage.value, filterStore.activeFilters, null, null, activeSorting.value
     )
