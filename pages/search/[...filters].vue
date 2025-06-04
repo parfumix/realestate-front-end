@@ -136,6 +136,7 @@ const handleSendMessage = async (message) => {
     console.log('Parsed filters:', parsedFilters)
     filterStore.setActiveFilters(parsedFilters)
 
+    // set active message
     filterStore.setActiveMessage(trimmedMessage)
 
   } catch(err) {
