@@ -82,6 +82,8 @@ import debounce from 'lodash-es/debounce'
 
 import { getRomanianBounds, calculateTravelTime } from '../utils'
 
+import { getNearbyPlaces } from '../../api/items'
+
 const props = defineProps({
   item: {
     type: Object,
@@ -210,8 +212,10 @@ const initializeMap = async () => {
     color: 'blue',
     fillOpacity: 0.1,
   }).addTo(map)
+}
 
-  //map.fitBounds(circle.getBounds(), { padding: [20, 20] });
+const buildAmenityCacheKey = (lat, lng, type) => {
+  return `${lat},${lng},${type}`
 }
 
 const loadAmenities = async () => {
@@ -219,7 +223,7 @@ const loadAmenities = async () => {
 
   try {
     const { lat, lng } = props.item.meta
-    const cacheKey = `${lat},${lng},${selectedAmenityType.value}`
+    const cacheKey = buildAmenityCacheKey(lat, lng, selectedAmenityType.value)
 
     // Check if the data is already in the cache
     if (amenityCache.value[cacheKey]) {
@@ -228,9 +232,19 @@ const loadAmenities = async () => {
       return
     }
 
+    const { data: places } = await getNearbyPlaces(props.item.id, {
+      amenities: [selectedAmenityType.value],
+      distance: 5000, // 5 km radius
+      limit: 20, // Limit to 100 results
+    })
+
+    if (!places || places.length === 0) {
+      console.warn('No amenities found for the selected type:', selectedAmenityType.value)
+      return
+    }
+
     // Cache the data
     amenityCache.value[cacheKey] = places
-
     currentPlaces.value = places
 
     // Update markers on the map
@@ -348,10 +362,15 @@ watch(
 
 watch(
   () => props.triggerMap,
-  (newTab) => {
-    if (newTab == 'map' && !map) {
+  () => {
+    if (!map) {
       nextTick(async () => {
         selectedAmenityType.value = props.amenity ?? typeOfAmenities[0].type
+        
+        // Initialize the cache with the current nearby places
+        const { lat, lng } = props.item.meta
+        const cacheKey = buildAmenityCacheKey(lat, lng, selectedAmenityType.value)
+        amenityCache.value[cacheKey] = props.nearbyPlaces || []
 
         await initializeMap()
         await loadAmenities()
