@@ -141,7 +141,7 @@ const emit = defineEmits(['map'])
 const message = ref('')
 
 const transactionType = computed(() => props.item.transaction_type)
-const isForSale = computed(() => transactionType.value === 'for-sale')
+const isForSale = computed(() => transactionType.value === 'de-vanzare')
 
 const messagesContainer = ref(null)
 

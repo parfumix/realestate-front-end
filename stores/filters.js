@@ -32,15 +32,15 @@ export const useFilterStore = defineStore('filtersStore', () => {
       { value: 'ploiesti', label: 'Ploiești' },
       { value: 'craiova', label: 'Craiova' },
       { value: 'oradea', label: 'Oradea' },
-    ]
+  ]
 
   const filters = ref([
     {
       id: 'transaction_type',
       name: 'Tip Tranzacție',
       options: [
-        { value: 'for-sale', label: 'De Vânzare' },
-        { value: 'for-rent', label: 'De Închiriat' },
+        { value: 'de-vanzare', label: 'De Vânzare' },
+        { value: 'de-inchiriat', label: 'De Închiriat' },
       ],
     },
     {
@@ -129,7 +129,7 @@ export const useFilterStore = defineStore('filtersStore', () => {
       const values = raw.split(',')
 
       for (let value of values) {
-        if (['for-sale', 'for-rent'].includes(value)) {
+        if (['de-inchiriat', 'de-vanzare'].includes(value)) {
           filters.transaction_type = [...(filters.transaction_type || []), value]
         } else if (['apartamente', 'case', 'garsoniere'].includes(value)) {
           filters.property_type = [...(filters.property_type || []), value]
