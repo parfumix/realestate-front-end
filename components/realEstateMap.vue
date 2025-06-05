@@ -199,6 +199,7 @@ const refreshMap = () => {
 }
 
 const setNewLocationBasedOnItems = (updatedBounds) => {
+  if(! map) return
   const [minLng, minLat, maxLng, maxLat] = updatedBounds;
 
   const newBounds = L.latLngBounds(
@@ -380,6 +381,7 @@ watch(() => hoveredItem.value, (id) => {
 // Handle refresh map trigger
 watch(() => triggeredRefreshMap.value, async(newVal) => {
   if(newVal === true) {
+    console.log("Triggered refresh map");
     await handleMapMoveEnd();
     itemsStore.handleTriggerRefreshMap(false);
   }
@@ -396,13 +398,15 @@ watch(() => defaultView.value, (newView, oldView) => {
     if (!isMapInitialized.value && !map) {
       // Initialize map if not yet initialized
       nextTick(async() => {
+        console.log("Initializing map...");
         await initializeMap();
 
         // Update markers with initial data
         updateMarkers(mapItems.value);
       });
     } else if (map) {
-      // If view changed and map exists, refresh it to handle size changes
+      // If view changed and map exists, refresh it to handle size changes, when user switches from list to map view
+      console.log("Refreshing map...");
       nextTick(() => {
         refreshMap();
       });
@@ -410,18 +414,20 @@ watch(() => defaultView.value, (newView, oldView) => {
   }
 }, { immediate: true });
 
-watch(() => mapBbox.value, (newVal) => {
-  if(! map || !newVal) return
-  setTimeout(() => {
-    setNewLocationBasedOnItems(newVal);
+watch(() => mapBbox.value, (bounds) => {
+  if(!bounds || bounds.length < 4) return
+  nextTick(async() => {
+    console.log("Updating map location based on bbox:", bounds);
+    setNewLocationBasedOnItems(bounds);
   })
 }, { deep: true, immediate: true })
 
 watch(() => mapItems.value, (newVal) => {
   if(! map) return
-  setTimeout(() => {
+  nextTick(async() => {
+    console.log("Updating markers based on map items:", newVal);
     updateMarkers(newVal);
-  })
+  });
 }, { deep: true, immediate: true })
 
 // Use resize observer to detect container size changes

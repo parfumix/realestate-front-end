@@ -201,14 +201,6 @@ export const useFilterStore = defineStore('filtersStore', () => {
     hasFiltersChanged.value = false
   }
 
-  const setActiveFilter = (filterName, value) => {
-    if (!value) {
-      delete activeFilters[filterName]
-    } else {
-      activeFilters[filterName] = value
-    }
-  }
-
   const setMapFilters = (zoom = 6, bbox = null, isManualMovement = null) => {
     try {
       mapZoom.value = zoom
@@ -233,6 +225,14 @@ export const useFilterStore = defineStore('filtersStore', () => {
     activeMessage.value = null
   }
 
+  const setActiveFilter = (filterName, value) => {
+    if (!value) {
+      delete activeFilters[filterName]
+    } else {
+      activeFilters[filterName] = value
+    }
+  }
+
   const setActiveFilters = (newFilters) => {
     Object.assign(activeFilters, newFilters)
   }
@@ -242,7 +242,6 @@ export const useFilterStore = defineStore('filtersStore', () => {
     Object.keys(activeFilters).forEach((key) => {
       delete activeFilters[key]
     })
-
     // Then repopulate with default values
     Object.entries(defaultFilters).forEach(([key, value]) => {
       activeFilters[key] = Array.isArray(value) ? [...value] : value
